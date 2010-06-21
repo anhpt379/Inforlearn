@@ -1,0 +1,63 @@
+{% load format nonce %}
+<div id="streams">
+  <h2>Nguồn tin</h2>
+  {% if FEEDS_ENABLED %}
+    {% ifequal request.user.nick view.nick %}
+      <a href="{{view.url}}/settings/feeds" class="edit">Quản lý</a>
+    {% else %}
+      {% if user_is_admin %}
+      <a href="{{view.url}}/settings/feeds" class="edit">Quản lý</a>
+      {% endif %}
+    {% endifequal %}
+  {% endif %}
+
+  {% if streams|length %}
+    <ul>
+    {% for stream in streams.values %}
+      <li>
+        <h4>
+        {{stream|stream_icon}}
+        {% if stream.extra.display_url %}
+          <a href="{{stream.extra.display_url|escape}}">{{stream.title}}</a>
+        {% else %}
+          {% ifequal stream.title "presence" %}
+            Tin nhắn gửi từ {{stream.owner_ref.display_nick}}
+          {% else %}
+            {% ifequal stream.title "comments" %}
+              Bình luận gửi từ {{stream.owner_ref.display_nick}}
+            {% else %}
+              {{stream.title}}
+            {% endifequal %}
+          {% endifequal %}
+        {% endif %}
+        </h4>
+        {% if request.user %}
+        {% ifnotequal request.user.nick view.nick %}
+          {% if stream.subscribed %}
+          <a
+            href="{{view.url}}?subscription_remove={{stream.key.name|urlencode}}&amp;{{request.user|nonceparam:"subscription_remove"}}&amp;target=inbox/{{request.user.nick|urlencode}}/overview"
+             class="unsubscribe">Ngừng theo dõi</a>
+          {% else %}
+          <a
+            href="{{view.url}}?subscription_request={{stream.key.name|urlencode}}&amp;{{request.user|nonceparam:"subscription_request"}}&amp;target=inbox/{{request.user.nick|urlencode}}/overview"
+            class="subscribe">Theo dõi</a>
+          {% endif %}
+        {% endifnotequal %}
+        {% endif %}
+      </li>
+    {% endfor %}
+    </ul>
+	{% else %}
+    {% ifequal request.user.nick view.nick %}
+    <p>
+      {{108|stream_icon}}
+      <a href="{{view.url}}/settings/feeds">+ Thêm nguồn khác</a>
+    </p>
+    {% else %}
+    <p>
+      Hiện tại chưa có gì.
+    </p>
+    {% endifequal %}
+	{% endif %}
+</div>
+

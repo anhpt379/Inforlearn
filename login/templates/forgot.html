@@ -1,0 +1,31 @@
+{% extends 'common/templates/base_single.html' %}
+{% block title %}Quên mật khẩu?{% endblock %}
+{% load nonce format %}
+
+{% block content %}
+
+{% include 'form_error.html' %}
+<h1>Bạn quên mật khẩu?</h1>
+
+<form action="" method="post" id="lostpass">
+  <input type="hidden" name="login_forgot" />
+  {{None|noncefield:"login_forgot"}}
+  
+  <div>
+    <label for="nick_or_email">Email hoặc tên đăng nhập</label>
+    <input type="text" name="nick_or_email" id="nick_or_email" value="" />
+    <p>Chúng tôi sẽ phục hồi lại mật khẩu và gửi link đăng nhập cho bạn qua email.</p>
+  </div>
+  <div class="buttons">
+    <input type="submit" value="Yêu cầu mật khẩu mới" />
+  </div>
+</form>
+
+<p class="centered">
+  <a href="{% url_for DOMAIN request %}/login">Quay lại trang đăng nhập</a>
+</p>
+<p class="centered">
+  hoặc <a href="{% url_for DOMAIN request %}/">trở về trang chủ</a>
+</p>
+
+{% endblock %}

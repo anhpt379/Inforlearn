@@ -1,0 +1,13 @@
+{% filter wordwrap:60 %}
+
+Cảm ơn bạn đã tham gia {{SITE_NAME}}, {{email_first}}!
+Bạn cần phải hoàn thành bước xác nhận này để hoàn tất quá trình đăng ký. 
+Sau khi hoàn thành, bạn sẽ có thể sử dụng chức năng thông báo qua email của {{SITE_NAME}}. 
+Hãy nhấn vào liên kết ở dưới để hoàn tất.
+
+{{email_link}}
+
+{{email_mobile_link}} (dành cho điện thoại di động)
+
+{% include "common/templates/email/signature.txt" %}
+{% endfilter %}

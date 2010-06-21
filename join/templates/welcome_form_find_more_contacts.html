@@ -1,0 +1,11 @@
+{% extends 'common/templates/form_find_more_contacts.html' %}
+{% block buttons %}
+<input type="hidden" name="redirect_to" value="{{redirect_to}}" />
+<button type="submit">
+  <big class="active"><span>&#8250; Tìm lại</span></big>
+</button>
+<br/>
+<br/>
+<p style="float: right;">hoặc <a href="/welcome/done?redirect_to={{redirect_to|urlencode}}">bỏ qua bước này</a>
+</p>
+{% endblock %}

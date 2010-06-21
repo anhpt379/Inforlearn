@@ -1,0 +1,18 @@
+{% extends 'common/templates/base_sidebar.html' %}
+{% block title %}Khám phá{% endblock %}
+{% block content %}
+  <h1>Mọi người trao đổi những gì :)</h1>
+
+  <div id='stream'>
+    {% include 'common/templates/stream.html' %}
+    {% include 'common/templates/paging.html' %}
+    {% include 'common/templates/feeds.html' %}
+  </div>
+
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'common/templates/sidebar_search.html' %}
+  {% include 'common/templates/sidebar_info.html' %} <!-- Thông tin nhóm phát triển -->
+  {% include 'common/templates/sidebar_tips.html' %}
+{% endblock %}

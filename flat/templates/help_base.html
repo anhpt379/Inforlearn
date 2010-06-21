@@ -1,0 +1,32 @@
+{% extends 'common/templates/base_wide.html' %}
+{% block title %}Trợ giúp{% endblock %}
+{% block content %}
+<div class="path">
+  <h1>{{path}}</h1>
+</div>
+
+<div id="side-nav">
+  <ul>
+    <li class="first{% ifequal page "index" %} current{% endifequal %}">
+    <a href="/help">Các câu hỏi thường gặp</a>
+    </li>
+    {% if SMS_ENABLED %}
+    <li {% ifequal page "sms" %}class="current"{% endifequal %} >
+    <a href="/sms">Gửi tin qua SMS</a>
+    </li>
+    {% endif %}
+    <li {% ifequal page "im" %}class="current"{% endifequal %} >
+    <a href="/help/im">Gửi tin từ Google Talk, LiveJournal, và Jabber</a>
+    </li>
+    <li {% ifequal page "commands" %}class="current"{% endifequal %} >
+    <a href="/help/commands">Cú pháp khi sử dụng từ SMS và các chương trình Instant Messaging</a>
+    </li>
+  </ul>
+</div>
+
+<div class="body">
+  {% block help %}
+  {% endblock %}
+</div>
+
+{% endblock %}

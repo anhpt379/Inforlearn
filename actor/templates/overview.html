@@ -1,0 +1,67 @@
+{% extends 'common/templates/base_sidebar.html' %}
+{% load nonce format %}
+ 
+{% block title %}Overview{% endblock %}
+
+
+{% block above_container %}
+{% if unconfirmed_email and not flash %}
+<div class="notice">
+  <p>
+  Bạn cần xác thực địa chỉ email "{{unconfirmed_email}}", nếu vẫn chưa nhận được thư, bạn có thể yêu cầu hệ thống <a href="{% url_for view request %}/settings/email">gửi lại</a>.
+  </p>
+ </div>
+{% endif %}
+{% endblock %}
+
+{% block content %}
+{% include 'common/templates/message_form.html' %}
+
+{% if not request.mobile %}
+  <ul id="sub-nav">
+    <li class="first current">
+      <a href="{{view.url}}/overview">Tường nhà</a>
+    </li>
+    <li>
+      <a href="{{view.url}}">Gửi lên bởi tôi</a>
+    </li>
+  </ul>
+{% endif %}
+
+<div id='stream'>
+  <h2>Xin chào {{view.display_nick}}!</h2>
+  {% if HIDE_COMMENTS_ENABLED %}
+  <div class="controls">
+    {% if view.extra.comments_hide %}
+      <a class="comment" 
+         href="?nick={{request.user.nick}}&amp;settings_hide_comments=0&amp;{{request.user|nonceparam:"settings_hide_comments"}}">
+        Hiển thị các bình luận
+    {% else %}
+      <a class="comment" 
+         href="?nick={{request.user.nick}}&amp;settings_hide_comments=1&amp;{{request.user|nonceparam:"settings_hide_comments"}}">
+        Ẩn bình luận
+    {% endif %}
+    </a>
+  </div>
+  {% endif %}
+
+  {% include 'common/templates/stream.html' %}
+  {% include 'common/templates/paging.html' %}
+
+  <p class="tools">
+    {% if feeds %}
+      <a href="{{feeds.0.url}}" class="rss" title="{{feeds.0.title}} ({{feeds.0.type}})">{{feeds.0.title}}</a>
+    {% endif %}
+  </p>
+</div>
+{% endblock %}
+
+{% block sidebar %}
+{% include 'common/templates/sidebar_location.html' %}
+{% include 'common/templates/sidebar_contacts.html' %}
+{% include 'common/templates/sidebar_channels.html' %}
+{% with view_streams as streams %}
+{% include 'common/templates/sidebar_streams.html' %}
+{% endwith %}
+{% include 'common/templates/sidebar_search.html' %}
+{% endblock %}

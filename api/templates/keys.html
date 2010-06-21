@@ -1,0 +1,53 @@
+{% extends 'api/templates/api_base.html' %}
+{% load nonce %}
+{% block api %}
+
+<p>Để sử dụng {{SITE_NAME}} API bạn cần có một khóa dành riêng cho từng ứng dụng. 
+Chúng tôi sẽ sử dụng nó để theo dõi việc sử dụng API của ứng dụng này.</p>
+
+
+<h2>Khóa API của bạn</h2>
+
+{% for consumer_token_ref in consumer_tokens %}
+<div class="boxy" style="margin-bottom: 10px; background-color: {% cycle 'white' '#DDD' %}">
+	<div style="font-size: 12px;">
+
+		<div style="float: right;">
+
+			Secret:<br />
+      <span><strong>{{consumer_token_ref.secret}}</strong></span>
+		</div>
+
+		Key:<br />
+    <span style="font-weight: bold; font-size: 16px;">{{consumer_token_ref.key_}}</span>
+	</div>
+
+	<div style="clear: both; font-size: 12px; padding: 1em 0;">
+
+    <b>Ứng dụng:</b> <i>{{consumer_token_ref.app_name}}</i><br />
+    <b>Hoạt động:</b>{{consumer_token_ref.created_at|timesince}} trước<br />
+		<b>Trạng thái:</b> 
+    <span style="color: #0c0; font-weight: bold;">{{consumer_token_ref.status}}</span><br />
+
+		<b>Chế độ xác thực:</b>
+    {{consumer_token_ref.type}}<br />
+	</div>
+
+	<div style="clear: both; font-size: 12px; padding-top: 1em;">
+    <a href="/api/keys/{{consumer_token_ref.key_}}">Sửa thông tin</a>
+	</div>
+</div>
+
+{% endfor %}
+
+{% include 'form_error.html' %}
+<form action="" method="post">
+  {{request.user|noncefield:"oauth_generate_consumer"}}
+  <input type='hidden' name='oauth_generate_consumer' value='' />
+  <input type='hidden' name='nick' value='{{request.user.nick}}' />
+  <div>
+    <input type="submit" id="generate" value="Tạo một khóa mới"/>
+  </div>
+</form>
+
+{% endblock %}

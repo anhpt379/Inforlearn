@@ -1,0 +1,57 @@
+{% extends 'api/templates/api_base.html' %}
+{% load nonce %}
+{% block api %}
+
+<!-- left column -->
+<div class="split">
+  <dl>
+    <dt><h2>Tổng quan</h2></dt>
+    <dd class='yellowy'>
+      <ul>
+        <li><a href="/api/docs/authentication">Xác thực</a></li>
+        <li><a href="/api/docs/fancy_urls">Fancy Urls</a></li>
+        <li><a href="/api/docs/error_codes">Mã lỗi</a></li>
+      </ul>
+    </dd>
+    <dt><h2>Định dạng yêu cầu</h2></dt>
+    <dd>
+      <ul>
+        <li><a href="/api/docs/request_rest">REST</a></li>
+        <li><a href="/api/docs/request_xmlrpc">XML-RPC</a></li>
+      </ul>
+    </dd>
+    <dt><h2>Định dạng tham số trả lời</h2></dt>
+    <dd>
+      <ul>
+        <li><a href="/api/docs/response_timestamp">Timestamp</a></li>
+        <li><a href="/api/docs/response_icon">Icon</a></li>
+      </ul>
+    </dd>
+    <dt><h2>Tham gia phát triển</h2></dt>
+    <dd>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;{{SITE_NAME}} được xây dựng dựa trên JaikuEngine, một dự án mã nguồn mở thuộc Google Inc, và đã được sửa đổi lại để phù hợp với môi trường Việt Nam. <br/>&nbsp;&nbsp;&nbsp;&nbsp;Kiểm tra <a href='http://github.com/AloneRoad/knowledge-network'>trang dự án</a> để biết thêm thông tin và cùng tham gia phát triển với chúng tôi.</p>
+    </dd>
+  </dl>
+</div>
+
+<!-- right column -->
+<div class="split">
+  <h2>Các phương thức hỗ trợ</h2>
+  <dl>
+    {% for category, methods in api_methods %}
+    <dt><h3>{{category}}</h3></dt>
+    <dd>
+      <ul>
+      {% for method in methods %}
+        <li><a href='/api/docs/method_{{method}}'>{{method}}</a></li>
+      {% endfor %}
+      </ul>
+    </dd>
+    {% endfor %}
+  </dl>
+
+</div>
+
+
+
+{% endblock %}

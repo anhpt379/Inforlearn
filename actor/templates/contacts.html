@@ -1,0 +1,28 @@
+{% extends 'actor/templates/people_base.html' %}
+{% block title %}Bạn của {{whose}}{% endblock %}
+{% load nonce avatar vcard format %}
+
+{% block people %}
+  <div class="path">
+    <h1><a href="{% url_for view request %}/contacts">Bạn bè</a> / Bạn của {{whose}}</h1>
+  </div>
+
+  <div class="body">
+  {% include 'form_error.html' %}
+    <div id="contacts" class='contacts'>
+      {% ifequal request.user.nick view.nick %}
+        <h2>Bạn bè ({{actor_tiles_count}})</h2>
+        <p class="foot-note">
+          Những người trong danh sách này có thể trông thấy các 
+          cập nhật bạn gửi lên cho dù bạn thiết lập chúng ở chế độ ẩn.
+          Những người có nền màu xanh là người đang theo dõi bạn.
+        </p>
+      {% endifequal %}
+      {% if actor_tiles %}
+        {% include 'common/templates/actor_tiles.html' %}
+      {% else %}
+        <p>Hiện tại chưa có ai, nhưng bạn sẽ tìm được bạn nhanh thôi :)</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

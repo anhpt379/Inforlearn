@@ -1,0 +1,42 @@
+{% load avatar nonce %}
+
+<div class="tab current" id="new">
+  {% if own_photos %}
+    {{request.user|noncefield:"change_photo"}}
+    <input type=hidden name="change_photo" />
+    <div class="avatars">
+      <ul>
+        {% for icon in own_photos %}
+          <li{% ifequal icon.name view.extra.icon %} class="selected"
+             {% endifequal %}>
+            <label>
+              <img src="/{{icon.path|urlencode}}" alt=""/>
+              {# TODO id=current querystring=nochacheingpplease #}
+              <input type="radio" name="avatar"
+                     {% ifequal icon.name view.extra.icon %}
+                       checked="checked"
+                     {% endifequal %}
+                     value="{{icon.name}}" />
+            </label>
+          </li>
+        {% endfor %}
+      </ul>
+    </div>
+  {% else %}
+    <p>
+      Chọn 1 file từ máy tính của bạn và nhấn "Tải lên"
+    </p>
+  {% endif %}
+  <div>
+    <label for="imgfile">Tải lên một ảnh</label>
+    <input type="file" name="imgfile" id="imgfile"/>
+    <p class="help">
+      Vui lòng chỉ chọn file có dung lượng dưới 200KB.
+    </p>
+  </div>
+  <div class="buttons">
+    <input type="submit" value="Tải lên" />
+  </div>
+</div>
+
+

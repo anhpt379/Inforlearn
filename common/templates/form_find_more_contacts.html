@@ -1,0 +1,19 @@
+{% load nonce %}
+<h2>Tìm thêm</h2>
+<div id="contacts">
+  <form id='find-more-contacts' action="" method="get">
+    <p><strong>Chờ một chút! Còn ở đây nữa!</strong></p>
+    <p>Chúng tôi chỉ mới kiểm tra <strong>{{contacts_so_far}}</strong> người bạn 
+    hay liên lạc nhưng có vẻ như vẫn chưa thực sự đầy đủ.</p>
+    <input type="hidden" name="token" value="{{token}}" />
+    <input type="hidden" name="index" value="{{contacts_more}}" />
+    <div class="buttons">
+      {{request.user|noncefield:"fetch_contacts"}}
+      <input type="hidden" name="fetch_contacts" />
+      {% block buttons %}
+      <input type="submit" value="Tìm bạn" />
+      {% endblock %}
+    </div>
+
+  </form>
+</div>

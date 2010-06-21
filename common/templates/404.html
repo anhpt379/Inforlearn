@@ -1,0 +1,66 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+  <style type="text/css">
+    *{ margin: 0; padding: 0; }
+    .clear{ clear: both; }
+    body{ background: #d1ebfd; font: normal 62.5% Arial, sans-serif; color: #0f57b8; }
+    
+    #mainContainer{ margin: 200px auto 0 auto; width: 500px; background-color: #eef8fe; border: 1px #bbd8f1 solid; padding: 9px 9px 15px 9px; position: relative; }
+    #mainContainer .topLeft, #mainContainer .topRight, #mainContainer .bottomLeft, #mainContainer .bottomRight{ 
+      position: absolute; 
+      display: block; 
+      background: url(  /themes/{{DEFAULT_THEME|urlencode}}/maintenanceCorners.gif ) no-repeat; 
+      width: 9px; 
+      height: 9px; }
+    #mainContainer .topLeft{ top: -1px; left: -1px; background-position: 0 0; }
+    #mainContainer .topRight{ top: -1px; right: -1px; background-position: -9px 0; }
+    #mainContainer .bottomLeft{ bottom: -1px; left: -1px; background-position: 0 -9px; }
+    #mainContainer .bottomRight{ bottom: -1px; right: -1px; background-position: -9px -9px; }
+    
+    #mainContainer h1 { 
+      display: block; 
+      width: 115px; 
+      height: 95px; 
+      background: url( /themes/{{DEFAULT_THEME|urlencode}}/logo.png ) no-repeat; 
+      float: left; 
+      }
+    #mainContainer h1 a{ display: block; width: 115px; height: 95px; }
+    #mainContainer h1 span{ display: none; }
+    
+    #mainContainer #message{ border-left: 1px #afcfe6 solid; margin-left: 130px; margin-top: 20px; padding: 10px 0 10px 25px; }
+    #message h2{ color: #0c3959; font-size: 1.8em; }
+    #message p{ color: #18659a; font-size: 1.3em; margin: 10px 0 0 0; line-height: 1.4em; }
+    #message a{ color: #062941; font-weight: bold; text-decoration: none; }
+    #message a:hover{ text-decoration: underline; }
+  
+  
+  </style>
+
+
+
+  <head>
+    <title>Page not found - Inforlearn</title>
+    
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+        <meta name="description" content="">
+        <meta name="keywords" content="microlearning, informal learning">
+        <meta name="author" content="AloneRoad">
+
+  </head>
+  <body>
+     <div id="mainContainer">
+         <div class="topLeft"></div><div class="topRight"></div><div class="bottomLeft"></div><div class="bottomRight"></div>
+         <h1><a href="http://{{DOMAIN}}" title="Trở lại trang chủ"><span>Inforlearn</span></a></h1>
+<!--         <a href="http://{{DOMAIN}}" id="logo">-->
+<!--          <img src="/themes/{{DEFAULT_THEME|urlencode}}/logo-big.gif" alt="{{SITE_NAME}}" />-->
+<!--         </a>-->
+<!--         <h1><a title="Trở về trang chủ" href="/"><span>Inforlearn</span></a></h1>-->
+         <div id="message">
+               <h2>Error 404: Page not found</h2>
+               <p><a href="http://{{DOMAIN}}" title="Trở về trang chủ">« Trở về trang chủ</a></p>
+            </div>
+            <div class="clear"></div>
+     </div>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+{% extends 'common/templates/base_sidebar.html' %}
+{% load avatar nonce %}
+{% block title %}Create Channel{% endblock %}
+
+{% block content %}
+  <h1>Tạo nhóm mới</h1>
+  {% include 'form_error.html' %}
+  <form action="" method="post">
+    {{request.user|noncefield:"channel_create"}}
+    <input type="hidden" name="nick" value="{{request.user.nick}}" />
+    <input type="hidden" name="channel_create" value="" />
+    <div>
+      <label for="channel">Chọn một ID cho nhóm</label>
+      <input type="text" name="channel" id="channel" class="text" 
+          value="{{channel}}" />
+      
+      <input type="submit" value=" Đồng ý "/>
+      <p class="help">
+        &nbsp;&nbsp;&nbsp;&nbsp;Vui lòng chỉ sử dụng các ký tự từ A-Z, a-z, 0-9. Tên tiếng Việt có dấu 
+        hoặc các mô tả dành cho nhóm có thể được bổ sung sau khi tạo. <br/>
+        &nbsp;&nbsp;&nbsp;&nbsp;ID này dùng để xác định tính duy nhất của một nhóm 
+        và được sử dụng khi gửi tin nhanh (thêm ký tự # vào trước ID). 
+      </p>
+    </div>
+<!--    <div class="buttons">-->
+<!--      <input type="submit" value="Tạo"/>-->
+<!--    </div> -->
+  </form>
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'common/templates/sidebar_search.html' %}
+  {% include 'common/templates/sidebar_info.html' %} <!-- Thông tin nhóm phát triển -->
+  {% include 'common/templates/sidebar_tips.html' %}
+{% endblock %}

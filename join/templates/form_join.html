@@ -1,0 +1,62 @@
+{% include 'common/templates/form_error.html' %}
+<form id="signup" action="" method="post">
+
+<!--  <div>-->
+<!--    <label for="last_name"><strong>Tên</strong></label>-->
+<!--    <input type="text" name="last_name" id="last_name" maxlength="60" class="text" value="{{last_name}}"/>-->
+<!--  </div>-->
+
+  <div class="highlight">
+    <label for="nick"><strong>Tên đăng nhập</strong></label>
+    <input type="text" name="nick" id="nick" maxlength="24" class="text" value="{{nick}}"/>
+    <p class="help">
+    {% ifequal SITE_NAME "Jaiku" %}
+    Trang cá nhân của bạn sẽ có địa chỉ: http://inforlearn.appspot.com/user/[yourname] <br />
+    {% else %}
+    Sau khi đăng ký, bạn có thể truy cập trang cá nhân của bạn tại địa chỉ: <br/>
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    http://{{DOMAIN}}/user/[yourname] <br />
+    {% endifequal %}
+    Tên đăng nhập chỉ được phép sử dụng các ký tự A-Z, a-z, 0-9.
+    </p>
+  </div>
+
+  <div>
+    <label for="password"><strong>Mật khẩu</strong></label>
+    <input type="password" name="password" id="password" class="text" maxlength="50"/>
+  </div>
+
+  <div>
+    <label for="email"><strong>Địa chỉ email</strong></label>
+    <input type="text" name="email" id="email" class="text" value="{{email}}" maxlength="70"/>
+    {% if EMAIL_LIMIT_DOMAIN %}
+    <p class='help'>Địa chỉ phải trong danh sách sau: <strong>{{EMAIL_LIMIT_DOMAIN}}</strong></p>
+    {% endif %}
+  </div>
+
+<!--  <div>-->
+<!--    <label for="full_name"><strong>Tên đầy đủ</strong></label>-->
+<!--    <input type="text" name="full_name" id="full_name" maxlength="60" class="text" value="{{full_name}}"/>-->
+<!--  </div>-->
+
+<!--  <div>-->
+<!--    <label for="confirm"><strong>Nhập lại mật khẩu</strong></label>-->
+<!--    <input type="password" name="confirm" id="confirm" class="text" maxlength="50"/>-->
+<!--  </div>-->
+
+  <div class="radio">
+    <input type="checkbox" name="hide" id="hide"/>
+    <label for="hide">Không công khai tài khoản này</label>
+
+<!--    {{legal_html|safe}}-->
+
+  </div>
+
+  <div class="buttons">
+    <input type="hidden" name="redirect_to" value="{{redirect_to}}" />
+    <input type="submit" value="Đăng ký" />
+  </div>
+</form> 

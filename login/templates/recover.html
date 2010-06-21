@@ -1,0 +1,22 @@
+{% extends 'common/templates/base_single.html' %}
+{% block title %}Password Reset{% endblock %}
+{% block content %}
+
+{% include 'form_error.html' %}
+<h1>Khôi phục mật khẩu</h1>
+
+{% if new_password %}
+<div class='new-password'>
+  Bạn khẩu của bạn đã được khôi phục thành công, giờ bạn có thể đăng nhập với: 
+  Tên đăng nhập: <strong>{{nick}}</strong><br />
+  Mật khẩu: <strong>{{new_password}}</strong>
+</div>
+{% endif %}
+
+<p class="centered">
+  <a href="http://{{DOMAIN}}/login">Trở về trang đăng nhập</a>
+</p>
+<p class="centered">
+  hay <a href="http://{{DOMAIN}}/">quay về trang chủ</a>
+</p>
+{% endblock %}

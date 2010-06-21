@@ -1,0 +1,43 @@
+{% load nonce %}
+<h2>Hiển thị</h2>
+{% include 'form_error.html' %}
+<form action="" method="post" enctype="multipart/form-data">
+  {{request.user|noncefield:"update_design"}}
+  <div id="picker" style="float: right;"></div>
+  <div>
+    <label id="bg_color">Màu nền</label>
+    <input type="text" name="bg_color" id="bg_color" class="colorwell" value="{{view.extra.bg_color|default:"#F1F1F1"}}" />
+  </div>
+  <div>
+    <label id="bg_image">Ảnh nền</label>
+    <input type="hidden" name="MAX_FILE_SIZE" value="400000" /> 
+    <input type="hidden" name="action" value="upload" /> 
+    <input type="file" name="bg_image" id="bg_image" value="" />
+    <p class="help">
+    Dung lượng ảnh tối đa là 200KB.
+    </p>
+  </div>
+<!--  <div>-->
+<!--    <label id="bg_repeat">Lặp lại ảnh này</label>-->
+<!--    <input type="checkbox" name="bg_repeat" id="bg_repeat" -->
+<!--    {% ifnotequal view.extra.bg_repeat "no-repeat" %}checked="checked"{% endifnotequal %} />-->
+<!--  </div>-->
+  <div class="buttons">
+    {% if redirect_to %}
+    <input type="hidden" name="redirect_to" value="{{redirect_to}}" />
+    {% endif %}
+    <input type="submit" value="Tải lên"/>
+    hoặc <a href="?restore=1">Khôi phục trạng thái mặc định</a>
+  
+  </div>
+</form>
+<script type="text/javascript" src="/js/badge.js"></script>
+
+
+
+{% block buttons %}
+<div class="buttons">
+  <big class="active"><a href="/welcome/3?redirect_to={{redirect_to|urlencode}}">&#8250; Tiếp tục</a></big>
+  <p><a href="/welcome/3?redirect_to={{redirect_to|urlencode}}">bỏ qua bước này</a></p>
+</div>
+{% endblock %}

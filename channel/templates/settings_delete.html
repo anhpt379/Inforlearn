@@ -1,0 +1,31 @@
+{% extends 'channel/templates/settings_base.html' %}
+{% load nonce format %}
+{% block settings %}
+
+<div class="body">
+  <h2>Xóa nhóm {{view.display_nick}}</h2>
+  <p>
+    Sau khi bạn xóa, sẽ không có cách nào để phục hồi lại dữ liệu của nhóm này.<br/>
+    Bạn có chắc chắn muốn xóa không?
+  </p>
+  {% include 'form_error.html' %}
+  {% ifequal view.extra.member_count 1 %}
+    <form action="" method="post">
+      {{request.user|noncefield:"actor_remove"}}
+      <input type="hidden" name="actor_remove" />
+      <input type="hidden" name="nick" value="{{view.nick}}"/>
+      <div class="buttons">
+        <input type="submit" value="Xóa" />
+        hoặc <a href="{% url_for view request %}/settings">Hủy bỏ</a>
+      </div>
+    </form>
+  {% else %}
+    <div class="highlight">
+      <p>
+        There seems to be still {{view.extra.member_count}} members on your 
+        channel.  You can delete the channel when you're the last member.
+      </p>
+    </div>
+  {% endifequal %}
+</div>
+{% endblock %}

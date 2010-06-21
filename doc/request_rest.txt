@@ -1,0 +1,44 @@
+=======================
+Định dạng yêu cầu: REST
+=======================
+
+Rest thực sự rất đơn giản
+=========================
+
+Nơi bạn cần gửi đến là ``http://microlearning.edu.vn/json``
+
+Bạn sẽ chỉ phải tạo một yêu cầu POST thông thường với một cặp biến sau::
+  
+  method    # tên phương thức bạn muốn sử dụng
+  oauth_*   #
+
+Các phương thức sử dụng đều có kèm phần hướng dẫn trong tài liệu này.
+
+Một ví dụ khi thực hiện actor_get_ call (từ Python)::
+
+  import urllib2
+  from oauth import oauth
+  consumer = oauth.OAuthConsumer('consumer key', 'consumer secret')
+  access_token = oauth.OAuthToken('access token key', 'access token secret')
+  parameters = {'nick': 'jaiku', 'method': 'actor_get'}
+  request = oauth.OAuthRequest.from_consumer_and_token(
+            oauth_consumer=consumer,
+            token=access_token,
+            http_url='http://api.microlearning.edu.vn/json',
+            http_method='POST',
+            parameters=parameters)
+  request.sign_request(
+            oauth.OAuthSignatureMethod_HMAC_SHA1(),
+            consumer,
+            access_token)
+  result = urllib2.urlopen(urllib2.Request(
+            'http://api.microlearning.edu.vn/json',
+             request.to_postdata()))
+  print result.read()
+  result.close()
+
+`More info on authentication`_
+
+.. _actor_get: /api/docs/method_actor_get
+.. _more info on authentication: /api/docs/authentication
+

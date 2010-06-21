@@ -1,0 +1,29 @@
+{% extends 'channel/templates/channel_base.html' %}
+
+{% block channel_body %}
+  <div id="group-intro">
+    <p class="description">
+    Nhóm là nơi để những người cùng quan tâm đến một vấn đề thảo luận và chia
+    sẻ với nhau.
+    </p>
+    <p>
+    Để gửi tin vào một nhóm, đầu tiên bạn cần vào trang của nhóm đó, nhấn nút 
+    "Gia nhập", và gõ nội dung tin nhắn vào ô gửi tin ở ngay đầu trang.
+    </p>
+    <p>
+    Nhóm cho phép bạn thực hiện các trao đổi và thảo luận trong một khu vực tách biệt.
+    Nếu bạn quan tâm đến một nhóm, hãy nói với họ để xin gia nhập. 
+    </p>
+    <p>
+    Bạn có thể bắt đầu với một vài nhóm như:<br/>
+    - Nhóm <a href="/channel/News">Tin tức</a><br/>
+    - Nhóm <a href="/channel/Bookmarks">Chia sẻ các liên kết hay</a> 
+    </p>
+  </div>
+  <h2>Muốn tạo nhóm của riêng bạn?</h2>
+  <p>
+  Để tạo nhóm mới, bạn cần 
+  <a href="/login?redirect_to={{request.path}}">đăng nhập</a> hoặc
+  <a href="/join">tạo một tài khoản mới</a>.
+  </p>
+{% endblock %}

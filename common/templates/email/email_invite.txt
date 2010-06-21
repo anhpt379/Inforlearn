@@ -1,0 +1,17 @@
+{% filter wordwrap:60 %}
+{{full_name}} ({{nick_name}}) có lời mời bạn gia nhập {{SITE_NAME}} cùng với cậu (cô) ấy.
+
+{{SITE_NAME}} là một cách để bạn có thể kết nối và chia sẻ kiến thức của mình và 
+nhận lại những thông tin, kiến thức, kinh nghiệm, ... từ những lĩnh vực bạn quan
+tâm.
+
+................
+
+{{accept_url}}
+
+{{accept_mobile_url}} (cho điện thoại di động)
+
+................
+
+Hẹn gặp lại :)
+{% endfilter %}

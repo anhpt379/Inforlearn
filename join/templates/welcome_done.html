@@ -1,0 +1,20 @@
+{% extends 'common/templates/base_single.html' %}
+{% block title %}Chào mừng bạn đến với Inforlearn{% endblock %}
+{# don't show flash from parent because we want it in a different position #}
+{% block flash %}{% endblock %}
+{% block content %}
+
+{% include 'join/templates/welcome_header.html' %}
+
+<div class="body" id="welcome-done">
+  <h1>Chúc mừng bạn!</h1>
+  <p>
+    Giờ mọi thứ đã sẵn sàng để sử dụng.
+  </p>
+  <p>
+  <a href="{{redirect_to}}">&#8250; Bắt đầu sử dụng {{SITE_NAME}}</a>
+  </p>
+</div>
+</div>
+
+{% endblock %}

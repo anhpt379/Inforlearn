@@ -1,0 +1,44 @@
+========================
+Các địa chỉ URL đặc biệt
+========================
+
+
+  Trong hầu hết các trường hợp, bạn chỉ cần thêm **/json** hoặc **/atom** để nhận 
+về nội dung tương ứng ở định dạng đó.
+
+
+Các tin ở trang Khám phá
+========================
+
+::
+  
+  /explore/(json|rss|atom)            # không yêu cầu xác thực
+
+
+Các tin từ trang người dùng
+===========================
+
+::
+  
+  /user/$username/(json|rss|atom)       # không yêu cầu xác thực nếu người dùng đang thiết lập tài khoản của họ ở chế độ công khai
+  $username.jaiku.com/(json|rss|atom)   # (cũng vậy)
+
+  
+Danh sách liên lạc
+==================
+
+::
+
+  /user/$username/contacts/(json)       # không yêu cầu xác thực nếu người dùng đang thiết lập tài khoản của họ ở chế độ công khai
+  $username.jaiku.com/(json)            # (cũng vậy)
+
+
+
+Gửi 1 tin nhắn
+==============
+Sẽ cần nội dung tin muốn gửi, người gửi, các bình luận và người tạo ra nó
+
+::
+
+  /user/$username/entry/$id/(json)      # không yêu cầu xác thực nếu người dùng đang thiết lập tài khoản của họ ở chế độ công khai
+  $username.micro-learning.appspot.com/entry/$id/(json)  # (cũng vậy)

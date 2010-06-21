@@ -1,0 +1,24 @@
+{% extends 'common/templates/base_single.html' %}
+{% block title %}Welcome{% endblock %}
+{% block content %}
+
+<div class="body" id="welcome-start">
+<!--  <img src="/themes/{{DEFAULT_THEME|urlencode}}/logo-welcome.png" alt="{{SITE_NAME}}" />-->
+
+  <h2>Cảm ơn bạn đã gia nhập {{SITE_NAME}}!</h2>
+<!--  <p>Thiết lập tài khoản của bạn:-->
+<!--  </p>-->
+  <ul>
+    <li id="step-1">Thêm hình đại diện</li>
+    <li id="step-2">Kích hoạt gửi và cập nhật qua SMS</li>
+    <li id="step-3">Tìm kiếm bạn bè</li>
+  </ul>
+  <p>
+  <big><a href="/welcome/1?redirect_to={{redirect_to|urlencode}}">&#8250; Tiếp tục</a></big>
+  </p>
+  <p class="clear">
+  <small><a href="{{redirect_to}}">Bỏ qua</a></small>
+  </p>
+</div>
+
+{% endblock %}

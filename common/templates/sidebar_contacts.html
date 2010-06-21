@@ -1,0 +1,42 @@
+{% load vcard %}
+<div id="contacts" class='contacts'>
+  {% ifequal request.user.nick view.nick %}
+    <h2>Bạn bè ({{contacts_count}})</h2>
+    <a href="{{view.url}}/contacts" class="edit">Quản lý</a>
+  {% else %}
+    <h2>Bạn của {{view.display_nick}} ({{contacts_count}})</h2>
+  {% endifequal %}
+
+	{% if contacts|length %}
+    <ul>
+    {% for contact in contacts %}
+      <li>
+        {% with contact as actor %}
+        {% include 'common/templates/vcard_tile_rel.html' %}
+        {% endwith %}
+      </li>
+    {% endfor %}
+    </ul>
+    
+    {% if contacts_more %}
+    <p class="more">
+      {% ifequal request.user.nick view.nick %}
+      <a href="{{request.user.url}}/contacts">&#8250; Xem thêm</a>
+      {% else %}
+      <a href="{{view.url}}/contacts">&#8250; Xem thêm</a>
+      {% endifequal %}
+    </p>
+    {% endif %}
+	{% else %}
+    {% ifequal request.user.nick view.nick %}
+    <p>
+    Hiện tại chưa có ai trong danh sách. Bạn có thể <a href="{{request.user.url}}/invite">mời một vài người bạn</a>.
+    </p>
+    {% else %}
+    <p>
+      Bạn không thể là người bạn đầu tiên của {{view.display_nick}}.
+    </p>
+    {% endifequal %}
+	{% endif %}
+</div>
+
