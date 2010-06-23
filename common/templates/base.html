@@ -111,7 +111,7 @@
 
     
     
-<body onload="start()" style="display:none;" {% block bodytag %}{% if area %}id="{{area}}"{% endif %}{% if not request.user %}class="global"{% endif %}{% endblock %}>
+<body style="display:none;" {% block bodytag %}{% if area %}id="{{area}}"{% endif %}{% if not request.user %}class="global"{% endif %}{% endblock %}>
     
   {% block body %}
   {% endblock %}

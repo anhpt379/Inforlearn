@@ -156,6 +156,8 @@ jQuery.fn.presence = function() {
 //      //e.preventDefault(); 
 //    }            
 //  });
+  
+  
   // TODO termie: turn this back on
   return;
   this.submit( function () {

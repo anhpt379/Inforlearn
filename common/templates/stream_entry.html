@@ -4,7 +4,11 @@
 {% endif %}
 {{entry|entry_icon}}
 <p class="comment">
-  {% if request %}{{entry|linked_entry_title:request}}{% else %}{{entry|linked_entry_title}}{% endif %}
+  {% if request %}
+    {{entry|linked_entry_title:request}}
+  {% else %}
+    {{entry|linked_entry_title}}
+  {% endif %}
 </p>
 <p class="meta">
   {% actor_link entry.actor_ref request %}

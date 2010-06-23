@@ -174,6 +174,7 @@ ICONS = {
   '401': ('web-car', 'Car', ''),
   '402': ('web-baby-boy', 'Itsaboy', ''),
   '403': ('web-baby-girl', 'Itsagirl', ''),
+  '500': ('discussion', 'Discussion', '')
 }
 
 ICONS_BY_ID = dict([(v[0], v) for k, v in ICONS.iteritems()])
@@ -181,7 +182,12 @@ ICONS_BY_ID = dict([(v[0], v) for k, v in ICONS.iteritems()])
 SELECTABLE_ICONS = dict([(k, v) for k, v in ICONS.iteritems()
                                 if k > '300'])
 
-del SELECTABLE_ICONS['340']
-del SELECTABLE_ICONS['351']
-del SELECTABLE_ICONS['401']
-del SELECTABLE_ICONS['403']
+#del SELECTABLE_ICONS['340']
+for i in range(301, 403):
+  try:
+    del SELECTABLE_ICONS[str(i)]
+  except KeyError:
+    pass
+#del SELECTABLE_ICONS['351']
+#del SELECTABLE_ICONS['401']
+#del SELECTABLE_ICONS['403']

@@ -1,3 +1,7 @@
-#Tue Jun 22 00:34:49 ICT 2010
+#Wed Jun 23 22:53:42 ICT 2010
 eclipse.preferences.version=1
+encoding//actor/views.py=utf-8
+encoding//common/messages.py=utf-8
+encoding//common/templatetags/format.py=utf-8
 encoding//common/validate.py=utf-8
+encoding//common/views.py=utf-8

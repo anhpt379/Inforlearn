@@ -101,7 +101,7 @@ _message_table__ = {
        'Các thiết lập đã được cập nhật lại thành công.'),
   'settings_change_privacy':
       (None,
-       'privacy updated'),
+       'Các thiết lập đã được cập nhật lại.'),
   'settings_hide_comments':
       (None,
        'Comments preferenced stored.'),

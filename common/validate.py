@@ -195,7 +195,7 @@ def password_and_confirm(password, confirm, message="Mật khẩu của bạn",
 def length(s, min, max, message=None, field=None):
   if len(s) < min or len(s) > max:
     raise exception.ValidationError(
-        (message or '') + u" phải dài từ %s đến %s ký tự" % (
+        (message or 'Tin') + u" phải có chiều dại trong khoảng từ %s đến %s ký tự." % (
             min, max),
         field)
   pass

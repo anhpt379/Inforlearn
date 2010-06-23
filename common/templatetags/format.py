@@ -151,7 +151,7 @@ def linked_entry_title(value, request=None):
 #      format_fancy(escape(value.extra['title'])).replace('\n', ' '))
   content = format_fancy(escape(value.extra['title'])).replace('\n', '<br/>')
   content = format_autolinks(content)
-  return '<p>%s</p>' % (content.strip())
+  return '%s' % (content.strip())
 
 @register.filter
 @safe
