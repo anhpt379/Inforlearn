@@ -179,7 +179,7 @@ def name(s, message="Tên đầy đủ", field='name'):
 
 def not_banned_name(s, message=None):
   if util.display_nick(s) in banned_names:
-    raise exception.ValidationError(u"Tên %s không được phép sử dụng." % s, "nick")
+    raise exception.ValidationError(u"Bạn không được phép sử dụng tên %s." % s.split("@")[0], "nick")
 
 def privacy(s, message=None): pass
 

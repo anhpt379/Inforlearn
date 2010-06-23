@@ -29,16 +29,16 @@
   </div>
 {% else %}
   {% ifnotequal area 'welcome' %}
-  <div id="footer">
-    <a href="http://{{DOMAIN}}/about">Giới thiệu</a> |
-    <a href="http://{{DOMAIN}}/roadmap">Roadmap</a> |
-    <a href="http://{{DOMAIN}}/sourcecode">Mã nguồn</a> |
-    <a href="http://{{DOMAIN}}/help">Câu hỏi thường gặp</a> |
-    <a href="http://{{DOMAIN}}/channel/{{SUPPORT_CHANNEL}}">Trợ giúp</a> |
-    <a href="http://{{DOMAIN}}/api">API</a>
-    {% if BLOG_ENABLED %}
-    <a href="{{BLOG_URL}}">Blog</a>
-    {% endif %}
-  </div>
+      <div id="footer">
+        <a href="http://{{DOMAIN}}/about">Giới thiệu</a> |
+        <a href="http://{{DOMAIN}}/roadmap">Roadmap</a> |
+        <a href="http://{{DOMAIN}}/sourcecode">Mã nguồn</a> |
+        <a href="http://{{DOMAIN}}/help">Câu hỏi thường gặp</a> |
+        <a href="http://{{DOMAIN}}/channel/{{SUPPORT_CHANNEL}}">Trợ giúp</a> |
+        <a href="http://{{DOMAIN}}/api">API</a>
+        {% if BLOG_ENABLED %}
+        <a href="{{BLOG_URL}}">Blog</a>
+        {% endif %}
+      </div>
   {% endifnotequal %}
 {% endif %}

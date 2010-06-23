@@ -6,9 +6,24 @@
 {% ifnotequal area 'welcome' %}
   {% if request.user %}
     Đăng nhập với tài khoản {% actor_link request.user request %} | 
-    <a href="{% url_for DOMAIN request %}/logout">Đăng xuất</a>
+    <a href="{% url_for DOMAIN request %}/logout">Đăng xuất</a>  
   {% else %}
-    Không có tài khoản? <a href="/join?redirect_to={{redirect_to|urlencode}}">Đăng ký</a>
+    {% ifnotequal request.path "/join" %}
+      Không có tài khoản? <a href="/join?redirect_to={{redirect_to|urlencode}}">Đăng ký</a>
+    {% endifnotequal %}
+    {% ifequal request.path "/" %}
+      <h2>
+          &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <a id="login_link" href="/login">
+          &nbsp;&#8250;&#8250; Đăng nhập&nbsp;
+        </a>
+      </h2>
+    {% endifequal %}
+    {% ifequal request.path "/login" %}
+    <br/>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+    &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+      <a href="{% url_for DOMAIN request %}/login/forgot">Quên mật khẩu?</a>
+    {% endifequal %}
   {% endif %}
 {% endifnotequal %}
 {% endblock %}
@@ -16,7 +31,7 @@
 {% block logo %}
 {% ifnotequal area 'welcome' %}
 <a href="{% url_for DOMAIN request %}" id="logo">
-  <img src="/themes/{{DEFAULT_THEME|urlencode}}/logo-big.png" height="95" width="115" alt="{{SITE_NAME}}" />
+  <img src="/themes/{{DEFAULT_THEME|urlencode}}/logo-big.png" height="73" width="89" alt="{{SITE_NAME}}" />
 </a>
 {% endifnotequal %}
 {% endblock %}

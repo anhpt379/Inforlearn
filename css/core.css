@@ -5,10 +5,11 @@ html, body {
 
 body {
     font: 75%/1.4em Arial, Helvetica, sans-serif;
-    background: url(../images/background/The_Fallen_-_Wallpaper.jpg);/*#F1F1F1 */
+    background: #d5e9ed;/* url(../images/background/The_Fallen_-_Wallpaper.jpg);*//*#F1F1F1 */
     text-align: center;
-    color: #000;
+    color: #333;
     background-attachment: fixed;
+    opacity: 0.99;
 }
 
 /* --- Container --------------------------------------- */
@@ -342,7 +343,7 @@ body.single div#content div.top {
 }
 
 body.single div#content div.bottom {
-    padding: 0 45px 0.5em 45px;
+    /*padding: 0 45px 0.5em 45px;*/
 }
 
 body#welcome div#content div.bottom{
@@ -595,12 +596,12 @@ div#streams ul li a.unsubscribe:hover, div#streams ul li a.subscribe:hover {
 }
 
 div#sidebar div.location p {
-    background: transparent url(../images/location.gif) no-repeat 0 50%;
+    background: transparent url(../images/location.png) no-repeat 0 50%;
     padding: 0.5em 0 0.3em 30px;
 }
 
 div#sidebar div.location form div {
-    background: transparent url(../images/location.gif) no-repeat 0 50%;    
+    background: transparent url(../images/location.png) no-repeat 0 50%;    
     padding: 0.5em 0 0.3em 30px;
 }
 
@@ -617,9 +618,33 @@ div#sidebar div.location input#loc {
 }
 
 /* --- For frontpage --------------------------------------- */
+div#logo h1 {
+	  font-size: 3.2em;
+    float: none;
+    padding:  0;
+    margin: 0;
+    text-align: left;
+    width: 350px;
+    color: #94BF1B;
+    text-shadow: 0px 1px 0px #ccc;
+	}
+
+div#logo h3 {
+    text-align: left;
+    width: 350px;
+    text-shadow: 0px 1px 0px #ccc;
+  }
+
+strong {
+	text-shadow: 0px 1px 1px #fff;
+	}
+
+div#helper-nav h2 {
+  font-size: 1.8em;
+	}
 
 div#intro {
-    margin: 10px 10px 0 10px;
+    margin: 0px 0px 0px 0px;
     position: relative;
     padding-top: 1em;
     z-index: 2;
@@ -638,7 +663,7 @@ div#intro {
 div#intro h1 {
     font-size: 2.8em;
     float: none;
-    padding: 0;
+    padding:  0;
     margin: 0;
 }
 
@@ -2255,9 +2280,10 @@ ul.stream li a, ul.stream li a:visited {
 }
 
 ul.stream li a:hover {
-    text-decoration: underline;
+    /*text-decoration: underline; */
     background: transparent;
     color: #333;
+    text-shadow: 0px 1px 0px #ccc;
 }
 
 ul.stream li h3 a:hover {
@@ -2865,7 +2891,7 @@ div#sidebar h2, div#side-nav h2, div#leave-comment h2 {
     font-size: 1.2em;
     padding: 0.2em 10px;
     margin: 0 -10px 0.5em -10px;
-    color: #fff;
+    color: #FAFAFA;
 }
 
 div#content div#sidebar h2 {
@@ -3144,7 +3170,7 @@ input#imgfile {
 
 input[type='text'], textarea {
     font-size: 1.2em;
-    padding: 0.2em;
+    /*padding: 0.2em;*/
 }
 
 #content input.text {
@@ -3429,7 +3455,7 @@ div#pwstatus {
     padding: 0;
     position: absolute;
     margin-top: -2em;
-    right: 280px;
+    right: 25px;
     width: 100px;
     height: 20px;
 }

@@ -1,0 +1,67 @@
+{% extends 'common/templates/base_sidebar.html' %}
+
+{% block bodytag %}{{block.super}} {% endblock %}
+
+{% block title %}Giới thiệu{% endblock %}
+
+{% block logo %}
+<a href="/" id="logo">
+  <img src="/themes/{{DEFAULT_THEME|urlencode}}/logo.png" width="89" height="73" alt="{{SITE_NAME}}" />
+</a>
+{% endblock %}
+
+{% block content %}
+    <div id="intro">
+      <h1>{{SITE_NAME}} </h1>
+      <h3>Chia sẻ kiến thức, mở rộng tương lai</h3>
+      <ul>
+          <li id="ninedot">
+              <h3>&nbsp;&nbsp;&nbsp;Sự đơn giản...</h3>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;Hãy thử giải bài toán sau: Cho 9 điểm 
+              như hình vẽ bên trái, hãy nối tất cả chúng bằng một đường liền nét, 
+              sao cho tổng số đoạn thẳng phải sử dụng là ít nhất... </p>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;...bạn có thể nối 9 điểm đó với 3 đoạn 
+              thẳng liên tiếp nhau không? Đôi khi, chúng ta suy nghĩ mọi chuyện 
+              theo những lối mòn và đóng khung suy nghĩ trong một cái hộp vô hình...</p>
+          </li>
+<!--          <li id="create">-->
+<!--              <h3>&nbsp;&nbsp;&nbsp;Chia sẻ kiến thức và kinh nghiệm</h3>-->
+<!--              <p>&nbsp;&nbsp;&nbsp;&nbsp;Tự tổng hợp lại các kiến thức, kinh -->
+<!--              nghiệm, bài học thu nhận được từ quá trình học tập, tìm hiểu, -->
+<!--              làm việc ở từng lĩnh vực, đưa lên và chia sẻ với mọi người.</p>-->
+<!--          </li>-->
+<!--          <li id="follow">-->
+<!--              <h3>&nbsp;&nbsp;&nbsp;Kết bạn, giao lưu, trao đổi và mở rộng kiến thức</h3>-->
+<!--              <p>&nbsp;&nbsp;&nbsp;&nbsp;Cùng với việc chia sẻ, bạn cũng sẽ nhận-->
+<!--              về các kiến thức đã được tổng hợp, đúc kết từ người khác trong những-->
+<!--              vấn đề/lĩnh vực quan tâm, gửi bình luận, nhận xét, thảo luận, -->
+<!--              tiếp thu kiến thức một cách nhanh chóng và hiệu quả nhất.</p>-->
+<!--          </li>-->
+          <li id="more">
+              <h3><a href="/tour">&#8250; Xem giới thiệu ứng dụng</a></h3>
+          </li>
+      </ul>
+    </div>
+    <div id='stream'>
+    {% include 'common/templates/stream.html' %}
+    {% include 'common/templates/paging.html' %}
+
+    <p class="tools">
+      {% if feeds %}
+        <a href="{{feeds.0.url}}" class="rss" title="{{feeds.0.title}} ({{feeds.0.type}})">{{feeds.0.title}}</a>
+      {% endif %}
+    </p>
+  </div>
+
+<ul>
+{% for entry in recent_entries %}
+  <li><a href="{{ entry.url }}">{{ entry.url }}</a></li>
+{% endfor %}
+</ul>
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'front/templates/sidebar_joinnow.html' %}
+  {% include 'front/templates/sidebar_featured_channels.html' %}
+  {% include 'front/templates/sidebar_featured_members.html' %}
+{% endblock %}

@@ -310,19 +310,19 @@ div#welcome-start ul li {
 }
 
 div#welcome-start ul li#step-1 {
-    background: transparent url(bg-step-1-small.gif) no-repeat 0% 50%;    
+    background: transparent url(bg-step-1-small.png) no-repeat 0% 50%;    
 }
 
 div#welcome-start ul li#step-2 {
-    background: transparent url(bg-step-2-small.gif) no-repeat 0% 50%;    
+    background: transparent url(bg-step-2-small.png) no-repeat 0% 50%;    
 }
 
 div#welcome-start ul li#step-3 {
-    background: transparent url(bg-step-3-small.gif) no-repeat 0% 50%;    
+    background: transparent url(bg-step-3-small.png) no-repeat 0% 50%;    
 }
 
 div#welcome-done {
-    background: transparent url(welcome-done.gif) no-repeat 12% 50%;
+    background: transparent url(welcome-done.png) no-repeat 12% 50%;
     padding: 60px 0 100px 220px;
 }
 
