@@ -1,17 +1,3 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import re
 import simplejson
 
@@ -94,7 +80,7 @@ class CreationTest(ViewTestCase):
                          {'nick': 'popular@example.com',
                           'channel': 'broken',
                           'channel_create': '',
-                          '_nonce' : 
+                          '_nonce' :
                               util.create_nonce('popular', 'channel_create'),
                           }
                          )
@@ -112,7 +98,7 @@ class CreationTest(ViewTestCase):
                          {'nick': 'popular@example.com',
                           'channel': 'popular',
                           'channel_create': '',
-                          '_nonce' : 
+                          '_nonce' :
                               util.create_nonce('popular', 'channel_create'),
                           }
                          )
@@ -130,7 +116,7 @@ class CreationTest(ViewTestCase):
     r = self.client.post('/channel/fastfingers',
                          {'channel': '#fastfingers@example.com',
                           'message': 'First post!',
-                          '_nonce': 
+                          '_nonce':
                               util.create_nonce('popular', 'set_presence'),
                           }
                          )
@@ -140,23 +126,23 @@ class CreationTest(ViewTestCase):
 
   def test_recreate_deleted_channel(self):
     self.login('popular')
-    
+
     # First, delete a channel.
     r = self.client.post('/channel/popular/settings/delete',
                          {
                            'actor_remove' : '',
                            'nick' : '#popular@example.com',
-                           '_nonce' : 
+                           '_nonce' :
                               util.create_nonce('popular', 'actor_remove'),
                          })
     r = self.assertRedirectsPrefix(r, '/channel')
     self.assertContains(r, 'Deleted')  # Pre-condition
-    
+
     r = self.client.post('/channel/create',
                          {'nick': 'popular@example.com',
                           'channel': 'popular',
                           'channel_create': '',
-                          '_nonce' : 
+                          '_nonce' :
                               util.create_nonce('popular', 'channel_create'),
                           }
                          )
@@ -169,7 +155,7 @@ class CreationTest(ViewTestCase):
                          {'nick': 'popular@example.com',
                           'channel': 'whitespace ',
                           'channel_create': '',
-                          '_nonce' : 
+                          '_nonce' :
                               util.create_nonce('popular', 'channel_create'),
                           }
                          )
@@ -183,7 +169,7 @@ class CreationTest(ViewTestCase):
                          {'nick': 'popular@example.com',
                           'channel': 'weird_',
                           'channel_create': '',
-                          '_nonce' : 
+                          '_nonce' :
                               util.create_nonce('popular', 'channel_create'),
                           }
                          )
@@ -196,7 +182,7 @@ class CreationTest(ViewTestCase):
                          {'nick': 'popular@example.com',
                           'channel': '2',
                           'channel_create': '',
-                          '_nonce' : 
+                          '_nonce' :
                               util.create_nonce('popular', 'channel_create'),
                           }
                          )
@@ -211,7 +197,7 @@ class ChannelJoinTest(ViewTestCase):
                          {'nick': 'annoying@example.com',
                           'channel_join': '',
                           'channel' : '#popular@example.com',
-                          '_nonce' : 
+                          '_nonce' :
                               util.create_nonce('annoying', 'channel_join'),
                           }
                          )
@@ -225,10 +211,10 @@ class ChannelJoinTest(ViewTestCase):
                          {'nick': 'popular@example.com',
                           'channel_join': '',
                           'channel' : '#popular@example.com',
-                          '_nonce' : 
+                          '_nonce' :
                               util.create_nonce('popular', 'channel_join'),
                           }
-                         )    
+                         )
     self.assertContains(r, 'already a member')
     self.assertWellformed(r)
 
@@ -239,7 +225,7 @@ class ChannelDeleteTest(ViewTestCase):
     r = self.client.post('/channel/popular/settings/delete',
                          {'nick': '#popular@example.com',
                           'actor_remove': '',
-                          '_nonce' : 
+                          '_nonce' :
                               util.create_nonce('popular', 'actor_remove'),
                           }
                          )
@@ -253,7 +239,7 @@ class ChannelDeleteTest(ViewTestCase):
     r = self.client.post('/channel/popular/settings/delete',
                          {'nick': '#popular@example.com',
                           'actor_remove': '',
-                          '_nonce' : 
+                          '_nonce' :
                               util.create_nonce('unpopular', 'actor_remove'),
                           }
                          )
@@ -274,7 +260,7 @@ class ChannelLeaveTest(ViewTestCase):
                          {'nick': 'unpopular@example.com',
                           'channel_part': '',
                           'channel' : '#popular@example.com',
-                           '_nonce' : 
+                           '_nonce' :
                                util.create_nonce('unpopular', 'channel_part'),
                           }
                          )
@@ -288,7 +274,7 @@ class ChannelLeaveTest(ViewTestCase):
                          {'nick': 'annoying@example.com',
                           'channel_part': '',
                           'channel' : '#popular@example.com',
-                           '_nonce' : 
+                           '_nonce' :
                                util.create_nonce('annoying', 'channel_part'),
                           }
                          )
@@ -308,7 +294,7 @@ class SettingsTest(ViewTestCase):
     for page in self.page_to_template_extension:
       r = self.client.get('/channel/popular/settings' + page)
       r = self.assertRedirectsPrefix(r, '/login')
-    
+
   def test_settings_all_pages_logged_in(self):
     self.login('popular')
     for page, template_extention in self.page_to_template_extension.iteritems():
@@ -328,14 +314,14 @@ class SettingsTest(ViewTestCase):
       # TODO(termie): it redirects twice and this function doesn't handle that
       #r = self.assertRedirectsPrefix(r, '/channel/nonexist')
       #self.assertWellformed(r)
-      
+
   def test_settings_delete_channel(self):
     self.login('popular')
     r = self.client.post('/channel/popular/settings/delete',
                          {
                            'actor_remove' : '',
                            'nick' : '#popular@example.com',
-                           '_nonce' : 
+                           '_nonce' :
                               util.create_nonce('popular', 'actor_remove'),
                          })
     r = self.assertRedirectsPrefix(r, '/channel')
@@ -351,7 +337,7 @@ class SettingsTest(ViewTestCase):
                           'channel': '#popular@example.com',
                           'description': description,
                           'external_url': external_url,
-                          '_nonce': util.create_nonce('popular', 
+                          '_nonce': util.create_nonce('popular',
                                                        'channel_update'),
                           }
                          )
@@ -369,7 +355,7 @@ class SettingsTest(ViewTestCase):
                           'channel': '#popular@example.com',
                           'description': description,
                           'external_url': external_url,
-                          '_nonce': util.create_nonce('popular', 
+                          '_nonce': util.create_nonce('popular',
                                                        'channel_update'),
                           }
                          )
@@ -389,17 +375,17 @@ class CommentTest(ViewTestCase):
                           'nick': 'popular@example.com',
                           'entry_add_comment' : '',
                           'content' : comment,
-                          '_nonce' : 
+                          '_nonce' :
                               util.create_nonce('popular', 'entry_add_comment'),
                           }
                          )
 
     self.exhaust_queue_any()
-    
+
     r = self.assertRedirectsPrefix(r, '/channel/popular/presence/13345?flash')
     self.assertContains(r, comment)
     self.assertContains(r, 'Comment added')
-    
+
     # Now delete what we just added
     r = self.assertGetLink(r, 'confirm-delete', link_no=1, of_count=2)
     r = self.assertRedirectsPrefix(r, '/channel/popular/presence/13345?flash')

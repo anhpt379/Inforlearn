@@ -1,9 +1,4 @@
-import Cookie
-import os
-
-from django.conf import settings
 from common.tests import ViewTestCase
-
 from common import api
 from common import clean
 from common import util
@@ -102,7 +97,7 @@ class WelcomeTest(ViewTestCase):
   def test_photo_upload(self):
     nick = 'popular'
     nick = clean.nick(nick)
-    old_avatar = api.actor_get(api.ROOT, nick).extra.get('icon', 
+    old_avatar = api.actor_get(api.ROOT, nick).extra.get('icon',
                                                          'avatar_default')
 
     self.login(nick)
@@ -115,7 +110,7 @@ class WelcomeTest(ViewTestCase):
                          })
     r = self.assertRedirectsPrefix(r, '/welcome/1?')
 
-    new_avatar = api.actor_get(api.ROOT, nick).extra.get('icon', 
+    new_avatar = api.actor_get(api.ROOT, nick).extra.get('icon',
                                                          'avatar_default')
     self.assertNotEquals(old_avatar, new_avatar)
 

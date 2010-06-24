@@ -1,17 +1,3 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import datetime
 import hmac
 import logging
@@ -21,13 +7,10 @@ import re
 import sys
 import time
 import urllib
-
 from django import http
 from django.conf import settings
 from django.utils import safestring
-
 from common import clean
-from common import exception
 
 try:
   import uuid
@@ -79,17 +62,17 @@ a_bit_less_than_one_year_from_when_this_file_was_loaded = (
 
 CACHE_FOREVER_HEADERS = {
     'Expires': a_bit_less_than_one_year_from_when_this_file_was_loaded,
-    'Cache-control': 'public, max-age=%d' % (86400*364)
+    'Cache-control': 'public, max-age=%d' % (86400 * 364)
     }
 
 def HttpRssResponse(content, request):
   response = http.HttpResponse(content)
-  response['Content-type']  = 'application/rss+xml; charset=utf-8'
+  response['Content-type'] = 'application/rss+xml; charset=utf-8'
   return response
 
 def HttpAtomResponse(content, request):
   response = http.HttpResponse(content)
-  response['Content-type']  = 'application/atom+xml; charset=utf-8'
+  response['Content-type'] = 'application/atom+xml; charset=utf-8'
   return response
 
 def HttpJsonResponse(content, request):
@@ -104,16 +87,16 @@ def HttpJsonResponse(content, request):
   "hello.world%5B5%5D".
 
   """
-  content_type  = 'application/json'
+  content_type = 'application/json'
   if (request and request.method == 'GET'
               and 'callback' in request.GET):
     callback = clean_jsonp_callback(request.GET['callback'])
     if callback:
-      content_type  = 'text/javascript'
+      content_type = 'text/javascript'
       content = "%s(%s);" % (callback, content)
 
   response = http.HttpResponse(content)
-  response['Content-type']  = "%s; charset=utf-8" % content_type
+  response['Content-type'] = "%s; charset=utf-8" % content_type
   return response
 
 def clean_jsonp_callback(callback):
@@ -136,7 +119,7 @@ def hash_password_intermediate(nick, password):
   return _hash(hash_salt() + nick, password)
 
 def domain(request):
-  domain = request.META['wsgi.url_scheme']+"://"+request.META['SERVER_NAME']
+  domain = request.META['wsgi.url_scheme'] + "://" + request.META['SERVER_NAME']
   if request.META['SERVER_PORT'] != '80':
     domain += ":%s" % request.META['SERVER_PORT']
   return domain

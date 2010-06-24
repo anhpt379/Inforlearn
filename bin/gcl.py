@@ -7,7 +7,6 @@
 # changelists.
 
 import getpass
-import linecache
 import os
 import random
 import re
@@ -143,7 +142,7 @@ def GetCodeReviewSetting(key):
     # First we check if we have a cached version.
     cached_settings_file = os.path.join(GetInfoDir(), CODEREVIEW_SETTINGS_FILE)
     if (not os.path.exists(cached_settings_file) or
-        os.stat(cached_settings_file).st_mtime > 60*60*24*3):
+        os.stat(cached_settings_file).st_mtime > 60 * 60 * 24 * 3):
       dir_info = GetSVNFileInfo(".")
       repo_root = dir_info["Repository Root"]
       url_path = dir_info["URL"]
@@ -191,7 +190,7 @@ def Warn(msg):
 
 def ErrorExit(msg, exit=True):
   """Print an error message to stderr and optionally exit."""
-  print >>sys.stderr, msg
+  print >> sys.stderr, msg
   if exit:
     sys.exit(1)
 
@@ -278,13 +277,13 @@ class ChangeInfo:
 
   def CloseIssue(self):
     """Closes the Rietveld issue for this changelist."""
-    data = [("description", self.description),]
+    data = [("description", self.description), ]
     ctype, body = upload.EncodeMultipartFormData(data, [])
     SendToRietveld("/" + self.issue + "/close", body, ctype)
 
   def UpdateRietveldDescription(self):
     """Sets the description for an issue on Rietveld."""
-    data = [("description", self.description),]
+    data = [("description", self.description), ]
     ctype, body = upload.EncodeMultipartFormData(data, [])
     SendToRietveld("/" + self.issue + "/description", body, ctype)
 
@@ -565,8 +564,8 @@ def UnknownFiles(extra_args):
   """
   args = ["svn", "status"]
   args += extra_args
-  p = subprocess.Popen(args, stdout = subprocess.PIPE,
-                       stderr = subprocess.STDOUT, shell = use_shell)
+  p = subprocess.Popen(args, stdout=subprocess.PIPE,
+                       stderr=subprocess.STDOUT, shell=use_shell)
   while 1:
     line = p.stdout.readline()
     if not line:
@@ -1095,7 +1094,7 @@ def main(argv=None):
   else:
     # Everything else that is passed into gcl we redirect to svn, after adding
     # the files. This allows commands such as 'gcl diff xxx' to work.
-    args =["svn", command]
+    args = ["svn", command]
     root = GetRepositoryRoot()
     args.extend([os.path.join(root, x) for x in change_info.FileList()])
     if command == "diff":

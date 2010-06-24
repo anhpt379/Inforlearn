@@ -1,16 +1,11 @@
 import logging
-import re
-
 from django.conf import settings
-
 from common import api
 from common import clean
 from common import exception
 from common import patterns
 from common import user
-from common import util
 from common.protocol import base
-from common.protocol import sms
 
 HELP_HUH = "Sorry, did not understand \"%s\". Send HELP for commands"
 HELP_WELCOME = "Welcome to %s SMS! Questions? Contact support@%s" % (settings.SITE_NAME, settings.NS_DOMAIN)
@@ -69,7 +64,7 @@ class SmsService(base.Service):
               patterns.PostHandler,
               ]
 
-      
+
   # TODO(termie): the following should probably be part of some sort of
   #               service interface, it is almost an exact duplicate of
   #               ImService
@@ -78,7 +73,7 @@ class SmsService(base.Service):
 
   def response_error(self, exc):
     return str(exc)
-  
+
   def channel_join(self, sender, nick):
     sender_ref = api.actor_lookup_mobile(api.ROOT, sender)
     if not sender_ref:
@@ -114,22 +109,22 @@ class SmsService(base.Service):
     
     otherwise, just post the message
     """
-    
+
     sender_ref = api.actor_lookup_mobile(api.ROOT, sender)
     if not sender_ref:
       raise exception.ValidationError(HELP_SIGN_IN)
-    
+
     if sender_ref.extra.get('sms_double_opt_in', None):
       api.mobile_confirm_doubleoptin(api.ROOT, sender_ref.nick)
 
     self.start_notifications(sender)
-    
+
   def actor_add_contact(self, sender, nick):
     sender_ref = api.actor_lookup_mobile(api.ROOT, sender)
     if not sender_ref:
       raise exception.ValidationError(HELP_SIGN_IN)
     clean_nick = clean.nick(nick)
-  
+
     try:
       api.actor_add_contact(sender_ref, sender_ref.nick, clean_nick)
       self.send_message((sender,),
@@ -148,7 +143,7 @@ class SmsService(base.Service):
     try:
       api.actor_remove_contact(sender_ref, sender_ref.nick, clean_nick)
       self.send_message((sender,),
-                        "%s stopped following %s" % (sender_ref.dispaly_nick(), 
+                        "%s stopped following %s" % (sender_ref.dispaly_nick(),
                                                      nick))
 
     except:
@@ -172,7 +167,7 @@ class SmsService(base.Service):
       raise exception.ValidationError("Username or password is incorrect")
 
     mobile_ref = api.mobile_associate(api.ROOT, user_ref.nick, sender)
-    
+
     # if they need to double opt in send them the confirmation message
     welcome = ' '.join([HELP_WELCOME_NICK % user_ref.display_nick(),
                          HELP_POST,
@@ -210,7 +205,7 @@ class SmsService(base.Service):
       return
 
     actor_ref = api.settings_change_notify(api.ROOT, sender_ref.nick, sms=True)
-      
+
     message = ' '.join([HELP_START_NOTIFICATIONS,
                         HELP_CHARGES])
 
@@ -251,8 +246,8 @@ class SmsService(base.Service):
     logging.debug("comment: %s %s %s", nick, sender_ref.nick, message)
 
     nick = clean.nick(nick)
-    stream_entry = api.reply_get_cache(sender=nick, 
-                                       target=sender_ref.nick, 
+    stream_entry = api.reply_get_cache(sender=nick,
+                                       target=sender_ref.nick,
                                        service='sms')
     if not stream_entry:
       # Well, or memcache timed it out...  Or we crashed... Or... Or...

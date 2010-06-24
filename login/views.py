@@ -1,25 +1,8 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 from django import http
 from django import template
 from django.conf import settings
 from django.template import loader
 from django.core.cache import cache
-
-from google.appengine.api import users
-
 from common import api
 from common import clean
 from common import decorator
@@ -49,14 +32,14 @@ def login_login(request):
         # Attempt to do some cleanup on the user if necessary
         api.user_cleanup(api.ROOT, current_user.nick)
 
-        
+
         # if we aren't hosted or aren't ssl just set the cookie and go home
-        if (not settings.HOSTED_DOMAIN_ENABLED 
+        if (not settings.HOSTED_DOMAIN_ENABLED
             or not settings.SSL_LOGIN_ENABLED):
           response = http.HttpResponseRedirect(redirect_to)
           response = user.set_user_cookie(response, current_user, rememberme)
           return response
-        
+
         # otherwise, we're going to have to redirect to set the cookie on
         # the proper domain
         sso_token = util.generate_uuid()
@@ -75,8 +58,8 @@ def login_login(request):
     if redirect_to == '/':
       redirect_to = request.user.url('/overview')
     return http.HttpResponseRedirect(redirect_to)
-  
-  c = template.RequestContext(request, locals())    
+
+  c = template.RequestContext(request, locals())
   t = loader.get_template('login/templates/login.html')
   return http.HttpResponse(t.render(c))
 
@@ -112,7 +95,7 @@ def login_forgot(request):
     raise exception.AlreadyLoggedInException()
 
   handled = common_views.handle_view_action(
-      request, {'login_forgot': request.path,})
+      request, {'login_forgot': request.path, })
 
   if handled:
     return handled

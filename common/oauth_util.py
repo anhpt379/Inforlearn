@@ -1,35 +1,16 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import logging
 import cgi
-
 from django.conf import settings
-
 from google.appengine.api import urlfetch
-
 from oauth import oauth
 from oauth.oauth import OAuthError
 from oauth.oauth import OAuthConsumer
 from oauth.oauth import OAuthClient
 from oauth.oauth import OAuthToken
 from oauth.oauth import OAuthRequest
-
 from common import api
 from common.private_key import LocalOAuthSignatureMethod_RSA_SHA1
 from common import util
-from common import exception
 
 
 
@@ -41,7 +22,7 @@ ROOT_TOKEN = oauth.OAuthToken(settings.ROOT_TOKEN_KEY,
 
 
 def is_root(consumer, token):
-  return (consumer.key == ROOT_CONSUMER.key 
+  return (consumer.key == ROOT_CONSUMER.key
           or (token and token.key == ROOT_TOKEN.key))
 
 
@@ -76,12 +57,12 @@ def build_oauth_server():
     sig_methods['PLAINTEXT'] = PLAINTEXT
 
   return oauth.OAuthServer(JeOAuthDataStore(), sig_methods)
-  
+
 def oauth_request_from_django_request(request):
   url = request.build_absolute_uri()
   url = url.split("?")[0]
   params = util.query_dict_to_keywords(request.REQUEST)
-  
+
   post_data = request.method == "post" and request.raw_post_data or ""
   headers = {}
   if 'HTTP_AUTHORIZATION' in request.META:
@@ -89,12 +70,12 @@ def oauth_request_from_django_request(request):
 
   # TODO(termie): fix the oauth library to not use this call sig
   oauth_request = oauth.OAuthRequest.from_request(
-      request.method, 
+      request.method,
       url,
       headers=headers,
-      query_string=post_data, 
+      query_string=post_data,
       parameters=params)
-  
+
   return oauth_request
 
 def handle_fetch_request_token(request):
@@ -124,7 +105,7 @@ def get_api_user(request):
   # XXX WARNING: this function expects that the validity of the request
   #              has already been validated and will provide root access
   #              to the api based on a simple match
-  
+
   # TODO ensure verification has occurred
   # assert request.oauth_verified
   oauth_request = oauth_request_from_django_request(request)
@@ -133,14 +114,14 @@ def get_api_user(request):
 def get_api_user_from_oauth_request(oauth_request):
   oauth_token = oauth_request.get_parameter('oauth_token')
   oauth_consumer = oauth_request.get_parameter('oauth_consumer_key')
-  
+
   if oauth_token == ROOT_TOKEN.key:
     return api.ROOT
-  
+
   token_ref = api.oauth_get_access_token(api.ROOT, oauth_token)
   if not token_ref:
     return None
-  
+
   actor_ref = api.actor_get(api.ROOT, token_ref.actor)
   actor_ref.access_level = token_ref.perms
   return actor_ref
@@ -164,11 +145,11 @@ def get_non_oauth_params(parameters):
                if not k.startswith('oauth')])
 
 
-def fetch_request_token(request, consumer, url, parameters=None, 
+def fetch_request_token(request, consumer, url, parameters=None,
                         sig_method=None):
   parameters = parameters and parameters or {}
   sig_method = sig_method and sig_method or LocalOAuthSignatureMethod_RSA_SHA1()
- 
+
   logging.info('* Obtain a request token ...')
   oauth_request = OAuthRequest.from_consumer_and_token(
       consumer, http_url=url, parameters=parameters
@@ -177,17 +158,17 @@ def fetch_request_token(request, consumer, url, parameters=None,
 
   return _fetch_token(oauth_request)
 
-def fetch_access_token(request, consumer, request_token, url, parameters=None, 
+def fetch_access_token(request, consumer, request_token, url, parameters=None,
                         sig_method=None):
   parameters = parameters and parameters or {}
   sig_method = sig_method and sig_method or LocalOAuthSignatureMethod_RSA_SHA1()
- 
+
   logging.info('* Obtain an access token ...')
   oauth_request = OAuthRequest.from_consumer_and_token(
       consumer, request_token, http_url=url, parameters=parameters
       )
   oauth_request.sign_request(sig_method, consumer, None)
-  
+
   return _fetch_token(oauth_request)
 
 def _fetch_token(oauth_request):
@@ -195,7 +176,7 @@ def _fetch_token(oauth_request):
   logging.info('REQUEST url=%s' % url)
   response = urlfetch.fetch(url)
   logging.info('RESPONSE => %s' % response.content)
-  
+
   # TODO can't do this one until the oauth library gets patched
   #token = OAuthToken.from_string(response.content)
   params = cgi.parse_qs(response.content.strip(), keep_blank_values=True)
@@ -244,7 +225,7 @@ class JeOAuthDataStore(object):
   def fetch_access_token(self, oauth_consumer, oauth_token):
     if oauth_token.authorized:
       access_token = api.oauth_generate_access_token(api.ROOT,
-                                             oauth_consumer.key_, 
+                                             oauth_consumer.key_,
                                              oauth_token.key_)
       request_token = api.oauth_get_request_token(api.ROOT, oauth_token.key_)
       request_token.delete()

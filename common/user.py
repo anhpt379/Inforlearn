@@ -1,24 +1,8 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import datetime
 import logging
-
+import oauth.oauth as oauth
 from django.conf import settings
 from django.core.cache import cache
-import oauth.oauth as oauth
-
 from common import api
 from common import exception
 from common import legacy
@@ -30,7 +14,7 @@ def get_user_from_request(request):
   """attempt to get a logged in user based on the request
   
   most likely from a cookie
-  """   
+  """
   nick = request.COOKIES.get(settings.USER_COOKIE, None)
   token = request.COOKIES.get(settings.PASSWORD_COOKIE, None)
   if nick:
@@ -38,8 +22,8 @@ def get_user_from_request(request):
     user = authenticate_user_cookie(nick, token)
     return user
 
-  if (settings.API_ALLOW_LEGACY_AUTH 
-      and 'personal_key' in request.REQUEST 
+  if (settings.API_ALLOW_LEGACY_AUTH
+      and 'personal_key' in request.REQUEST
       and 'user' in request.REQUEST):
     user = legacy.authenticate_user_personal_key(
         request.REQUEST['user'], request.REQUEST['personal_key'])
@@ -54,7 +38,7 @@ def get_user_from_request(request):
   #       small difference, api users (via OAuth, etc) are given
   #       a permission level of read, write or delete which limits
   #       what they are able to do on the site.
-  if (('oauth_token' in request.REQUEST and 'oauth_consumer_key' in request.REQUEST) 
+  if (('oauth_token' in request.REQUEST and 'oauth_consumer_key' in request.REQUEST)
       or 'HTTP_AUTHORIZATION' in request.META):
     oauth_util.verify_request(request)
     user = oauth_util.get_api_user(request)
@@ -78,14 +62,14 @@ def authenticate_user_cookie(nick, token):
 
   # user's authenticated via cookie have full access
   user.access_level = api.DELETE_ACCESS
-  
+
   cached_token = lookup_user_auth_token(user.nick, token)
   if not cached_token:
     return None
 
   if user.password != cached_token:
     return None
-  
+
   return user
 
 def authenticate_user_login(nick, password):
@@ -118,7 +102,7 @@ def authenticate_user_login(nick, password):
 
     # a little repeat of above since we have a new user instance now
     user.access_level = api.DELETE_ACCESS
-    
+
     return user
   return None
 
@@ -152,24 +136,24 @@ def set_user_cookie(response, user, remember=False):
   auth_token = generate_user_auth_token(user.nick, user.password)
 
   if settings.COOKIE_DOMAIN == "localhost":
-    response.set_cookie(settings.USER_COOKIE, 
-                        user.nick, 
-                        expires=expires, 
+    response.set_cookie(settings.USER_COOKIE,
+                        user.nick,
+                        expires=expires,
                         path=settings.COOKIE_PATH)
     response.set_cookie(settings.PASSWORD_COOKIE,
-                        auth_token, 
-                        expires=expires, 
+                        auth_token,
+                        expires=expires,
                         path=settings.COOKIE_PATH)
   else:
-    response.set_cookie(settings.USER_COOKIE, 
-                        user.nick, 
-                        expires=expires, 
-                        path=settings.COOKIE_PATH, 
+    response.set_cookie(settings.USER_COOKIE,
+                        user.nick,
+                        expires=expires,
+                        path=settings.COOKIE_PATH,
                         domain=settings.COOKIE_DOMAIN)
-    response.set_cookie(settings.PASSWORD_COOKIE, 
-                        auth_token, 
-                        expires=expires, 
-                        path=settings.COOKIE_PATH, 
+    response.set_cookie(settings.PASSWORD_COOKIE,
+                        auth_token,
+                        expires=expires,
+                        path=settings.COOKIE_PATH,
                         domain=settings.COOKIE_DOMAIN)
 
   return response
@@ -179,11 +163,11 @@ def clear_user_cookie(response):
     response.delete_cookie(settings.USER_COOKIE, path=settings.COOKIE_PATH)
     response.delete_cookie(settings.PASSWORD_COOKIE, path=settings.COOKIE_PATH)
   else:
-    response.delete_cookie(settings.USER_COOKIE, 
-                           path=settings.COOKIE_PATH, 
+    response.delete_cookie(settings.USER_COOKIE,
+                           path=settings.COOKIE_PATH,
                            domain=settings.COOKIE_DOMAIN)
-    response.delete_cookie(settings.PASSWORD_COOKIE, 
-                           path=settings.COOKIE_PATH, 
+    response.delete_cookie(settings.PASSWORD_COOKIE,
+                           path=settings.COOKIE_PATH,
                            domain=settings.COOKIE_DOMAIN)
 
   return response

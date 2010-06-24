@@ -1,20 +1,7 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import datetime
 import logging
 import StringIO
+import simplejson
 
 from django import http
 from django import template
@@ -22,14 +9,8 @@ from django.conf import settings
 from django.core import serializers
 from django.template import loader
 
-import simplejson
-
-
-from google.appengine.ext import db
-from google.appengine.api.labs import taskqueue
 from api import xmlrpc
 from common import api
-from common import clean
 from common import decorator
 from common import exception
 from common import im
@@ -37,7 +18,6 @@ from common import legacy
 from common import messages
 from common import oauth_util
 from common import sms
-from common import user
 from common import util
 from common import validate
 from common import views as common_views
@@ -213,7 +193,7 @@ def api_authorize(request):
     raise Exception("bad consumer")
   if "active" != oauth_consumer_ref.status:
     raise Exception("inactive consumer")
-  
+
   perms = request.REQUEST.get('perms', 'read')
   if request.POST:
     # we posted to this page to authorize
@@ -230,7 +210,7 @@ def api_authorize(request):
     c = template.RequestContext(request, locals())
     t = loader.get_template('api/templates/authorized.html')
     return http.HttpResponse(t.render(c))
-  
+
   perms_pretty = {'read': 'view',
                   'write': 'view and update',
                   'delete': 'view, update and delete'}[perms]
@@ -294,7 +274,7 @@ def api_call(request, format="json"):
 
     rv = method_ref(api_user, **kwargs)
     if rv is None:
-      raise exception.ApiException('method %s returned None'%(method))
+      raise exception.ApiException('method %s returned None' % (method))
     return render_api_response(rv, format, servertime=servertime)
   except oauth_util.OAuthError, e:
     exc = exception.ApiOAuth(e.message)
@@ -375,8 +355,8 @@ def api_vendor_sms_receive(request, vendor_secret=None):
   sms_message = sms_protocol.SmsMessage.from_request(request)
   sms_service = sms.SmsService(sms_protocol.SmsConnection())
   sms_service.init_handlers()
-  rv = sms_service.handle_message(sms_message.sender, 
-                                  sms_message.target, 
+  rv = sms_service.handle_message(sms_message.sender,
+                                  sms_message.target,
                                   sms_message.message)
   return http.HttpResponse(rv)
 
@@ -386,7 +366,7 @@ def api_vendor_xmpp_receive(request):
   if not settings.IM_ENABLED:
     raise http.Http404()
   xmpp_message = xmpp.XmppMessage.from_request(request)
-  if (settings.IM_TEST_ONLY and 
+  if (settings.IM_TEST_ONLY and
       xmpp_message.sender.base() not in settings.IM_TEST_JIDS):
 
     raise http.Http404()
@@ -403,7 +383,7 @@ def api_vendor_queue_process(request):
   secret = request.REQUEST.get('secret')
   if secret != settings.QUEUE_VENDOR_SECRET:
     raise exception.ApiException("Invalid secret")
-  
+
   try:
     rv = api.task_process_any(api.ROOT)
     if rv:

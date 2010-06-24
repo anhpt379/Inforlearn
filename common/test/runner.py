@@ -1,32 +1,16 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import unittest
-
-
 from common import profile
 from common.test import coverage
-
 from django.conf import settings
 from django.db import models
 from django.test import simple
 from django.test import utils
 
+
 def _any_startswith(app, app_names):
   return [a for a in app_names if app.startswith(a)]
 
-def run_tests(test_labels, verbosity=1, interactive=True, extra_tests=[], 
+def run_tests(test_labels, verbosity=1, interactive=True, extra_tests=[],
               include_coverage=False, include_profile=False, profile_all=False):
     """
     Copy and munge of django's django.test.simple.run_tests method,
@@ -52,11 +36,11 @@ def run_tests(test_labels, verbosity=1, interactive=True, extra_tests=[],
     Returns the number of tests that failed.
     """
     utils.setup_test_environment()
-    
+
     settings.DEBUG = False
     profile.PROFILE_ALL_TESTS = False
     suite = unittest.TestSuite()
-    
+
     coverage_modules = []
     if include_coverage:
       coverage.start()
@@ -77,7 +61,7 @@ def run_tests(test_labels, verbosity=1, interactive=True, extra_tests=[],
               continue
             suite.addTest(simple.build_suite(app))
             coverage_modules.append(app)
-    
+
     for test in extra_tests:
         suite.addTest(test)
 
@@ -90,10 +74,10 @@ def run_tests(test_labels, verbosity=1, interactive=True, extra_tests=[],
       coverage.stop()
       app_names = [mod.__name__.split('.')[0] for mod in coverage_modules]
 
-      coverage_paths = ['%s/*.py' % app 
+      coverage_paths = ['%s/*.py' % app
                         for app in settings.INSTALLED_APPS
                         if _any_startswith(app, app_names)]
-                            
+
       coverage.report(coverage_paths, ignore_errors=1)
 
     if profile_all or include_profile:
@@ -104,7 +88,7 @@ def run_tests(test_labels, verbosity=1, interactive=True, extra_tests=[],
 
 
     connection.creation.destroy_test_db(old_name, verbosity)
-    
+
     utils.teardown_test_environment()
-    
+
     return len(result.failures) + len(result.errors)

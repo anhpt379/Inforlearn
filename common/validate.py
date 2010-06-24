@@ -1,25 +1,8 @@
 #! coding: utf-8
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import re
-import logging
-
 from common import exception
 from common import patterns
 from common import util
-
 from django.conf import settings
 
 # TODO(teemu): list of banned names should probably reside outside of code.
@@ -195,7 +178,7 @@ def password_and_confirm(password, confirm, message="Mật khẩu của bạn",
 def length(s, min, max, message=None, field=None):
   if len(s) < min or len(s) > max:
     raise exception.ValidationError(
-        (message or 'Tin') + u" phải có chiều dại trong khoảng từ %s đến %s ký tự." % (
+        (message or 'Tin') + u" phải có chiều dài trong khoảng từ %s đến %s ký tự." % (
             min, max),
         field)
   pass

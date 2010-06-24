@@ -1,18 +1,5 @@
+#! coding: utf-8
 #!/usr/bin/env python
-#
-# Copyright 2007 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 """Tool for uploading diffs from a version control system to the codereview app.
 
@@ -95,7 +82,7 @@ def GetEmail(prompt):
       last_email = last_email_file.readline().strip("\n")
       last_email_file.close()
       prompt += " [%s]" % last_email
-    except IOError, e:
+    except IOError:
       pass
   email = raw_input(prompt + ": ").strip()
   if email:
@@ -103,7 +90,7 @@ def GetEmail(prompt):
       last_email_file = open(last_email_file_name, "w")
       last_email_file.write(email)
       last_email_file.close()
-    except IOError, e:
+    except IOError:
       pass
   else:
     email = last_email
@@ -124,7 +111,7 @@ def StatusUpdate(msg):
 
 def ErrorExit(msg):
   """Print an error message to stderr and exit."""
-  print >>sys.stderr, msg
+  print >> sys.stderr, msg
   sys.exit(1)
 
 
@@ -273,32 +260,32 @@ class AbstractRpcServer(object):
         auth_token = self._GetAuthToken(credentials[0], credentials[1])
       except ClientLoginError, e:
         if e.reason == "BadAuthentication":
-          print >>sys.stderr, "Invalid username or password."
+          print >> sys.stderr, "Invalid username or password."
           continue
         if e.reason == "CaptchaRequired":
-          print >>sys.stderr, (
+          print >> sys.stderr, (
               "Please go to\n"
               "https://www.google.com/accounts/DisplayUnlockCaptcha\n"
               "and verify you are a human.  Then try again.")
           break
         if e.reason == "NotVerified":
-          print >>sys.stderr, "Account not verified."
+          print >> sys.stderr, "Account not verified."
           break
         if e.reason == "TermsNotAgreed":
-          print >>sys.stderr, "User has not agreed to TOS."
+          print >> sys.stderr, "User has not agreed to TOS."
           break
         if e.reason == "AccountDeleted":
-          print >>sys.stderr, "The user account has been deleted."
+          print >> sys.stderr, "The user account has been deleted."
           break
         if e.reason == "AccountDisabled":
-          print >>sys.stderr, "The user account has been disabled."
+          print >> sys.stderr, "The user account has been disabled."
           break
         if e.reason == "ServiceDisabled":
-          print >>sys.stderr, ("The user's access to the service has been "
+          print >> sys.stderr, ("The user's access to the service has been "
                                "disabled.")
           break
         if e.reason == "ServiceUnavailable":
-          print >>sys.stderr, "The service is not available; try again later."
+          print >> sys.stderr, "The service is not available; try again later."
           break
         raise
       self._GetAuthCookie(auth_token)
@@ -589,7 +576,7 @@ def RunShellWithReturnCode(command, print_output=False,
   p.wait()
   errout = p.stderr.read()
   if print_output and errout:
-    print >>sys.stderr, errout
+    print >> sys.stderr, errout
   p.stdout.close()
   p.stderr.close()
   return output, p.returncode
@@ -733,7 +720,7 @@ class VersionControlSystem(object):
 
   def IsImage(self, filename):
     """Returns true if the filename has an image extension."""
-    mimetype =  mimetypes.guess_type(filename)[0]
+    mimetype = mimetypes.guess_type(filename)[0]
     if not mimetype:
       return False
     return mimetype.startswith("image/")
@@ -1030,7 +1017,7 @@ class GitVCS(VersionControlSystem):
     # the hashes of the files, so we can upload them along with our diff.
 
     # Special used by git to indicate "no such content".
-    NULL_HASH = "0"*40
+    NULL_HASH = "0" * 40
 
     extra_args = extra_args[:]
     if self.options.revision:
@@ -1087,7 +1074,7 @@ class GitVCS(VersionControlSystem):
     return data
 
   def GetBaseFile(self, filename):
-    hash_before, hash_after = self.hashes.get(filename, (None,None))
+    hash_before, hash_after = self.hashes.get(filename, (None, None))
     base_content = None
     new_content = None
     is_binary = self.IsBinary(filename)
@@ -1475,7 +1462,7 @@ def RealMain(argv, data=None):
   if not response_body.startswith("Issue created.") and \
   not response_body.startswith("Issue updated."):
     sys.exit(0)
-  issue = msg[msg.rfind("/")+1:]
+  issue = msg[msg.rfind("/") + 1:]
 
   if not uploaded_diff_file:
     result = UploadSeparatePatches(issue, rpc_server, patchset, data, options)

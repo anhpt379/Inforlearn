@@ -84,7 +84,7 @@ var counter = {
   target: null,
   re : new RegExp(/^\s*|\s*$/g),
   count: function () {
-    var value = counter.el.value.replace(/\n/g,'');	//remove newline
+    var value = counter.el.value.replace(/\n/g,''); //remove newline
     var count = value.length;
     chars_left = 256 - count;
     if (chars_left >= 0) {
@@ -114,7 +114,11 @@ var counter = {
       }
     }
     var ok = (count > 0 && count < 257) && (value.replace(counter.re,"") != counter.el._value);
-    counter.button.disabled = !ok;
+    if (ok == true) {
+      ob  = $(".send-message-disable");
+      ob.attr("onclick", "document.message_form.submit();");
+      ob.attr("class", "send-message-enable");
+    }
     counter.target.nodeValue = str;
   }
 };
@@ -156,8 +160,6 @@ jQuery.fn.presence = function() {
 //      //e.preventDefault(); 
 //    }            
 //  });
-  
-  
   // TODO termie: turn this back on
   return;
   this.submit( function () {
@@ -361,13 +363,13 @@ jQuery.fn.ajaxify = function () {
 };
 
 jQuery.fn.confirm = function () {
-	  this.click(
-	    function () {
-	      this.href = this.href + "&confirm=1";
-	      return window.confirm("Bạn chắc chắn muốn thực hiện thao tác này?");
-	    }
-	  );
-	};
+    this.click(
+      function () {
+        this.href = this.href + "&confirm=1";
+        return window.confirm("Bạn chắc chắn muốn thực hiện thao tác này?");
+      }
+    );
+  };
 
 
 jQuery.fn.setAccordion = function () {

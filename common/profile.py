@@ -1,22 +1,5 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-import logging
 import time
-
 from django import template
-from django.conf import settings
 from django.template import loader
 
 PROFILE_ALL_TESTS = False
@@ -71,7 +54,7 @@ def label(name):
 # deco
 def _log_call(f, tag='general'):
   call_name = f.func_name
-    
+
   def _wrap(self, *args, **kw):
     if enabled:
       call_self = self
@@ -104,10 +87,10 @@ def profiled(f):
     stop()
   _wrap.func_name = f.func_name
   return _wrap
-  
+
 def _log_api_call(f, call_self, tag='api'):
   call_name = f.func_name
-    
+
   def _wrap(*args, **kw):
     if enabled:
       start_time = time.time()
@@ -126,7 +109,7 @@ def install_api_profiling():
     f = getattr(api, k)
     if type(f) != type(log_call):
       continue
-    setattr(api, k, _log_api_call(f, api, tag='api')) 
+    setattr(api, k, _log_api_call(f, api, tag='api'))
 
 
 
@@ -143,7 +126,7 @@ def csv(header=False):
   csv = '\n'.join([','.join([str(cell) for cell in row]) for row in rv])
   return csv
 
- 
+
 def html():
   # our storage looks like:
   # label, tag, class_func_key, time_ms
@@ -158,12 +141,12 @@ def html():
 
     o[tag]['sub'][class_func_key]['each'].append(time_ms)
     o[tag]['sub'][class_func_key]['time_ms'] += time_ms
-    
+
     o[tag]['time_ms'] += time_ms
     o[tag]['count'] += 1
 
     total_ms += time_ms
-  
+
   for tag in o:
     # sort the calls by name
     o[tag]['sub'] = sorted(o[tag]['sub'].iteritems(), key=lambda x: x[0])
@@ -172,7 +155,7 @@ def html():
   c = template.Context({'timing': o, 'total': total_ms})
   t = loader.get_template('common/templates/profiling.html')
   return t.render(c)
- 
+
 
 storage = []
 def store_call(call_class, call_name, tag='general', time_ms=0.0):
@@ -182,8 +165,8 @@ def store_call(call_class, call_name, tag='general', time_ms=0.0):
   if not enabled:
     return
 
-  class_name = getattr(call_class, 
-                       '__name__', 
+  class_name = getattr(call_class,
+                       '__name__',
                        getattr(call_class.__class__, '__name__')
                        )
   call_class = class_name

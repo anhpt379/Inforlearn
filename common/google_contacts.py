@@ -1,31 +1,10 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-import math
-import random
 import logging
-import time
 import urllib
-
-import atom.service
 import gdata.auth
 import gdata.service
 import gdata.alt.appengine
 import simplejson
-
 from django.conf import settings
-
 from common import exception
 
 
@@ -42,7 +21,7 @@ def client():
   client = gdata.service.GDataService(additional_headers=additional_headers)
   gdata.alt.appengine.run_on_appengine(client)
   return client
-  
+
 
 def auth_sub_url(next_url):
   c = client()
@@ -62,11 +41,11 @@ def auth_sub_token_from_request(request):
 def upgrade_to_session_token(token):
   c = client()
   return c.upgrade_to_session_token(token)
-  
+
 def get_groups(token):
   c = client()
   c.override_token = token
-    
+
   resource = GROUPS_RESOURCE
   try:
     feed_json = c.Get(resource, converter=converter)
@@ -76,7 +55,7 @@ def get_groups(token):
     if e.args and 'status' in e.args[0] and e.args[0]['status'] == 401:
       raise exception.ServiceError('Invalid AuthSub token')
     raise
-  
+
   return rv['feed']['entry']
 
 def get_system_group(token, group="Contacts"):
@@ -91,7 +70,7 @@ def get_contacts(token, group=None, index=1, max=100):
       to be authorised for this user """
   c = client()
   c.override_token = token
-  
+
   logging.info("TOKEN %s", token)
 
   resource = CONTACTS_RESOURCE % (index, max + 1)
@@ -112,7 +91,7 @@ def get_contacts(token, group=None, index=1, max=100):
     if e.args and 'status' in e.args[0] and e.args[0]['status'] == 401:
       raise exception.ServiceError('Invalid AuthSub token')
     raise
-  
+
   return rv['feed']['entry'][:max], more
 
 def get_contacts_emails(token, group=None, index=1, max=100):

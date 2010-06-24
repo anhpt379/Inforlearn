@@ -1,17 +1,3 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import urlparse
 import sys
 
@@ -56,8 +42,8 @@ class FixturesTestCase(test.TestCase):
                'CapitalPunishment@example.com': 'baz',
                'root@example.com': 'fakepassword',
                'hotness@example.com': 'fakepassword'};
-  
-  __metaclass__ =  megamox.MoxMetaTestBase
+
+  __metaclass__ = megamox.MoxMetaTestBase
 
   def setUp(self):
     settings.DEBUG = False
@@ -122,8 +108,8 @@ class ViewTestCase(FixturesTestCase):
 
   # TODO(teemu): propose this to appengine_django project, when best submit path (Google-internal or
   # public) is decided.
-  def assertRedirectsPrefix(self, response, expected_url_prefix, 
-                            status_code=302, target_status_code=200, 
+  def assertRedirectsPrefix(self, response, expected_url_prefix,
+                            status_code=302, target_status_code=200,
                             host=None):
     """Asserts that a response redirected to an URL with specified prefix,
     and that the redirect URL can be loaded. Return redirected response, so
@@ -159,10 +145,10 @@ class ViewTestCase(FixturesTestCase):
     if scheme == 'https':
       params['wsgi.url_scheme'] = 'https'
       params['SERVER_PORT'] = '443'
-      
+
 
     redirect_response = response.client.get(**params)
-    self.assertEqual(redirect_response.status_code, 
+    self.assertEqual(redirect_response.status_code,
                      target_status_code,
                      "Couldn't retrieve redirection page '%s': response code"
                      " was %d (expected %d)" % (url,
@@ -201,14 +187,14 @@ class ViewTestCase(FixturesTestCase):
                       str(sys.exc_info()[0]))
 
   def assertGetLink(self, response, link_class, link_no,
-                    of_count=-1, msg=''):
+                    of_count= -1, msg=''):
     """Tries to find an anchor element with the given class from the response.
     Checks that there are of_count total links of that class
     (unless of_count==-1). Gets the page from that link.
     """
     self.assertWellformed(response)
     parsed = BeautifulSoup.BeautifulSoup(response.content)
-    found = parsed.findAll('a', attrs = { 'class': link_class})
+    found = parsed.findAll('a', attrs={ 'class': link_class})
     anchors = [a for a in found]
     if of_count > -1:
       self.assertEqual(len(anchors), of_count, msg)

@@ -1,5 +1,3 @@
-import logging
-
 from django.conf import settings
 from django.core import mail
 
@@ -36,7 +34,7 @@ class AcceptInviteTest(tests.ViewTestCase):
   def test_invite_email_accept_logged_in(self):
     r = self.login_and_get('hermit', '/invite/email/%s' % self.actor_code)
     r = self.client.post(
-        '/invite/email/%s' % self.actor_code, 
+        '/invite/email/%s' % self.actor_code,
         {'invite_accept': '',
          'nick': 'hermit',
          'code': self.actor_code,
@@ -53,9 +51,9 @@ class AcceptInviteTest(tests.ViewTestCase):
     r = self.assertRedirectsPrefix(r, '/error')
 
   def test_invite_email_reject_logged_in(self):
-    r = self.login_and_get('hermit', '/invite/email/%s' % self.actor_code)
+    self.login_and_get('hermit', '/invite/email/%s' % self.actor_code)
     r = self.client.post(
-        '/invite/email/%s' % self.actor_code, 
+        '/invite/email/%s' % self.actor_code,
         {'invite_reject': '',
          'nick': 'hermit',
          'code': self.actor_code,
@@ -91,6 +89,6 @@ class MailTest(tests.ViewTestCase):
 
     sent_mail = mail.outbox[0]
     url = tests.get_relative_url(sent_mail.body)
-    
+
     r = self.login_and_get('hermit', url)
     self.assertTemplateUsed(r, 'invite/templates/email.html')

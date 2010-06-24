@@ -1,34 +1,14 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-import logging
 import xmlrpclib
-from oauth import oauth
-
 from django.conf import settings
-
 from api import xmlrpc
 from common import api
 from common import clean
 from common import legacy
 from common import oauth_util
-from common import profile
-from common import util
 from common.protocol import xmpp
-from common.protocol import sms
 from common.test import base
 from common.test import util as test_util
+
 
 class ImTestCase(base.ViewTestCase):
   endpoint = '/_ah/xmpp/message'
@@ -49,7 +29,7 @@ class ImTestCase(base.ViewTestCase):
 
   def send(self, from_jid, message):
     r = self.client.post(
-        self.endpoint, 
+        self.endpoint,
         {
           'from': from_jid.full(),
           'to': settings.IM_BOT,
@@ -70,7 +50,7 @@ class NotificationsTest(ImTestCase):
   def test_start_stop(self):
     actor_pre_ref = api.actor_get(api.ROOT, 'hermit')
     self.assertEqual(actor_pre_ref.extra.get('im_notify', False), False)
-  
+
     r = self.sign_in(self.from_jid, 'hermit')
 
     self.send(self.from_jid, 'start')
@@ -79,7 +59,7 @@ class NotificationsTest(ImTestCase):
     self.assertEqual(actor_post_ref.extra.get('im_notify', False), True)
 
     self.send(self.from_jid, 'stop')
-    
+
     actor_last_ref = api.actor_get(api.ROOT, 'hermit')
     self.assertEqual(actor_last_ref.extra.get('im_notify', False), False)
 
@@ -92,10 +72,10 @@ class NotificationsTest(ImTestCase):
     self.assertEqual(len(xmpp.outbox), 2)
 
   def test_notify_on_comment(self):
-    api.entry_add_comment(api.ROOT, 
+    api.entry_add_comment(api.ROOT,
                           stream='stream/popular@example.com/presence',
                           entry='stream/popular@example.com/presence/12345',
-                          nick='popular', 
+                          nick='popular',
                           content='la la la')
 
     self.exhaust_queue_any()
@@ -104,14 +84,14 @@ class NotificationsTest(ImTestCase):
     self.assertEqual(len(xmpp.outbox), 2)
 
   def test_notify_on_restricted_comment(self):
-    api.subscription_request(api.ROOT, 
+    api.subscription_request(api.ROOT,
                              'stream/hermit@example.com/comments',
                              'inbox/unpopular@example.com/overview')
 
-    api.entry_add_comment(api.ROOT, 
+    api.entry_add_comment(api.ROOT,
                           stream='stream/popular@example.com/presence',
                           entry='stream/popular@example.com/presence/12347',
-                          nick='hermit', 
+                          nick='hermit',
                           content='la la la')
 
     self.exhaust_queue_any()
@@ -120,9 +100,9 @@ class NotificationsTest(ImTestCase):
     self.assertEqual(len(xmpp.outbox), 1)
 
   def test_notify_on_channel_post(self):
-    api.channel_post(api.ROOT, 
-                     nick='popular', 
-                     channel="#popular", 
+    api.channel_post(api.ROOT,
+                     nick='popular',
+                     channel="#popular",
                      message='la la la')
     # should notify popular and unpopular
     self.assertEqual(len(xmpp.outbox), 2)
@@ -190,9 +170,9 @@ class OAuthTest(base.ViewTestCase):
     request_token = oauth.OAuthToken.from_string(response.content)
 
     # cheat and authorize this token using the backend
-    api.oauth_authorize_request_token(api.ROOT, 
+    api.oauth_authorize_request_token(api.ROOT,
                                       request_token.key,
-                                      actor='popular@example.com', 
+                                      actor='popular@example.com',
                                       perms="read")
 
     access_request = oauth.OAuthRequest.from_consumer_and_token(
@@ -287,7 +267,7 @@ class SmsTestCase(base.ViewTestCase):
 
   def send(self, from_mobile, message):
     r = self.client.post(
-        self.endpoint, 
+        self.endpoint,
         {
           'sender': from_mobile,
           'target': settings.SMS_TARGET,

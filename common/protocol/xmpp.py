@@ -1,26 +1,9 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-import logging
 import re
-
 from django.conf import settings
 from django.utils import html
-
-from cleanliness import encoding
 from common import component
 from common.protocol import base
+
 
 class JID(object):
   _re_jid = re.compile(r'([^:/@]+)@([^/])(/.*)')
@@ -76,7 +59,7 @@ class XmppConnection(base.Connection):
 
     if html_message or atom_message:
       raw_xml = True
-      body_builder = ["<body>%s</body>" % (html.escape(body.strip())),]
+      body_builder = ["<body>%s</body>" % (html.escape(body.strip())), ]
       if html_message:
         html_message = encoding.smart_str(html_message)
         body_builder.append(html_message)

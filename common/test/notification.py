@@ -1,28 +1,9 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-import logging
-
 from common import api
-from common import exception
-from common import mail as common_mail
 from common import util
-from common.protocol import sms
 from common.protocol import xmpp
 from common.test import base
-
 from django.core import mail
+
 
 class NotificationTest(base.FixturesTestCase):
   """ tests as per the Notifications Design section of doc/design_funument.txt
@@ -58,7 +39,7 @@ class NotificationTest(base.FixturesTestCase):
         api.ROOT, 'stream/girlfriend@example.com/presence/16961')
     self.channel_entry = api.entry_get(
         api.ROOT, 'stream/#popular@example.com/presence/13345')
-  
+
   def clear_outboxes(self):
     mail.outbox = []
     xmpp.outbox = []
@@ -98,7 +79,7 @@ class NotificationTest(base.FixturesTestCase):
     return [s.target for s in api.subscription_get_topic(api.ROOT, topic)]
 
   def get_restricted_subscriptions_for_topic(self, topic):
-    return [s.target 
+    return [s.target
             for s in api.subscription_get_topic(api.ROOT, topic)
             if s.is_subscribed()]
 
@@ -154,7 +135,7 @@ class NotificationTest(base.FixturesTestCase):
                                           entry_ref.stream,
                                           entry_ref.uuid,
                                           entry_ref.entry)
-    
+
     #self.assertEqual(len(inboxes), len(set(inboxes)), 'duplicates: %s' % inboxes)
     self.assertSetEqual(set(expected), set(inboxes))
     for inbox in inboxes:
@@ -203,7 +184,7 @@ class NotificationTest(base.FixturesTestCase):
     self.check_inboxes_for_entry(entry_ref, subscriptions)
     self.check_email_for_inboxes(entry_ref, subscriptions)
     self.check_im_for_inboxes(entry_ref, subscriptions)
-  
+
   def test_contactsonly_to_own_contactsonly(self):
     """post by contacts-only user to own contacts-only stream
      who should see this:
@@ -224,7 +205,7 @@ class NotificationTest(base.FixturesTestCase):
     self.check_inboxes_for_entry(entry_ref, subscriptions)
     self.check_email_for_inboxes(entry_ref, subscriptions)
     self.check_im_for_inboxes(entry_ref, subscriptions)
-  
+
   def test_contactsonly_to_public_channel(self):
     """post by public user to public channel
      who should see this:
@@ -423,13 +404,13 @@ he entry's restricted stream * overview
     subscriptions += self.get_subscriptions_for_topic(
         'stream/%s/comments' % actor)
     subscriptions = list(set(subscriptions))
-    
+
     entry_ref = self.comment(self.unpopular, self.channel_entry)
 
     self.check_inboxes_for_entry(entry_ref, subscriptions)
     self.check_email_for_inboxes(entry_ref, subscriptions)
     self.check_im_for_inboxes(entry_ref, subscriptions)
-  
+
   def test_contactsonly_comment_to_public_entry(self):
     """comment by contacts-only user on public user's entry
      who should see this:
@@ -539,7 +520,7 @@ he entry's restricted stream * overview
     subscriptions += self.get_restricted_subscriptions_for_topic(
         'stream/%s/comments' % actor)
     subscriptions = list(set(subscriptions))
-    
+
     entry_ref = self.comment(self.girlfriend, self.channel_entry)
 
     self.check_inboxes_for_entry(entry_ref, subscriptions)

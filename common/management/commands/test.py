@@ -1,17 +1,3 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 from django.core.management.base import BaseCommand
 from optparse import make_option
 import sys
@@ -27,23 +13,23 @@ class Command(BaseCommand):
           help='Verbosity level; 0=minimal output, 1=normal output, 2=all output'
           ),
       make_option(
-          '--noinput', action='store_false', dest='interactive', 
-          default=True, 
+          '--noinput', action='store_false', dest='interactive',
+          default=True,
           help='Tells Django to NOT prompt the user for input of any kind.'
           ),
       make_option(
-          '--coverage', action='store_true', dest='coverage', 
-          default=False, 
+          '--coverage', action='store_true', dest='coverage',
+          default=False,
           help='Includes coverage reporting for the tests'
           ),
       make_option(
-          '--profile_all', action='store_true', dest='profile_all', 
-          default=False, 
+          '--profile_all', action='store_true', dest='profile_all',
+          default=False,
           help='Includes profile reporting for all tests'
           ),
       make_option(
-          '--include_profile', action='store_true', dest='include_profile', 
-          default=False, 
+          '--include_profile', action='store_true', dest='include_profile',
+          default=False,
           help='Includes profile reporting for profiled tests'
           ),
       )
@@ -70,11 +56,11 @@ class Command(BaseCommand):
     test_module = __import__(test_module_name, {}, {}, test_path[-1])
     test_runner = getattr(test_module, test_path[-1])
 
-    failures = test_runner(test_labels, 
-                           verbosity=verbosity, 
-                           interactive=interactive, 
-                           include_coverage=include_coverage, 
-                           include_profile=include_profile, 
+    failures = test_runner(test_labels,
+                           verbosity=verbosity,
+                           interactive=interactive,
+                           include_coverage=include_coverage,
+                           include_profile=include_profile,
                            profile_all=profile_all)
     if failures:
       sys.exit(failures)

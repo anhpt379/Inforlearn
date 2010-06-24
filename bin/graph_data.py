@@ -1,17 +1,4 @@
 #!/usr/bin/env python
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 
 """
 requires pydot
@@ -22,13 +9,12 @@ writes a png to out.png
 
 """
 import pydot
-import pprint
 import simplejson
 #import igraph
 
 def graph_from_models_dot(*models):
   graph = pydot.Dot(graph_type='digraph')
-  
+
   streams = {}
   entries = {}
 
@@ -39,8 +25,8 @@ def graph_from_models_dot(*models):
       if d['model'].lower() == 'common.relation':
         continue
         # process this as an edge
-        actor_graph.add_edge(pydot.Edge(src=d['fields']['owner'], 
-                                  dst=d['fields']['target'], 
+        actor_graph.add_edge(pydot.Edge(src=d['fields']['owner'],
+                                  dst=d['fields']['target'],
                                   label=d['fields']['relation']))
 
       elif d['model'].lower() == 'common.actor':
@@ -55,8 +41,8 @@ def graph_from_models_dot(*models):
         subgraph_name = d['pk'].replace("/", "_").replace("@", "_").replace(".", "_").replace("#", "X")
         streams[d['pk']] = pydot.Cluster(graph_name=subgraph_name, suppress_disconnected=False)
         streams[d['pk']].add_node(pydot.Node(name=d['pk']))
-        graph.add_edge(pydot.Edge(src=d['fields']['owner'], 
-                                  dst=d['pk'], 
+        graph.add_edge(pydot.Edge(src=d['fields']['owner'],
+                                  dst=d['pk'],
                                   label=d['fields']['type']))
 
         graph.add_subgraph(streams[d['pk']])
@@ -76,9 +62,9 @@ def graph_from_models_dot(*models):
           entries[d['pk']].add_edge(pydot.Edge(src=d['pk'][len('inboxentry/'):],
                                                dst=inbox,
                                                 ))
-                                                           
+
   return graph
-  
+
 
 #def graph_from_models_igraph(*models):
 #  edge_attrs = {"name": []}
@@ -96,11 +82,11 @@ def graph_from_models_dot(*models):
 #          continue
 #        if k in ('created_at', 
 #        i += 1
-        
+
 #        vertex_attrs['name'].append(v)
 #        edges.append((j, i))
 #        edge_attrs['name'].append(k)
-        
+
 #  #graph = igraph.Graph(directed=True, edges=edges, 
 #  #                     edge_attrs=edge_attrs, vertex_attrs=vertex_attrs)
 #  graph = igraph.Graph(directed=True)
@@ -113,7 +99,7 @@ def graph_from_models_dot(*models):
 
 #  for iv in range(len(edge_attrs['name'])):
 #    graph.es[iv]['label'] = edge_attrs['name'][iv]
-    
+
 #  return graph
 
 
@@ -125,7 +111,7 @@ if __name__ == "__main__":
     data_file = open(m)
     models_ref.append(simplejson.load(data_file))
     data_file.close()
-  
+
 
   graph = graph_from_models_dot(*models_ref)
   print graph.to_string()

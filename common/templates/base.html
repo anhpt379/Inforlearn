@@ -93,7 +93,7 @@
       $(document.body).fadeIn(200)
       {# Fade when click submit button #}
       $(document.body).click(function (event) {
-        if (event.target.nodeName == "A" || 
+        if ((event.target.nodeName == "A" && event.target.className != "send-message-disable") || 
            (event.target.nodeName == "IMG" && event.target.className == "photo") || 
             event.target.type == "submit" ||
             event.target.nodeName == "SPAN")  {

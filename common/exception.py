@@ -1,23 +1,7 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import logging
 import sys
-
 from google.appengine.api import datastore_errors
 from google.appengine.api import images
-
 from django.conf import settings
 
 NO_METHOD = 0x01
@@ -106,7 +90,7 @@ class Catcher(object):
 
   def __exit__(self, exc_type, exc_value, exc_tb):
     if isinstance(exc_type, exception.Error):
-      self.request.errors.append((exc_type, exc_value, exc_tb)) 
+      self.request.errors.append((exc_type, exc_value, exc_tb))
       return True
     return
 
@@ -148,7 +132,7 @@ class UserDoesNotExistError(Error):
   def __init__(self, nick, current_user=None):
     self.nick = nick
     self.current_user = current_user
-  
+
   @property
   def message(self):
     return "User %s does not exist" % self.nick
@@ -158,7 +142,7 @@ class DisabledFeatureError(UserVisibleError):
   # for a user-friendly description of the disabled feature. 
   def to_html(self):
     return "This feature is disabled at the moment."
-  
+
   def to_api(self):
     return "This feature is disabled at the moment."
 
@@ -217,11 +201,11 @@ class ConfirmationRequiredException(RedirectException):
     # TODO(termie) rearrange these in the future to prevent circular imports
     from common import util
     redirect_url = self.build_redirect(request)
-  
+
     nonce = util.create_nonce(request.user, self.message + redirect_url)
 
-    return util.qsa(self.base_url, {'message': self.message, 
-                                    '_nonce': nonce, 
+    return util.qsa(self.base_url, {'message': self.message,
+                                    '_nonce': nonce,
                                     'redirect_to': redirect_url})
 
   redirect = True

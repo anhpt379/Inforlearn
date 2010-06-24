@@ -1,29 +1,9 @@
 #! coding: utf-8
-# pylint: disable-msg=W0311
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import logging
-
 from django import http
 from django import template
 from django.conf import settings
 from django.template import loader
-import simplejson
-
-from common.display import prep_stream_dict, prep_entry_list, prep_entry, prep_comment_list, DEFAULT_AVATARS
-
 from common import api
 from common import component
 from common import exception
@@ -32,7 +12,6 @@ from common import display
 from common import google_contacts
 from common import mail
 from common import memcache
-from common import oauth_util
 from common import user
 from common import util
 from common import validate

@@ -1,26 +1,7 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 from django import test
-from django.conf import settings
-from django.core import mail
-
-from common import api
-from common import exception
 from common import patterns
-from common import profile
 from common.protocol import base
+
 
 class MockService(base.Service):
   handlers = [patterns.SignInHandler,
@@ -68,15 +49,15 @@ class PatternsTest(test.TestCase):
   def tearDown(self):
     self.mock.clear()
     super(PatternsTest, self).tearDown()
-    
+
   def assertCalled(self, message, called, sender=None, target=None):
     if sender is None:
       sender = self.sender
     if target is None:
       target = self.target
     self.mock.handle_message(sender, target, message)
-    self.assertEqual(self.mock.called, 
-                     called, 
+    self.assertEqual(self.mock.called,
+                     called,
                      '%s != %s for %s' % (self.mock.called, called, message)
                      )
     self.mock.clear()
@@ -89,7 +70,7 @@ class PatternsTest(test.TestCase):
 
     data = ['#fakechan: bling!',
             '#fakechan heya']
-  
+
     for d in data:
       self.assertCalled(d, called)
 
@@ -100,7 +81,7 @@ class PatternsTest(test.TestCase):
 
     data = ['@fakenick: heya',
             '@fakenick heya']
-  
+
     for d in data:
       self.assertCalled(d, called)
 
@@ -114,7 +95,7 @@ class PatternsTest(test.TestCase):
             'f fakenick',
             'F fakenick',
             ]
-  
+
     for d in data:
       self.assertCalled(d, called)
 
@@ -129,7 +110,7 @@ class PatternsTest(test.TestCase):
             'F #fakechan',
             'join #fakechan',
             ]
-  
+
     for d in data:
       self.assertCalled(d, called)
 
@@ -140,7 +121,7 @@ class PatternsTest(test.TestCase):
 
     data = ['help',
             'HELP']
-  
+
     for d in data:
       self.assertCalled(d, called)
 
@@ -154,7 +135,7 @@ class PatternsTest(test.TestCase):
             'l fakenick',
             'L fakenick',
             ]
-  
+
     for d in data:
       self.assertCalled(d, called)
 
@@ -169,7 +150,7 @@ class PatternsTest(test.TestCase):
             'L #fakechan',
             'part #fakechan',
             ]
-  
+
     for d in data:
       self.assertCalled(d, called)
 
@@ -187,7 +168,7 @@ class PatternsTest(test.TestCase):
             'pause',
             'STOP',
             ]
-  
+
     for d in data:
       self.assertCalled(d, called)
 
@@ -227,7 +208,7 @@ class PatternsTest(test.TestCase):
 
     data = ['sign up groovy',
             'SIGN UP groovy']
-  
+
     for d in data:
       self.assertCalled(d, called)
 
@@ -240,10 +221,10 @@ class PatternsTest(test.TestCase):
             'claim fakenick fakepassword',
             'SIGN IN fakenick fakepassword',
             ]
-  
+
     for d in data:
       self.assertCalled(d, called)
-  
+
   def test_sign_out_handler(self):
     called = {'sign_out': 1,
               'response_ok': 1
@@ -253,6 +234,6 @@ class PatternsTest(test.TestCase):
             'SIGN OUT',
             'sign OUT'
             ]
-  
+
     for d in data:
       self.assertCalled(d, called)

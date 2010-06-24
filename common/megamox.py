@@ -5,7 +5,6 @@ import stubout
 
 # Some hacks to make Mox work a bit better with JaikuEngine tests
 
-import logging
 
 class Stubber(object):
   __set = True
@@ -19,7 +18,7 @@ class Stubber(object):
 
   def Set(self, parent, child_name, new_child):
     self.stubs.Set(parent, child_name, new_child)
-    
+
     # hack for now, we're going to pop and re-append coolness
     (parent, old_child, child_name) = self.stubs.cache.pop()
 
@@ -33,8 +32,8 @@ class Stubber(object):
 
 class ExtendedStubOut(stubout.StubOutForTesting):
   def GetStubber(self):
-    return Stubber(self) 
-  
+    return Stubber(self)
+
   def UnsetAll(self):
     self.cache.reverse()
     for stubbed_out in self.cache:
@@ -90,18 +89,18 @@ class ExtendedMox(Mox):
     if attr_to_replace == MockAnything():
       raise TypeError('Cannot mock a MockAnything! Did you remember to '
                       'call UnsetStubs in your previous test?')
-    
+
     stubbed_out = self.stubs.GetStubber()
-    
+
     if type(attr_to_replace) in self._USE_MOCK_OBJECT and not use_mock_anything:
       stub = self.CreateMock(attr_to_replace, stub=stubbed_out)
     else:
       stub = self.CreateMockAnything(
           description='Stub for %s' % attr_to_replace,
           stub=stubbed_out)
-    
+
     stubbed_out.Set(obj, attr_name, stub)
-    
+
 
   def CreateMock(self, class_to_mock, stub=None):
     mock = super(ExtendedMox, self).CreateMock(class_to_mock)
@@ -115,9 +114,9 @@ class ExtendedMox(Mox):
 
   def _CurryMockWithStubbedOut(self, mock, stubbed_out):
     def _CurriedCreateMockMethod(method_name, method_to_mock=None):
-      return ExtendedMockMethod(method_name, 
+      return ExtendedMockMethod(method_name,
                                 mock._expected_calls_queue,
-                                mock._replay_mode, 
+                                mock._replay_mode,
                                 method_to_mock=method_to_mock,
                                 stub=stubbed_out)
 

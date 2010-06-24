@@ -1,17 +1,3 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 """Bootstrap for running a Django app under Google App Engine.
 
 The site-specific code is all in other files: settings.py, urls.py,
@@ -28,8 +14,6 @@ import sys
 logging.debug("Loading %s", __name__)
 
 from appengine_django import InstallAppengineHelperForDjango
-from appengine_django import have_django_zip
-from appengine_django import django_zip_path
 InstallAppengineHelperForDjango()
 
 # This needs to happen before installing the components.
@@ -60,7 +44,7 @@ def log_exception(*args, **kwds):
   """Django signal handler to log an exception."""
   cls, err = sys.exc_info()[:2]
   logging.exception('Exception in request: %s: %s', cls.__name__, err)
-      
+
 import django.core.signals
 # Log all exceptions detected by Django.
 django.core.signals.got_request_exception.connect(log_exception)
@@ -77,19 +61,19 @@ def main():
   util.run_wsgi_app(application)
 
 def profile_main():
- # This is the main function for profiling 
- # We've renamed our original main() above to real_main()
- import cProfile, pstats
- prof = cProfile.Profile()
- prof = prof.runctx("main()", globals(), locals())
- print "<pre>"
- stats = pstats.Stats(prof)
- stats.sort_stats("time")  # Or cumulative
- stats.print_stats(80)  # 80 = how many to print
- # The rest is optional.
- # stats.print_callees()
- # stats.print_callers()
- print "</pre>"
+  # This is the main function for profiling 
+  # We've renamed our original main() above to real_main()
+  import cProfile, pstats
+  prof = cProfile.Profile()
+  prof = prof.runctx("main()", globals(), locals())
+  print "<pre>"
+  stats = pstats.Stats(prof)
+  stats.sort_stats("time")  # Or cumulative
+  stats.print_stats(80)  # 80 = how many to print
+  # The rest is optional.
+  # stats.print_callees()
+  # stats.print_callers()
+  print "</pre>"
 
 
 if __name__ == '__main__':

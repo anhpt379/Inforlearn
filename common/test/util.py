@@ -1,18 +1,4 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
 from __future__ import absolute_import
-
 import base64
 import datetime
 import logging
@@ -24,19 +10,13 @@ try:
 except ImportError:
   # Python 2.5
   from cgi import parse_qsl
-
 from google.appengine.api import apiproxy_stub_map
-
 from django.conf import settings
 from django.test import client
-
-from common import api
 from common import clock
-from common import exception
 from common.protocol import sms
 from common.protocol import xmpp
 
-from api import views as api_views
 
 utcnow = lambda: clock.utcnow()
 
@@ -80,7 +60,7 @@ def exhaust_queue_any():
 
 
 class TestXmppConnection(xmpp.XmppConnection):
-  def send_message(self, to_jid_list, message, html_message=None, 
+  def send_message(self, to_jid_list, message, html_message=None,
                    atom_message=None):
     logging.debug('XMPP SEND -> %s: %s, html_message=%s, atom_message=%s',
                   to_jid_list,
@@ -113,7 +93,7 @@ class FakeMemcache(object):
   def __init__(self, *args, **kw):
     self._data = {}
     pass
-  
+
   def _get_valid(self, key):
     if key not in self._data:
       return None
@@ -133,7 +113,7 @@ class FakeMemcache(object):
     #logging.info('setting key %s to %s', key, (value, time))
     self._data[key] = (value, time)
     return True
-  
+
   def set_multi(self, mapping, time=0, key_prefix=''):
     for k, v in mapping.iteritems():
       self.set(key_prefix + k, v, time=time)
@@ -152,12 +132,12 @@ class FakeMemcache(object):
       if not success:
         o.append[k]
     return o
-  
+
   def incr(self, key, delta=1):
     data = self._get_valid(key)
     if data is None:
       return None
-    
+
     data_tup = self._data[key]
     try:
       count = int(data)
@@ -168,8 +148,8 @@ class FakeMemcache(object):
     return count
 
   def decr(self, key, delta=1):
-    return incr(key, delta=-(delta))
-  
+    return incr(key, delta= -(delta))
+
   def delete(self, key, seconds=0):
     # NOTE: doesn't support seconds
     try:
@@ -208,10 +188,10 @@ class ClockOverride(object):
 
   def override(self):
     self.old = getattr(self.module, 'utcnow')
-    new_utcnow = lambda: (datetime.datetime.utcnow() + 
+    new_utcnow = lambda: (datetime.datetime.utcnow() +
                           datetime.timedelta(**self.kw))
     setattr(self.module, 'utcnow', new_utcnow)
-  
+
   def reset(self):
     setattr(self.module, 'utcnow', self.old)
 
@@ -232,7 +212,7 @@ class SettingsOverride(object):
     for k, v in self.kw.iteritems():
       self.old[k] = getattr(settings, k, None)
       setattr(settings, k, v)
-  
+
   def reset(self):
     for k, v in self.old.iteritems():
       setattr(settings, k, v)

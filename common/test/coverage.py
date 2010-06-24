@@ -56,7 +56,6 @@ COVERAGE_FILE environment variable to save it somewhere else."""
 
 __version__ = "2.85.20080914"    # see detailed history at the end of this file.
 
-import compiler
 import compiler.visitor
 import glob
 import os
@@ -106,20 +105,20 @@ class StatementFindingAstVisitor(compiler.visitor.ASTVisitor):
         self.excluded = excluded
         self.suite_spots = suite_spots
         self.excluding_suite = 0
-        
+
     def doRecursive(self, node):
         for n in node.getChildNodes():
             self.dispatch(n)
 
     visitStmt = visitModule = doRecursive
-    
+
     def doCode(self, node):
         if hasattr(node, 'decorators') and node.decorators:
             self.dispatch(node.decorators)
             self.recordAndDispatch(node.code)
         else:
             self.doSuite(node, node.code)
-            
+
     visitFunction = visitClass = doCode
 
     def getFirstLine(self, node):
@@ -139,23 +138,23 @@ class StatementFindingAstVisitor(compiler.visitor.ASTVisitor):
         for n in node.getChildNodes():
             lineno = max(lineno, self.getLastLine(n))
         return lineno
-    
+
     def doStatement(self, node):
         self.recordLine(self.getFirstLine(node))
 
     visitAssert = visitAssign = visitAssTuple = visitPrint = \
         visitPrintnl = visitRaise = visitSubscript = visitDecorators = \
         doStatement
-    
+
     def visitPass(self, node):
         # Pass statements have weird interactions with docstrings.  If this
         # pass statement is part of one of those pairs, claim that the statement
         # is on the later of the two lines.
         l = node.lineno
         if l:
-            lines = self.suite_spots.get(l, [l,l])
+            lines = self.suite_spots.get(l, [l, l])
             self.statements[lines[1]] = 1
-        
+
     def visitDiscard(self, node):
         # Discard nodes are statements that execute an expression, but then
         # discard the results.  This includes function calls, so we can't 
@@ -172,7 +171,7 @@ class StatementFindingAstVisitor(compiler.visitor.ASTVisitor):
             return self.recordLine(self.getFirstLine(node))
         else:
             return 0
-    
+
     def recordLine(self, lineno):
         # Returns a bool, whether the line is included or excluded.
         if lineno:
@@ -196,9 +195,9 @@ class StatementFindingAstVisitor(compiler.visitor.ASTVisitor):
                 self.statements[lineno] = 1
                 return 1
         return 0
-    
+
     default = recordNodeLine
-    
+
     def recordAndDispatch(self, node):
         self.recordNodeLine(node)
         self.dispatch(node)
@@ -209,7 +208,7 @@ class StatementFindingAstVisitor(compiler.visitor.ASTVisitor):
             self.excluding_suite = 1
         self.recordAndDispatch(body)
         self.excluding_suite = exsuite
-        
+
     def doPlainWordSuite(self, prevsuite, suite):
         # Finding the exclude lines for else's is tricky, because they aren't
         # present in the compiler parse tree.  Look at the previous suite,
@@ -217,17 +216,17 @@ class StatementFindingAstVisitor(compiler.visitor.ASTVisitor):
         # first line are excluded, then we exclude the else.
         lastprev = self.getLastLine(prevsuite)
         firstelse = self.getFirstLine(suite)
-        for l in range(lastprev+1, firstelse):
+        for l in range(lastprev + 1, firstelse):
             if self.suite_spots.has_key(l):
                 self.doSuite(None, suite, exclude=self.excluded.has_key(l))
                 break
         else:
             self.doSuite(None, suite)
-        
+
     def doElse(self, prevsuite, node):
         if node.else_:
             self.doPlainWordSuite(prevsuite, node.else_)
-    
+
     def visitFor(self, node):
         self.doSuite(node, node.body)
         self.doElse(node.body, node)
@@ -250,21 +249,21 @@ class StatementFindingAstVisitor(compiler.visitor.ASTVisitor):
             if not a:
                 # It's a plain "except:".  Find the previous suite.
                 if i > 0:
-                    prev = node.handlers[i-1][2]
+                    prev = node.handlers[i - 1][2]
                 else:
                     prev = node.body
                 self.doPlainWordSuite(prev, h)
             else:
                 self.doSuite(a, h)
         self.doElse(node.handlers[-1][2], node)
-    
+
     def visitTryFinally(self, node):
         self.doSuite(node, node.body)
         self.doPlainWordSuite(node.body, node.final)
-        
+
     def visitWith(self, node):
         self.doSuite(node, node.body)
-        
+
     def visitGlobal(self, node):
         # "global" statements don't execute like others (they don't call the
         # trace function), so don't record their line numbers.
@@ -285,7 +284,7 @@ class coverage:
     # A dictionary with an entry for (Python source file name, line number
     # in that file) if that line has been executed.
     c = {}
-    
+
     # A map from canonical Python source file name to a dictionary in
     # which there's an entry for each line number that has been
     # executed.
@@ -310,7 +309,7 @@ class coverage:
         self.nesting = 0
         self.cstack = []
         self.xstack = []
-        self.relative_dir = self.abs_file(os.curdir)+os.sep
+        self.relative_dir = self.abs_file(os.curdir) + os.sep
         self.exclude('# *pragma[: ]*[nN][oO] *[cC][oO][vV][eE][rR]')
 
     # t(f, x, y).  This method is passed to sys.settrace as a trace function.  
@@ -318,14 +317,14 @@ class coverage:
     # the arguments and return value of the trace function.
     # See [van Rossum 2001-07-20a, 3.2] for a description of frame and code
     # objects.
-    
+
     def t(self, f, w, unused):                                 #pragma: no cover
         if w == 'line':
             self.c[(f.f_code.co_filename, f.f_lineno)] = 1
             #-for c in self.cstack:
             #-    c[(f.f_code.co_filename, f.f_lineno)] = 1
         return self.t
-    
+
     def help(self, error=None):     #pragma: no cover
         if error:
             print error
@@ -361,7 +360,7 @@ class coverage:
             elif o[2:] in long_opts:
                 settings[o[2:]] = 1
             elif o[2:] + '=' in long_opts:
-                settings[o[2:]+'='] = a
+                settings[o[2:] + '='] = a
             else:       #pragma: no cover
                 pass    # Can't get here, because getopt won't return anything unknown.
 
@@ -377,14 +376,14 @@ class coverage:
         args_needed = (settings.get('execute')
                        or settings.get('annotate')
                        or settings.get('report'))
-        action = (settings.get('erase') 
+        action = (settings.get('erase')
                   or settings.get('collect')
                   or args_needed)
         if not action:
             help_fn("You must specify at least one of -e, -x, -c, -r, or -a.")
         if not args_needed and args:
             help_fn("Unexpected arguments: %s" % " ".join(args))
-        
+
         self.parallel_mode = settings.get('parallel-mode')
         self.get_ready()
 
@@ -402,7 +401,7 @@ class coverage:
             self.collect()
         if not args:
             args = self.cexecuted.keys()
-        
+
         ignore_errors = settings.get('ignore-errors')
         show_missing = settings.get('show-missing')
         directory = settings.get('directory=')
@@ -412,7 +411,7 @@ class coverage:
             omit = [self.abs_file(p) for p in omit.split(',')]
         else:
             omit = []
-        
+
         if settings.get('report'):
             self.report(args, show_missing, ignore_errors, omit_prefixes=omit)
         if settings.get('annotate'):
@@ -422,7 +421,7 @@ class coverage:
         self.usecache = usecache
         if cache_file and not self.cache:
             self.cache_default = cache_file
-        
+
     def get_ready(self, parallel_mode=False):
         if self.usecache and not self.cache:
             self.cache = os.environ.get(self.cache_env, self.cache_default)
@@ -430,7 +429,7 @@ class coverage:
                 self.cache += "." + gethostname() + "." + str(os.getpid())
             self.restore()
         self.analysis_cache = {}
-        
+
     def start(self, parallel_mode=False):
         self.get_ready()
         if self.nesting == 0:                               #pragma: no cover
@@ -438,7 +437,7 @@ class coverage:
             if hasattr(threading, 'settrace'):
                 threading.settrace(self.t)
         self.nesting += 1
-        
+
     def stop(self):
         self.nesting -= 1
         if self.nesting == 0:                               #pragma: no cover
@@ -462,7 +461,7 @@ class coverage:
     def begin_recursive(self):
         self.cstack.append(self.c)
         self.xstack.append(self.exclude_re)
-        
+
     def end_recursive(self):
         self.c = self.cstack.pop()
         self.exclude_re = self.xstack.pop()
@@ -533,12 +532,12 @@ class coverage:
         """ Get data from `filename` if it is a zip file path, or return None
             if it is not.
         """
-        markers = ['.zip'+os.sep, '.egg'+os.sep]
+        markers = ['.zip' + os.sep, '.egg' + os.sep]
         for marker in markers:
             if marker in filename:
                 parts = filename.split(marker)
                 try:
-                    zi = zipimport.zipimporter(parts[0]+marker[:-1])
+                    zi = zipimport.zipimporter(parts[0] + marker[:-1])
                 except zipimport.ZipImportError:
                     continue
                 try:
@@ -598,7 +597,7 @@ class coverage:
     # in the source code, (3) a list of lines of excluded statements,
     # and (4), a map of line numbers to multi-line line number ranges, for
     # statements that cross lines.
-    
+
     def analyze_morf(self, morf):
         if self.analysis_cache.has_key(morf):
             return self.analysis_cache[morf]
@@ -636,26 +635,26 @@ class coverage:
             if len(tree) == 3 and type(tree[2]) == type(1):
                 return tree[2]
             tree = tree[1]
-    
+
     def last_line_of_tree(self, tree):
         while True:
             if len(tree) == 3 and type(tree[2]) == type(1):
                 return tree[2]
             tree = tree[-1]
-    
+
     def find_docstring_pass_pair(self, tree, spots):
         for i in range(1, len(tree)):
-            if self.is_string_constant(tree[i]) and self.is_pass_stmt(tree[i+1]):
+            if self.is_string_constant(tree[i]) and self.is_pass_stmt(tree[i + 1]):
                 first_line = self.first_line_of_tree(tree[i])
-                last_line = self.last_line_of_tree(tree[i+1])
+                last_line = self.last_line_of_tree(tree[i + 1])
                 self.record_multiline(spots, first_line, last_line)
-        
+
     def is_string_constant(self, tree):
         try:
             return tree[0] == symbol.stmt and tree[1][1][1][0] == symbol.expr_stmt
         except:
             return False
-        
+
     def is_pass_stmt(self, tree):
         try:
             return tree[0] == symbol.stmt and tree[1][1][1][0] == symbol.pass_stmt
@@ -663,9 +662,9 @@ class coverage:
             return False
 
     def record_multiline(self, spots, i, j):
-        for l in range(i, j+1):
+        for l in range(i, j + 1):
             spots[l] = (i, j)
-            
+
     def get_suite_spots(self, tree, spots):
         """ Analyze a parse tree to find suite introducers which span a number
             of lines.
@@ -675,16 +674,16 @@ class coverage:
                 if tree[i][0] == symbol.suite:
                     # Found a suite, look back for the colon and keyword.
                     lineno_colon = lineno_word = None
-                    for j in range(i-1, 0, -1):
+                    for j in range(i - 1, 0, -1):
                         if tree[j][0] == token.COLON:
                             # Colons are never executed themselves: we want the
                             # line number of the last token before the colon.
-                            lineno_colon = self.last_line_of_tree(tree[j-1])
+                            lineno_colon = self.last_line_of_tree(tree[j - 1])
                         elif tree[j][0] == token.NAME:
                             if tree[j][1] == 'elif':
                                 # Find the line number of the first non-terminal
                                 # after the keyword.
-                                t = tree[j+1]
+                                t = tree[j + 1]
                                 while t and token.ISNONTERMINAL(t[0]):
                                     t = t[1]
                                 if t:
@@ -707,7 +706,7 @@ class coverage:
                     # treat them differently, especially in the common case of a
                     # function with a doc string and a single pass statement.
                     self.find_docstring_pass_pair(tree[i], spots)
-                    
+
                 elif tree[i][0] == symbol.simple_stmt:
                     first_line = self.first_line_of_tree(tree[i])
                     last_line = self.last_line_of_tree(tree[i])
@@ -724,19 +723,19 @@ class coverage:
             lines = text.split('\n')
             for i in range(len(lines)):
                 if reExclude.search(lines[i]):
-                    excluded[i+1] = 1
+                    excluded[i + 1] = 1
 
         # Parse the code and analyze the parse tree to find out which statements
         # are multiline, and where suites begin and end.
         import parser
-        tree = parser.suite(text+'\n\n').totuple(1)
+        tree = parser.suite(text + '\n\n').totuple(1)
         self.get_suite_spots(tree, suite_spots)
         #print "Suite spots:", suite_spots
-        
+
         # Use the compiler module to parse the text and find the executable
         # statements.  We add newlines to be impervious to final partial lines.
         statements = {}
-        ast = compiler.parse(text+'\n\n')
+        ast = compiler.parse(text + '\n\n')
         visitor = StatementFindingAstVisitor(statements, excluded, suite_spots)
         compiler.walk(ast, visitor, walker=visitor)
 
@@ -793,7 +792,7 @@ class coverage:
         missing = []
         for line in statements:
             lines = line_map.get(line, [line, line])
-            for l in range(lines[0], lines[1]+1):
+            for l in range(lines[0], lines[1] + 1):
                 if self.cexecuted[filename].has_key(l):
                     break
             else:
@@ -842,11 +841,11 @@ class coverage:
             else:
                 globbed.append(morf)
         morfs = globbed
-        
+
         morfs = self.filter_by_prefix(morfs, omit_prefixes)
         morfs.sort(self.morf_name_compare)
 
-        max_name = max([5,] + map(len, map(self.morf_name, morfs)))
+        max_name = max([5, ] + map(len, map(self.morf_name, morfs)))
         fmt_name = "%%- %ds  " % max_name
         fmt_err = fmt_name + "%s: %s"
         header = fmt_name % "Name" + " Stmts   Exec  Cover"
@@ -856,14 +855,14 @@ class coverage:
             fmt_coverage = fmt_coverage + "   %s"
         if not file:
             file = sys.stdout
-        print >>file, header
-        print >>file, "-" * len(header)
+        print >> file, header
+        print >> file, "-" * len(header)
         total_statements = 0
         total_executed = 0
         for morf in morfs:
             name = self.morf_name(morf)
             try:
-                _, statements, _, missing, readable  = self.analysis2(morf)
+                _, statements, _, missing, readable = self.analysis2(morf)
                 n = len(statements)
                 m = n - len(missing)
                 if n > 0:
@@ -873,7 +872,7 @@ class coverage:
                 args = (name, n, m, pc)
                 if show_missing:
                     args = args + (readable,)
-                print >>file, fmt_coverage % args
+                print >> file, fmt_coverage % args
                 total_statements = total_statements + n
                 total_executed = total_executed + m
             except KeyboardInterrupt:                       #pragma: no cover
@@ -881,9 +880,9 @@ class coverage:
             except:
                 if not ignore_errors:
                     typ, msg = sys.exc_info()[:2]
-                    print >>file, fmt_err % (name, typ, msg)
+                    print >> file, fmt_err % (name, typ, msg)
         if len(morfs) > 1:
-            print >>file, "-" * len(header)
+            print >> file, "-" * len(header)
             if total_statements > 0:
                 pc = 100.0 * total_executed / total_statements
             else:
@@ -891,7 +890,7 @@ class coverage:
             args = ("TOTAL", total_statements, total_executed, pc)
             if show_missing:
                 args = args + ("",)
-            print >>file, fmt_coverage % args
+            print >> file, fmt_coverage % args
 
     # annotate(morfs, ignore_errors).
 
@@ -909,7 +908,7 @@ class coverage:
             except:
                 if not ignore_errors:
                     raise
-                
+
     def annotate_file(self, filename, statements, excluded, missing, directory=None):
         source = open(filename, 'r')
         if directory:
@@ -961,40 +960,40 @@ class coverage:
 the_coverage = coverage()
 
 # Module functions call methods in the singleton object.
-def use_cache(*args, **kw): 
+def use_cache(*args, **kw):
     return the_coverage.use_cache(*args, **kw)
 
-def start(*args, **kw): 
+def start(*args, **kw):
     return the_coverage.start(*args, **kw)
 
-def stop(*args, **kw): 
+def stop(*args, **kw):
     return the_coverage.stop(*args, **kw)
 
-def erase(*args, **kw): 
+def erase(*args, **kw):
     return the_coverage.erase(*args, **kw)
 
-def begin_recursive(*args, **kw): 
+def begin_recursive(*args, **kw):
     return the_coverage.begin_recursive(*args, **kw)
 
-def end_recursive(*args, **kw): 
+def end_recursive(*args, **kw):
     return the_coverage.end_recursive(*args, **kw)
 
-def exclude(*args, **kw): 
+def exclude(*args, **kw):
     return the_coverage.exclude(*args, **kw)
 
-def analysis(*args, **kw): 
+def analysis(*args, **kw):
     return the_coverage.analysis(*args, **kw)
 
-def analysis2(*args, **kw): 
+def analysis2(*args, **kw):
     return the_coverage.analysis2(*args, **kw)
 
-def report(*args, **kw): 
+def report(*args, **kw):
     return the_coverage.report(*args, **kw)
 
-def annotate(*args, **kw): 
+def annotate(*args, **kw):
     return the_coverage.annotate(*args, **kw)
 
-def annotate_file(*args, **kw): 
+def annotate_file(*args, **kw):
     return the_coverage.annotate_file(*args, **kw)
 
 # Save coverage data when Python exits.  (The atexit module wasn't
@@ -1008,7 +1007,7 @@ except ImportError:
 
 def main():
     the_coverage.command_line(sys.argv[1:])
-    
+
 # Command-line interface.
 if __name__ == '__main__':
     main()

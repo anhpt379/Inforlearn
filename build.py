@@ -1,25 +1,9 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import glob
 import logging
 import md5
-import os
 import random
 import re
 import sys
-import StringIO
 import time
 import zipfile
 import os.path
@@ -103,10 +87,10 @@ def generate_api_docs():
     sys.exit(1)
 
   from common import api
-  
+
   a = docparser.parse_docs(name='common.api')
-  variables = a.apidoc_links(imports=False, 
-                             packages=False, 
+  variables = a.apidoc_links(imports=False,
+                             packages=False,
                              submodules=False,
                              bases=False,
                              subclasses=False,
@@ -125,14 +109,14 @@ def generate_api_docs():
       prefix = "deco"
     else:
       continue
-    
+
     filename = '%s_%s.txt' % (prefix, v.name)
     path = os.path.join(DOC_DIR, filename)
 
     logging.info('  for %s...' % v.name)
 
     docs = rst_docs(v.value)
-    
+
     f = open(path, 'w')
     f.write(docs)
     f.close()
@@ -140,7 +124,7 @@ def generate_api_docs():
 
 def build_docs():
   logging.info('Building html docs...')
-  txts = glob.glob(os.path.join(DOC_DIR, '*.txt')) 
+  txts = glob.glob(os.path.join(DOC_DIR, '*.txt'))
   for t in txts:
     basename = os.path.basename(t)
     baseroot, ext = os.path.splitext(basename)
@@ -154,7 +138,7 @@ def build_docs():
     rst_to_html(infile, outfile)
     infile.close()
     outfile.close()
-  
+
   logging.info('Finished building html docs.')
 
 def check_config():
@@ -166,11 +150,11 @@ def config(write_to_file=False):
   d['DEBUG'] = False
   d['TEMPLATE_DEBUG'] = False
   d['SITE_NAME'] = get_input(HELP_SITE_NAME, 'Enter a site name')
-  d['SECRET_KEY'] = get_input(HELP_SECRET_KEY, 
-                              'Enter a secret key', 
+  d['SECRET_KEY'] = get_input(HELP_SECRET_KEY,
+                              'Enter a secret key',
                               generate_secret_key())
 
-  d['GAE_DOMAIN'] = get_input(HELP_GAE_DOMAIN, 
+  d['GAE_DOMAIN'] = get_input(HELP_GAE_DOMAIN,
                               'Enter an appspot domain')
   d['HOSTED_DOMAIN_ENABLED'] = get_input(HELP_HOSTED_DOMAIN_ENABLED,
                                          'Enabled Hosted Domains (yes|no)',
@@ -233,7 +217,7 @@ def clean(skip_zip=False):
   api_methods = glob.glob(os.path.join(DOC_DIR, 'method_*'))
   api_decos = glob.glob(os.path.join(DOC_DIR, 'deco_*'))
   html_docs = glob.glob(os.path.join(API_TEMPLATE_DIR, 'built_*'))
-  
+
   all_to_remove = zipfiles + api_methods + api_decos + html_docs
   for filename in all_to_remove:
     os.unlink(filename)
@@ -245,7 +229,7 @@ def clean(skip_zip=False):
 # Helpers
 def generate_secret_key():
  bits = random.getrandbits(10)
- return md5.new(str(time.time()) + str(bits)).hexdigest() 
+ return md5.new(str(time.time()) + str(bits)).hexdigest()
 
 def required(s):
   if not s:
@@ -256,7 +240,7 @@ def yesno(s):
   s = s.lower()
   if s not in ('y', 'n', 'yes', 'no'):
     raise ValueError('Invalid entry, please type yes or no')
-  return (False, True)[s.startswith('y')] 
+  return (False, True)[s.startswith('y')]
 
 def get_input(message, prompt, default='', cleaner=required):
   print message
@@ -268,7 +252,7 @@ def get_input(message, prompt, default='', cleaner=required):
     o = cleaner(s)
     print '==============================='
   except ValueError, e:
-    print 
+    print
     print 'Error:', e.message
     o = get_input(message, prompt, default, cleaner)
   return o
@@ -294,12 +278,12 @@ def rst_docs(api_doc):
   args_list = ', '.join(api_doc.posargs)
   if api_doc.kwarg:
     args_list += ', \*\*%s' % api_doc.kwarg
-  
+
   o = [sig_template % {'shortname': shortname, 'args_list': args_list},
        '']
   #for d in api_doc.decorators:
   #  o.append(dec_template % {'decorator': d})
-  
+
   o.append('')
   if api_doc.docstring != apidoc.UNKNOWN:
     o.append(api_doc.docstring)

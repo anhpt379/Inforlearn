@@ -1,21 +1,6 @@
 #!/usr/bin/env python
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import getpass
 import logging
-import os
 import optparse
 import sys
 
@@ -80,7 +65,7 @@ class ChannelCountBackfiller(object):
       for actor_ref in actor_refs:
         if not util.is_channel_nick(actor_ref.nick):
           actor_ref.extra["channel_count"] \
-              = self.get_channel_count(actor_ref.nick)
+ = self.get_channel_count(actor_ref.nick)
           to_put.append(actor_ref)
           if not self._do_write:
             logging.info("Would have set channel_count to %d for %s",

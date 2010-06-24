@@ -11,14 +11,10 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
-import logging
-
 from django import http
 from django import template
 from django.conf import settings
 from django.template import loader
-
 from common import api
 from common import display
 from common import util
@@ -27,7 +23,7 @@ from common import views as common_views
 def invite_email(request, code):
   """User has received the invite email, and has followed the link to accept or
      or refuse it."""
-  
+
   if request.user:
     handled = common_views.handle_view_action(
         request,
@@ -41,7 +37,7 @@ def invite_email(request, code):
   # Retrieve the invite
   invite = api.invite_get(api.ROOT, code)
   from_actor = invite.from_actor
-  
+
   # Translate the from_actor into a display name
   from_actor_ref = api.actor_get(api.ROOT, from_actor)
   view = from_actor_ref
@@ -51,8 +47,8 @@ def invite_email(request, code):
     # In this case, do we want to consider the invitation invalid?
     # (probably we do, because it's more likely that it was spam)
     return util.RedirectError("That invite is no longer valid")
-    
-    
+
+
   # We use api.ROOT in the next set of functions because the
   # invite is giving possibly private access to the user
   inbox = api.inbox_get_actor_contacts(api.ROOT,

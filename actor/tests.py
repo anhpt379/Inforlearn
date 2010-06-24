@@ -1,36 +1,14 @@
 # -*- coding: utf-8 -*-
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
-import Cookie
-import logging
-import os
 import re
 import simplejson
-import urllib
-
 from django.conf import settings
 from django.core import mail
-
 from actor import views
-
-from common.tests import ViewTestCase
-
 from common import api
 from common import clean
 from common import util
 from common.test import util as test_util
+from common.tests import ViewTestCase
 
 class HistoryTest(ViewTestCase):
   def test_public_history_when_signed_out(self):
@@ -60,7 +38,7 @@ class HistoryTest(ViewTestCase):
     self.assertContains(r, "Your Posts")
     self.assertTemplateUsed(r, 'actor/templates/history.html')
     self.assertContains(r, 'entry_remove=', 3)
-    r = self.assertGetLink(r, 'confirm-delete', link_no = 0, of_count = 3)
+    r = self.assertGetLink(r, 'confirm-delete', link_no=0, of_count=3)
     self.assertEqual(r.status_code, 302, r.content)
     r = self.client.get('/user/popular')
     self.assertContains(r, 'entry_remove=', 2)
@@ -81,7 +59,7 @@ class HistoryTest(ViewTestCase):
       'nick': '%s@example.com' % user,
       'presence_set': '',
       'location' : location,
-      '_nonce': util.create_nonce('%s@example.com' % user, 
+      '_nonce': util.create_nonce('%s@example.com' % user,
                                   'presence_set')
     }
     return self.client.post('/user/popular', params)
@@ -94,7 +72,7 @@ class HistoryTest(ViewTestCase):
     r = self.set_presence(user, presence)
     r = self.assertRedirectsPrefix(r, '/user/popular?flash')
     self.assertContains(r, presence)
-    self.assertContains(r, 'Location updated')    
+    self.assertContains(r, 'Location updated')
     self.assertTemplateUsed(r, 'actor/templates/history.html')
 
   def test_presence_loggged_out(self):
@@ -104,16 +82,16 @@ class HistoryTest(ViewTestCase):
     user = 'popular'
     r = self.set_presence(user, presence)
     self.assertNotContains(r, presence)
-    self.assertNotContains(r, 'Location updated')    
+    self.assertNotContains(r, 'Location updated')
     self.assertTemplateUsed(r, 'actor/templates/history.html')
-    
+
   def test_presence_other(self):
     """Tests setting and getting presence on the history page"""
     presence = "This is the presence"
     user = 'popular'
     r = self.login(user)
     r = self.set_presence(user, presence)
-    
+
     # Retrieve for another user
     r = self.login_and_get('unpopular', '/user/popular')
     self.assertContains(r, presence)
@@ -123,7 +101,7 @@ class HistoryTest(ViewTestCase):
     new_presence = 'This is the new presence'
     r = self.set_presence(user, new_presence)
     self.assertNotContains(r, new_presence)
-    self.assertNotContains(r, 'Location updated')    
+    self.assertNotContains(r, 'Location updated')
 
   def test_rss_and_atom_feeds(self):
     r = self.client.get('/user/popular')
@@ -148,12 +126,12 @@ class SubscriptionTest(ViewTestCase):
   def test_subscribe_and_unsubscribe(self):
     r = self.login_and_get('popular', '/user/celebrity')
     self.assertContains(r, 'class="subscribe', 2)
-    r = self.assertGetLink(r, 'subscribe', link_no = 0, of_count = 2)
+    r = self.assertGetLink(r, 'subscribe', link_no=0, of_count=2)
     self.assertEqual(r.status_code, 302, r.content)
     r = self.client.get('/user/celebrity')
     self.assertContains(r, 'class="subscribe', 1)
     self.assertContains(r, 'class="unsubscribe', 1)
-    r = self.assertGetLink(r, 'unsubscribe', link_no = 0, of_count = 1)
+    r = self.assertGetLink(r, 'unsubscribe', link_no=0, of_count=1)
     self.assertEqual(r.status_code, 302, r.content)
     r = self.client.get('/user/celebrity')
     self.assertContains(r, 'class="subscribe', 2)
@@ -182,7 +160,7 @@ class OverviewTest(ViewTestCase):
       'nick': '%s@example.com' % user,
       'presence_set': '',
       'location' : location,
-      '_nonce': util.create_nonce('%s@example.com' % user, 
+      '_nonce': util.create_nonce('%s@example.com' % user,
                                   'presence_set')
     }
     return self.client.post('/user/popular/overview', params)
@@ -195,7 +173,7 @@ class OverviewTest(ViewTestCase):
     r = self.set_presence(user, presence)
     r = self.assertRedirectsPrefix(r, '/user/popular/overview?flash')
     self.assertContains(r, presence)
-    self.assertContains(r, 'Location updated')    
+    self.assertContains(r, 'Location updated')
     self.assertTemplateUsed(r, 'actor/templates/overview.html')
 
   def test_presence_loggged_out(self):
@@ -205,7 +183,7 @@ class OverviewTest(ViewTestCase):
     r = self.set_presence(user, presence)
     r = self.assertRedirectsPrefix(r, '/user/popular')
     self.assertNotContains(r, presence)
-    self.assertNotContains(r, 'Location updated')    
+    self.assertNotContains(r, 'Location updated')
     self.assertTemplateUsed(r, 'actor/templates/history.html')
 
   def test_overview_with_unconfirmed_email(self):
@@ -283,7 +261,7 @@ class ItemTest(ViewTestCase):
   def test_entry_remove(self):
     item_url = '/user/girlfriend/presence/16961'
     r = self.login_and_get('girlfriend', item_url)
-    r = self.assertGetLink(r, 'confirm-delete', link_no = 0, of_count = 3)
+    r = self.assertGetLink(r, 'confirm-delete', link_no=0, of_count=3)
     self.assertEqual(r.status_code, 302, r.content)
     r = self.client.get(item_url)
     self.assertEqual(r.status_code, 404, r.content)
@@ -291,7 +269,7 @@ class ItemTest(ViewTestCase):
   def test_entry_remove_comment(self):
     item_url = '/user/girlfriend/presence/16961'
     r = self.login_and_get('girlfriend', item_url)
-    r = self.assertGetLink(r, 'confirm-delete', link_no = 1, of_count = 3)
+    r = self.assertGetLink(r, 'confirm-delete', link_no=1, of_count=3)
     self.assertEqual(r.status_code, 302, r.content)
     r = self.client.get(item_url)
     self.assertContains(r, 'entry_remove_comment', 1)
@@ -307,13 +285,13 @@ class CommentTest(ViewTestCase):
               'stream': 'stream/popular@example.com/presence',
               'entry': self.entry,
               'content': content,
-              '_nonce': util.create_nonce('hermit@example.com', 
+              '_nonce': util.create_nonce('hermit@example.com',
                                           'entry_add_comment')
               }
     r = self.client.post('/user/popular/presence/12345',
                          params)
     self.exhaust_queue_any()
-    
+
     self.assertEqual(len(mail.outbox), 2)
     for email in mail.outbox:
       # test that the link is valid
@@ -330,14 +308,14 @@ class CommentTest(ViewTestCase):
               'stream': 'stream/popular@example.com/presence',
               'entry': self.entry,
               'content': content,
-              '_nonce': util.create_nonce('hermit@example.com', 
+              '_nonce': util.create_nonce('hermit@example.com',
                                           'entry_add_comment')
               }
     r = self.client.post('/user/popular/presence/12345',
                          params)
 
     self.exhaust_queue_any()
-    
+
     self.assertEqual(len(mail.outbox), 2)
     for email in mail.outbox:
       msg = email.message()
@@ -351,7 +329,7 @@ class ContactsTest(ViewTestCase):
     self.assertContains(r, 'Your contacts')
     self.assertTemplateUsed(r, 'actor/templates/contacts.html')
     self.assertContains(r, 'class="remove', 2)
-    r = self.assertGetLink(r, 'remove', link_no = 0, of_count = 2)
+    r = self.assertGetLink(r, 'remove', link_no=0, of_count=2)
     self.assertEqual(r.status_code, 302, r.content)
     r = self.client.get('/user/popular/contacts')
     self.assertContains(r, 'class="remove', 1)
@@ -361,7 +339,7 @@ class ContactsTest(ViewTestCase):
     self.assertContains(r, 'Your followers')
     self.assertTemplateUsed(r, 'actor/templates/followers.html')
     self.assertContains(r, 'class="add', 3)
-    r = self.assertGetLink(r, 'add', link_no = 0, of_count = 3)
+    r = self.assertGetLink(r, 'add', link_no=0, of_count=3)
     self.assertEqual(r.status_code, 302, r.content)
     r = self.client.get('/user/popular/contacts')
     self.assertContains(r, 'class="remove', 3)
@@ -374,15 +352,15 @@ class ContactsTest(ViewTestCase):
     self.logout()
     r = self.client.get('/user/popular/contacts')
     self.assertNotContains(r, 'Invite friends')
-    
+
   def test_invite_link_redirects_to_login_when_logged_out(self):
     r = self.login_and_get(None, '/user/popular/invite')
     r = self.assertRedirectsPrefix(r, '/login?redirect_to=%2Fuser%2Fpopular%2Finvite')
-  
+
   def test_invite_link_redirects_to_correct_page(self):
     r = self.login_and_get('popular', '/user/girlfriend/invite')
     r = self.assertRedirectsPrefix(r, '/user/popular/invite')
-    
+
   def test_email_notification(self):
     # new follower
 
@@ -390,34 +368,34 @@ class ContactsTest(ViewTestCase):
     params = {'actor_add_contact': '',
               'owner': 'hermit@example.com',
               'target': 'popular@example.com',
-              '_nonce': util.create_nonce('hermit@example.com', 
+              '_nonce': util.create_nonce('hermit@example.com',
                                           'actor_add_contact')
               }
     r = self.client.post('/user/popular', params)
-    
+
     self.assertEqual(len(mail.outbox), 1, 'new follower')
-    
+
     email = mail.outbox[0]
     # test that the link is valid
     url = test_util.get_relative_url(email.body)
 
     r = self.client.get(url)
     self.assertTemplateUsed(r, 'actor/templates/history.html')
-    
+
     mail.outbox = []
-    
+
     # new follower mutual
     r = self.login('popular')
     params = {'actor_add_contact': '',
               'owner': 'popular@example.com',
               'target': 'unpopular@example.com',
-              '_nonce': util.create_nonce('popular@example.com', 
+              '_nonce': util.create_nonce('popular@example.com',
                                           'actor_add_contact')
               }
     r = self.client.post('/user/unpopular', params)
-    
+
     self.assertEqual(len(mail.outbox), 1, 'new follower mutual')
-    
+
     email = mail.outbox[0]
 
     # test that the link is valid
@@ -464,7 +442,7 @@ class SettingsTest(ViewTestCase):
     self.assertTemplateUsed(r, 'actor/templates/settings_password.html')
 
   def test_settings_password_wrong_user(self):
-    r = self.login_and_get('unpopular', 
+    r = self.login_and_get('unpopular',
                            '/user/popular/settings/password')
     r = self.assertRedirectsPrefix(r, '/error')
     self.assertContains(r, 'Operation not allowed')
@@ -472,13 +450,13 @@ class SettingsTest(ViewTestCase):
 
   def test_settings_password_mixed_case(self):
     nick = 'CapitalPunishment'
-    r = self.login_and_get(nick, 
+    r = self.login_and_get(nick,
                            '/user/%s/settings/password' % nick)
     self.assertContains(r, 'Change Your Password')
     self.assertTemplateUsed(r, 'actor/templates/settings_password.html')
 
-    r = self.client.post('/user/%s/settings/password' % nick, 
-                         {'_nonce': 
+    r = self.client.post('/user/%s/settings/password' % nick,
+                         {'_nonce':
                                util.create_nonce(nick, 'change_password'),
                           'settings_change_password' : '',
                           'nick' : nick,
@@ -495,7 +473,7 @@ class SettingsTest(ViewTestCase):
 
   def test_settings_delete(self):
     r = self.login_and_get(
-        'popular', 
+        'popular',
         '/user/popular/settings/delete',
         {
           '_nonce' : util.create_nonce('popular', 'actor_remove'),
@@ -504,9 +482,9 @@ class SettingsTest(ViewTestCase):
         },
     )
     r = self.assertRedirectsPrefix(r, '/logout')
-    
+
     # TODO(tyler): Add a test that the user cannot log back in!
-      
+
 
 
   def test_settings_upload_avatar(self):
@@ -530,7 +508,7 @@ class SettingsTest(ViewTestCase):
     r = self.client.post('/user/obligated/settings/photo',
                          {
                            'imgfile': f,
-                           '_nonce' : 
+                           '_nonce' :
                               util.create_nonce('obligated', 'change_photo'),
                          })
     r = self.assertRedirectsPrefix(r, '/user/obligated/settings/photo')
@@ -607,10 +585,10 @@ class SettingsTest(ViewTestCase):
 
 class NewUserTest(ViewTestCase):
   def test_pages_as_newuser(self):
-    api.user_create(api.ROOT, nick = 'mmmm', password = 'mmmmmm',
-                    first_name = 'm',
-                    last_name ='m',
-                    homepage ='http://www.example.com/~m')
+    api.user_create(api.ROOT, nick='mmmm', password='mmmmmm',
+                    first_name='m',
+                    last_name='m',
+                    homepage='http://www.example.com/~m')
     for page in ('/user/root',
                  '/user/mmmm/overview',
                  '/user/mmmm/contacts',
@@ -627,7 +605,7 @@ class PostTest(ViewTestCase):
   def test_post_message_in_overview(self):
     self.login('popular')
     msg = 'a post from unit test'
-    r = self.client.post('/user/popular/overview', 
+    r = self.client.post('/user/popular/overview',
                          {'message': msg,
                           '_nonce': util.create_nonce('popular', 'post'),
                           'nick': 'popular@example.com',

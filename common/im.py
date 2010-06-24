@@ -1,17 +1,3 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 import logging
 import re
 
@@ -24,7 +10,6 @@ from common import patterns
 from common import user
 from common import util
 from common.protocol import base
-from common.protocol import xmpp
 
 
 HELP_HUH = "Sorry, did not understand \"%s\". Send HELP for commands"
@@ -264,7 +249,7 @@ class ImService(base.Service):
                           stream=stream_entry.stream)
 
   def promote_user(self, from_jid, nick):
-    ji_ref = api.actor_lookup_im(api.ROOT, from_jid.base())
+    jid_ref = api.actor_lookup_im(api.ROOT, from_jid.base())
     if jid_ref:
       # TODO(tyler): Should we tell the user who they are?
       raise exception.ValidationError(

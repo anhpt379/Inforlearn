@@ -1,46 +1,28 @@
 #! coding: utf-8
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 """django template tags for entry display logic
 """
 
 __author__ = 'mikie@google.com (Mika Raento)'
 
 import urllib
-
-from django import template
-from django.template.defaultfilters import stringfilter
 import django.template.defaulttags
-from django.utils.safestring import mark_safe
+import settings
+from django import template
 from django.utils.html import escape
-
-from common.util import create_nonce, safe
+from common.util import create_nonce
 from common import messages
 from common.templatetags.base import if_pred
-import settings
 
 register = template.Library()
 
-def is_actor_or_owner(user, entry, is_admin = False):
+def is_actor_or_owner(user, entry, is_admin=False):
   if is_admin:
     return True
   if not user:
     return False
   return user.nick == entry.actor or user.nick == entry.owner
 
-def is_not_actor(user, entry, is_admin = None):
+def is_not_actor(user, entry, is_admin=None):
   if not user:
     return False
   return user.nick != entry.actor
@@ -81,7 +63,7 @@ class EntryActionNode(template.Node):
     if self.pred(user, entry, is_admin):
       content = self.content.render(context)
       return (
-          ('<a href="?%s=%s&amp;_nonce=%s"'  +
+          ('<a href="?%s=%s&amp;_nonce=%s"' +
           ' class="%s" title="%s">%s</a>') % (
               self.api_call, urllib.quote(entry.keyname()),
               create_nonce(user, self.api_call),

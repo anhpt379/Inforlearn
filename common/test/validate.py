@@ -1,24 +1,10 @@
-# Copyright 2009 Google Inc.
-#
-# Licensed under the Apache License, Version 2.0 (the "License");
-# you may not use this file except in compliance with the License.
-# You may obtain a copy of the License at
-#
-#     http://www.apache.org/licenses/LICENSE-2.0
-#
-# Unless required by applicable law or agreed to in writing, software
-# distributed under the License is distributed on an "AS IS" BASIS,
-# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-# See the License for the specific language governing permissions and
-# limitations under the License.
-
 from django import test
-
 from common import exception
 from common import normalize
 from common import util
 from common import validate
 from common.test import util as test_util
+
 
 class ValidateNickTest(test.TestCase):
   def test_banned_nicks(self):
@@ -31,7 +17,7 @@ class ValidateMobileNumberTest(test.TestCase):
     # Valid cases, just pass
     validate.mobile_number('+447565434588')
     validate.mobile_number('+35850444123')
-  
+
   def test_too_short(self):
     self.assertRaises(exception.ValidationError, validate.mobile_number, '+4412345')
 
@@ -47,7 +33,7 @@ class ValidateMobileNumberTest(test.TestCase):
   def test_noninternational_format(self):
     self.assertRaises(exception.ValidationError, validate.mobile_number, '050444123')
 
-  def test_italian_number( self):
+  def test_italian_number(self):
     self.assertRaises(exception.ValidationError, validate.mobile_number, '+397565434588')
 
 class ValidateEmailTest(test.TestCase):
@@ -66,30 +52,30 @@ class ValidateEmailTest(test.TestCase):
 
 class ValidatePasswordTest(test.TestCase):
   def test_valid_passwords(self):
-    validate.password('a'*6)
+    validate.password('a' * 6)
     validate.password('bbb bbb')
-    validate.password('c'*16)
+    validate.password('c' * 16)
 
   def test_invalid_passwords(self):
-    self.assertRaises(exception.ValidationError, validate.password, 'a'*17)
-    self.assertRaises(exception.ValidationError, validate.password, 'b'*5)
+    self.assertRaises(exception.ValidationError, validate.password, 'a' * 17)
+    self.assertRaises(exception.ValidationError, validate.password, 'b' * 5)
     self.assertRaises(exception.ValidationError, validate.password, '')
 
 class ValidateNameTest(test.TestCase):
   def test_valid_names(self):
     validate.name('a')
     validate.name('ab ba')
-    validate.name('b'*60)
+    validate.name('b' * 60)
     validate.full_name('a')
     validate.full_name('ab ba')
-    validate.full_name('a'*121)
-    validate.full_name('b'*60 + ' ' + 'c'*60)
+    validate.full_name('a' * 121)
+    validate.full_name('b' * 60 + ' ' + 'c' * 60)
 
   def test_invalid_names(self):
     self.assertRaises(exception.ValidationError, validate.name, '')
-    self.assertRaises(exception.ValidationError, validate.name, 'a'*61)
+    self.assertRaises(exception.ValidationError, validate.name, 'a' * 61)
     self.assertRaises(exception.ValidationError, validate.full_name, '')
-    self.assertRaises(exception.ValidationError, validate.full_name, 'a'*122)
+    self.assertRaises(exception.ValidationError, validate.full_name, 'a' * 122)
 
 
 class ValidateAvatarPathTest(test.TestCase):
@@ -115,10 +101,10 @@ class ValidateNonceTest(test.TestCase):
     fake_user = 'popular@example.com'
     action = 'some_action'
 
-    
+
     nonce = util.create_nonce(fake_user, action)
     params = {'_nonce': nonce}
-  
+
     validate.nonce(test_util.FakeRequest(
                        user=fake_user,
                        post=params),
@@ -128,7 +114,7 @@ class ValidateNonceTest(test.TestCase):
                       user=fake_user,
                       get=params),
                    action)
-                    
+
 
   def test_bad_nonces(self):
     fake_user = 'popular@example.com'
@@ -172,14 +158,14 @@ class ValidateNonceTest(test.TestCase):
     fake_user = 'popular@example.com'
     action = 'some_action'
 
-    nonce = util.create_nonce(fake_user, action, offset=-1)
-  
-    validate.nonce(test_util.FakeRequest( 
+    nonce = util.create_nonce(fake_user, action, offset= -1)
+
+    validate.nonce(test_util.FakeRequest(
                        user=fake_user,
                        post={'_nonce': nonce}),
                    action)
-  
-    old_nonce = util.create_nonce(fake_user, action, offset=-2)
+
+    old_nonce = util.create_nonce(fake_user, action, offset= -2)
     def _old_nonce():
       validate.nonce(test_util.FakeRequest(
                          user=fake_user,

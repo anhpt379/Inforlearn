@@ -2,7 +2,6 @@
 
 {% if not request.user.spam %}
 <div id="form-message" class="main">
-
   {% include 'form_error.html' %}
   {% block message_title %}{% endblock %}
   <form name="message_form" action="" method="POST">  
@@ -11,18 +10,15 @@
     {% endif %}
     <p id="message-container">
 			<label for="message" id="message-label">Gõ tin nhắn bạn muốn chia sẻ với mọi người vào đây</label>
-      <textarea id="message" name="message" rows="4" cols="25">{% if message %}{{ message|escape }}{% else %}{% if not request.mobile %}&nbsp;Bạn đang chú ý đến điều gì?{% endif %}{% endif %}</textarea>
+      <textarea id="message" name="message" rows="4" cols="25">{% if message %}{{ message|escape }}{% else %}{% if not request.mobile %}&nbsp;Bạn vừa học được điều gì?{% endif %}{% endif %}</textarea>
     </p>
 		<p class="buttons">
       <input type="hidden" id="location" name="location" value="{{ request.user.extra.location }}"/>
-      <a onclick="document.message_form.submit();">
-        <b style="font-size:2.5em;
-                  text-decoration: none;
-                  color: #FAFAFA;
-                  cursor: pointer;">Gửi</b> <br/> 
-        (Ctrl+Enter)
-      </a>
-<!--      <input type="submit" value="Gửi (Ctrl+Enter)" />-->
+        <div id="send-button">
+        <br/>
+        <a class="send-message-disable" onclick="">Gửi</a> 
+        &nbsp;(Ctrl+Enter)
+        </div>
       <input type="hidden" name="nick" value="{{request.user.nick}}" />
       {% ifequal view.type 'user' %}
       {{request.user|noncefield:"post"}}
@@ -34,7 +30,7 @@
       {% endifequal %}
     </p>
     {% if not request.mobile %}
-      <p id="counter">256</p>
+      <p id="counter">256 ký tự</p>
       <p id="icons">
         <label for="icon" id="icon-label">Icon</label>
         <select name="icon" id="icon">
@@ -43,11 +39,11 @@
           <option value="{{ key }}" id="/themes/{{DEFAULT_THEME|urlencode}}/icons/{{ icon.0 }}.gif" title="{{ icon.2 }}"{% ifequal key current_icon %} selected="selected"{% endifequal %}>{{ icon.1 }}</option>
           {% endfor %}
         </select>
-        <a href="#" id="add-icons">+ Hình đại diện</a>
-        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        Gõ tiếng Việt (Ctrl+Space):
+        <a href="#" id="add-icons">+ Thêm hình</a>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 
         <script src="{{request.user.url}}/../../js/avim.js" type="text/javascript"></script>
         <script src="{{request.user.url}}/../../js/shortcut.js" type="text/javascript"></script>
+        
         <script type="text/javascript">
         shortcut.add("Ctrl+Space",function() {
           ob  = $(".image_language");
@@ -86,16 +82,19 @@
             }
         }
         </script>
-        <img class="image_language" 
-             src="/themes/{{DEFAULT_THEME|urlencode}}/checked.png" 
-             style="vertical-align:middle; 
-                    display: inline; 
-                    height: 16px; 
-                    width: 16px;
-                    margin-left: 1px;
-                    margin-bottom: 7px;" 
-             onclick="toggle_lang()">
+          Gõ tiếng Việt (Ctrl+Space):
+          <img class="image_language" 
+               src="/themes/{{DEFAULT_THEME|urlencode}}/checked.png" 
+               style="vertical-align:middle; 
+                      display: inline; 
+                      height: 16px; 
+                      width: 16px;
+                      margin-left: 1px;
+                      margin-bottom: 7px;" 
+               onclick="toggle_lang()">
+
       </p>
+      
       
       
     {% endif %}
