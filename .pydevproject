@@ -13,4 +13,16 @@
 <pydev_pathproperty name="org.python.pydev.PROJECT_SOURCE_PATH">
 <path>/Inforlearn</path>
 </pydev_pathproperty>
+<pydev_pathproperty name="org.python.pydev.PROJECT_EXTERNAL_SOURCE_PATH">
+<path>/home/Workspace/Inforlearn/atom.zip</path>
+<path>/home/Workspace/Inforlearn/beautifulsoup.zip</path>
+<path>/home/Workspace/Inforlearn/cleanliness.zip</path>
+<path>/home/Workspace/Inforlearn/django.zip</path>
+<path>/home/Workspace/Inforlearn/elementtree.zip</path>
+<path>/home/Workspace/Inforlearn/epydoc.zip</path>
+<path>/home/Workspace/Inforlearn/gdata.zip</path>
+<path>/home/Workspace/Inforlearn/markdown.zip</path>
+<path>/home/Workspace/Inforlearn/oauth.zip</path>
+<path>/home/Workspace/Inforlearn/simplejson.zip</path>
+</pydev_pathproperty>
 </pydev_project>

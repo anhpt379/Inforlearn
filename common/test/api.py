@@ -1817,7 +1817,7 @@ class ApiUnitTestAvatarUpload(ApiUnitTest):
     all_sizes = {'original': (320, 320)} # original dimension
     all_sizes.update(api.AVATAR_IMAGE_SIZES)
     for size, dimensions in all_sizes.items():
-      keyname = 'image/%s_%s.jpg' % (avatar_base_path, size)
+      keyname = 'images/%s_%s.jpg' % (avatar_base_path, size)
       image_ref = models.Image.get_by_key_name(keyname)
       self.assert_(image_ref)
       image = images.Image(image_ref.content)
@@ -1942,14 +1942,12 @@ class EmailTest(ApiUnitTest):
         actor_with_name,
         '4124')
     self.assertTrue(message.count(actor_with_name.extra['full_name']) > 0)
-    self.assertTrue(html_message.count(actor_with_name.extra['full_name']) > 0)
 
     actor_without_name = api.actor_get(api.ROOT, self.popular_nick)
     (subject, message, html_message) = common_mail.email_confirmation_message(
         actor_without_name,
         '4124')
     self.assertTrue(message.count(actor_without_name.display_nick()) > 0)
-    self.assertTrue(html_message.count(actor_without_name.display_nick()) > 0)
 
 class ImageErrorDecoratorTest(ApiUnitTest):
   """Tests the image error decorator transforms image error to api exception"""
