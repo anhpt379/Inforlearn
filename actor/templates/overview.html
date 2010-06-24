@@ -1,7 +1,7 @@
 {% extends 'common/templates/base_sidebar.html' %}
 {% load nonce format %}
  
-{% block title %}Overview{% endblock %}
+{% block title %}Trang chủ{% endblock %}
 
 
 {% block above_container %}
@@ -35,7 +35,7 @@
     {% if view.extra.comments_hide %}
       <a class="comment" 
          href="?nick={{request.user.nick}}&amp;settings_hide_comments=0&amp;{{request.user|nonceparam:"settings_hide_comments"}}">
-        Hiển thị các bình luận
+        Hiện bình luận
     {% else %}
       <a class="comment" 
          href="?nick={{request.user.nick}}&amp;settings_hide_comments=1&amp;{{request.user|nonceparam:"settings_hide_comments"}}">

@@ -7,7 +7,7 @@ import re
 AVATAR_PARTIAL_PATH_RE = r'(default|(?P<nick>#?\w+@[\w\-\.]+))/(?P<path>.*)'
 AVATAR_PARTIAL_PATH_COMPILED = re.compile(AVATAR_PARTIAL_PATH_RE)
 
-AVATAR_PATH_RE = r'^image/' + AVATAR_PARTIAL_PATH_RE + '\.jpg'
+AVATAR_PATH_RE = r'^images/' + AVATAR_PARTIAL_PATH_RE + '\.jpg'
 AVATAR_PATH_COMPILED = re.compile(AVATAR_PATH_RE)
 
 

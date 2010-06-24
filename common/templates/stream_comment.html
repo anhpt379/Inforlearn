@@ -1,6 +1,6 @@
 {% load avatar format entry presence%}
 {% if not hide_avatar %}
-{% linked_avatar entry.actor_ref "u" request %}
+{% linked_avatar entry.actor_ref "f" request %}
 {% endif %}
 <p class="comment">
   {% if request %}{{entry|format_comment:request}}{% else %}{{entry|format_comment}}{% endif %}

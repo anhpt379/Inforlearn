@@ -697,7 +697,7 @@ def actor_settings(request, nick, page='index'):
     # TODO(tyler): Fix this avatar nonsense!
     own_photos = [{
         'path' : small_photo.key().name(),
-        'name' : small_photo.key().name()[len('image/'):-len('_f.jpg')],
+        'name' : small_photo.key().name()[len('images/'):-len('_f.jpg')],
       } for small_photo in small_photos
     ]
 

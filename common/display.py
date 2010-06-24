@@ -38,8 +38,8 @@ def prep_comment_list(comment_list, actors):
   comments = [prep_comment(e, actors) for e in comment_list]
   return comments
 
-DEFAULT_AVATARS = [{'name': 'animal_%s' % i, 'path': 'default/animal_%s' % i}
-                   for i in xrange(1, 17)]
+DEFAULT_AVATARS = [{'name': 'user%s' % i, 'path': 'default/user%s' % i}
+                   for i in xrange(1, 20)]
 
 ICONS = {
   '101': ('feed-blog', 'blog', ''),

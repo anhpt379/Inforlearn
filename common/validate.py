@@ -149,7 +149,7 @@ def sms_message(message):
   pass
 
 def full_name(name):
-  length(name, 1, 2 * 60 + 1, "Tên đầy đủ", 'full_name')
+  length(name, 1, 2 * 60 + 1, u"Tên đầy đủ", 'full_name')
 
 def confirm_dangerous(request, message=None):
   # TODO(termie): change the javascript to submit POST messages
@@ -157,7 +157,7 @@ def confirm_dangerous(request, message=None):
   if "confirm" not in request.REQUEST:
     raise exception.ConfirmationRequiredException(message)
 
-def name(s, message="Tên đầy đủ", field='name'):
+def name(s, message=u"Tên đầy đủ", field='name'):
   length(s, 1, 60, message, field)
 
 def not_banned_name(s, message=None):
@@ -166,10 +166,10 @@ def not_banned_name(s, message=None):
 
 def privacy(s, message=None): pass
 
-def password(s, message="Mật khẩu của bạn"):
+def password(s, message=u"Mật khẩu của bạn"):
   length(s, 6, 16, message, 'password')
 
-def password_and_confirm(password, confirm, message="Mật khẩu của bạn",
+def password_and_confirm(password, confirm, message=u"Mật khẩu của bạn",
                          field=None):
   if password != confirm:
     raise exception.ValidationError('The passwords do not match', field)

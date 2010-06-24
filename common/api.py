@@ -908,8 +908,7 @@ def actor_get(api_user, nick):
                                 'follower_count': 7,
                                 'follower_count': 14,
                                 'icon': 'default/animal_8',
-                                'full_name': 'Test',
-#                                'family_name': 'User'
+                                'full_name': 'Test'
                                 }
                       }
             }
@@ -2172,7 +2171,7 @@ def im_get_actor(api_user, nick):
 #######
 
 def image_get(api_user, nick, path, format='jpg'):
-  keyname = 'image/%s/%s.%s' % (nick, path, format)
+  keyname = 'images/%s/%s.%s' % (nick, path, format)
   image_ref = Image.get_by_key_name(keyname)
 
   # LEGACY COMPAT
@@ -2191,7 +2190,7 @@ def image_get_all_keys(api_user, nick, size):
 @public_owner_or_contact
 def image_set(api_user, nick, path, content, format='jpg', size=None):
   nick = clean.nick(nick)
-  params = {'key_name': 'image/%s/%s.%s' % (nick, path, format),
+  params = {'key_name': 'images/%s/%s.%s' % (nick, path, format),
             'actor': 'actor/%s' % nick,
             'content': db.Blob(content),
             }

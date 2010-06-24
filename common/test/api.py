@@ -1,3 +1,4 @@
+#! coding: utf-8
 from __future__ import with_statement
 import datetime
 import simplejson
@@ -938,7 +939,7 @@ class ApiUnitTestBasic(ApiUnitTest):
     api.invite_request_email(api.ROOT, self.celebrity_nick, 'foo@bar.com')
     self.assertEqual(len(mail.outbox), 1)
     self.assertEqual(mail.outbox[0].subject,
-        'Cele Brity invited you to %s' % (settings.SITE_NAME))
+        'Cele invited you to %s' % (settings.SITE_NAME))
     self.assertTrue(mail.outbox[0].body,
         'Cele Brity (celebrity) has invited you to join %s' % (settings.SITE_NAME))
 
@@ -1734,8 +1735,8 @@ class ApiUnitTestPost(ApiUnitTest):
 
   def test_post_too_long(self):
     popular_ref = api.actor_get(api.ROOT, self.popular_nick)
-    test_message = "a" * 200;
-    expected = test_message[:140]
+    test_message = "a" * 300;
+    expected = test_message[:256]
     entry_ref = api.post(popular_ref,
                          nick=popular_ref.nick,
                          message=test_message)
@@ -1856,7 +1857,7 @@ class ApiUnitTestOAuthAccess(ApiUnitTest):
   def test_overview(self):
     request = self.popular_request('/user/popular/overview')
     r = self.client.get('/user/popular/overview', request.parameters)
-    self.assertContains(r, "Hi popular! Here's the latest from your contacts")
+    self.assertContains(r, "Xin chào popular!")
     self.assertTemplateUsed(r, 'actor/templates/overview.html')
 
 class ApiUnitTestActorGetContactsAvatarsSince(ApiUnitTest):
@@ -1940,8 +1941,8 @@ class EmailTest(ApiUnitTest):
     (subject, message, html_message) = common_mail.email_confirmation_message(
         actor_with_name,
         '4124')
-    self.assertTrue(message.count(actor_with_name.extra['given_name']) > 0)
-    self.assertTrue(html_message.count(actor_with_name.extra['given_name']) > 0)
+    self.assertTrue(message.count(actor_with_name.extra['full_name']) > 0)
+    self.assertTrue(html_message.count(actor_with_name.extra['full_name']) > 0)
 
     actor_without_name = api.actor_get(api.ROOT, self.popular_nick)
     (subject, message, html_message) = common_mail.email_confirmation_message(

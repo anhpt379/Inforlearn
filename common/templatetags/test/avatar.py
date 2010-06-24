@@ -26,11 +26,11 @@ class AvatarTest(base.FixturesTestCase):
     settings.DEBUG = True
 
   def test_avatar_url(self):
-    self.assertEquals("http://localhost:8080/image/avatar_default_u.jpg",
+    self.assertEquals("http://localhost:8080/images/avatar_default_u.jpg",
                       avatar.avatar_url(self.popular, "u"))
 
   def test_avatar(self):
-    expected = ('<img src="http://localhost:8080/image/avatar_default_t.jpg"'
+    expected = ('<img src="http://localhost:8080/images/avatar_default_t.jpg"'
                 ' class="photo" alt="popular" width="50" height="50" />')
     self.assertEquals(expected, avatar.avatar(self.popular, "t"))
 

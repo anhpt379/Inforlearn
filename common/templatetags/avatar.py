@@ -22,7 +22,7 @@ register = template.Library()
 @register.filter(name="avatar")
 @safe
 @safe_avatar
-def avatar(value, arg="t"):
+def avatar(value, arg="f"):
   size = arg
   dimensions = api.AVATAR_IMAGE_SIZES[size]
   # TODO shard these
@@ -54,7 +54,7 @@ def noncached_avatar(value, args):
 @register.filter(name="avatar_url")
 @safe
 @safe_avatar
-def avatar_url(value, arg="t"):
+def avatar_url(value, arg="f"):
   size = arg
   icon = value.extra.get('icon', 'avatar_default')
 
@@ -62,7 +62,7 @@ def avatar_url(value, arg="t"):
   # TODO cache these
   path = "%s_%s.jpg" % (icon, size)
 
-  return 'http://%s/image/%s' % (settings.DOMAIN, http.urlquote(path))
+  return 'http://%s/images/%s' % (settings.DOMAIN, http.urlquote(path))
 
 def parse_args(args):
   """Splits comma separated argument into size and rel attribute."""
