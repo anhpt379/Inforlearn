@@ -1,16 +1,14 @@
-import datetime
-import time
-
 from django.template import loader, RequestContext
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.xheaders import populate_xheaders
 from django.db.models.fields import DateTimeField
 from django.http import Http404, HttpResponse
+import datetime, time
 
 def archive_index(request, queryset, date_field, num_latest=15,
         template_name=None, template_loader=loader,
-        extra_context=None, allow_empty=True, context_processors=None,
-        mimetype=None, allow_future=False, template_object_name='latest'):
+        extra_context=None, allow_empty=False, context_processors=None,
+        mimetype=None, allow_future=False):
     """
     Generic top-level archive of date-based objects.
 
@@ -39,7 +37,7 @@ def archive_index(request, queryset, date_field, num_latest=15,
     t = template_loader.get_template(template_name)
     c = RequestContext(request, {
         'date_list' : date_list,
-        template_object_name : latest,
+        'latest' : latest,
     }, context_processors)
     for key, value in extra_context.items():
         if callable(value):
@@ -78,7 +76,7 @@ def archive_year(request, year, queryset, date_field, template_name=None,
     if not date_list and not allow_empty:
         raise Http404
     if make_object_list:
-        object_list = queryset.filter(**lookup_kwargs)
+        object_list = queryset.filter(**lookup_kwargs).order_by(date_field)
     else:
         object_list = []
     if not template_name:
@@ -116,8 +114,7 @@ def archive_month(request, year, month, queryset, date_field,
     """
     if extra_context is None: extra_context = {}
     try:
-        tt = time.strptime("%s-%s" % (year, month), '%s-%s' % ('%Y', month_format))
-        date = datetime.date(*tt[:3])
+        date = datetime.date(*time.strptime(year+month, '%Y'+month_format)[:3])
     except ValueError:
         raise Http404
 
@@ -130,10 +127,7 @@ def archive_month(request, year, month, queryset, date_field,
         last_day = first_day.replace(year=first_day.year + 1, month=1)
     else:
         last_day = first_day.replace(month=first_day.month + 1)
-    lookup_kwargs = {
-        '%s__gte' % date_field: first_day,
-        '%s__lt' % date_field: last_day,
-    }
+    lookup_kwargs = {'%s__range' % date_field: (first_day, last_day)}
 
     # Only bother to check current date if the month isn't in the past and future objects are requested.
     if last_day >= now.date() and not allow_future:
@@ -144,17 +138,11 @@ def archive_month(request, year, month, queryset, date_field,
 
     # Calculate the next month, if applicable.
     if allow_future:
-        next_month = last_day
-    elif last_day <= datetime.date.today():
-        next_month = last_day
+        next_month = last_day + datetime.timedelta(days=1)
+    elif last_day < datetime.date.today():
+        next_month = last_day + datetime.timedelta(days=1)
     else:
         next_month = None
-
-    # Calculate the previous month
-    if first_day.month == 1:
-        previous_month = first_day.replace(year=first_day.year-1,month=12)
-    else:
-        previous_month = first_day.replace(month=first_day.month-1)
 
     if not template_name:
         template_name = "%s/%s_archive_month.html" % (model._meta.app_label, model._meta.object_name.lower())
@@ -163,7 +151,7 @@ def archive_month(request, year, month, queryset, date_field,
         '%s_list' % template_object_name: object_list,
         'month': date,
         'next_month': next_month,
-        'previous_month': previous_month,
+        'previous_month': first_day - datetime.timedelta(days=1),
     }, context_processors)
     for key, value in extra_context.items():
         if callable(value):
@@ -188,8 +176,7 @@ def archive_week(request, year, week, queryset, date_field,
     """
     if extra_context is None: extra_context = {}
     try:
-        tt = time.strptime(year+'-0-'+week, '%Y-%w-%U')
-        date = datetime.date(*tt[:3])
+        date = datetime.date(*time.strptime(year+'-0-'+week, '%Y-%w-%U')[:3])
     except ValueError:
         raise Http404
 
@@ -199,10 +186,7 @@ def archive_week(request, year, week, queryset, date_field,
     # Calculate first and last day of week, for use in a date-range lookup.
     first_day = date
     last_day = date + datetime.timedelta(days=7)
-    lookup_kwargs = {
-        '%s__gte' % date_field: first_day,
-        '%s__lt' % date_field: last_day,
-    }
+    lookup_kwargs = {'%s__range' % date_field: (first_day, last_day)}
 
     # Only bother to check current date if the week isn't in the past and future objects aren't requested.
     if last_day >= now.date() and not allow_future:
@@ -245,9 +229,7 @@ def archive_day(request, year, month, day, queryset, date_field,
     """
     if extra_context is None: extra_context = {}
     try:
-        tt = time.strptime('%s-%s-%s' % (year, month, day),
-                           '%s-%s-%s' % ('%Y', month_format, day_format))
-        date = datetime.date(*tt[:3])
+        date = datetime.date(*time.strptime(year+month+day, '%Y'+month_format+day_format)[:3])
     except ValueError:
         raise Http404
 
@@ -304,7 +286,7 @@ def archive_today(request, **kwargs):
 
 def object_detail(request, year, month, day, queryset, date_field,
         month_format='%b', day_format='%d', object_id=None, slug=None,
-        slug_field='slug', template_name=None, template_name_field=None,
+        slug_field=None, template_name=None, template_name_field=None,
         template_loader=loader, extra_context=None, context_processors=None,
         template_object_name='object', mimetype=None, allow_future=False):
     """
@@ -317,9 +299,7 @@ def object_detail(request, year, month, day, queryset, date_field,
     """
     if extra_context is None: extra_context = {}
     try:
-        tt = time.strptime('%s-%s-%s' % (year, month, day),
-                           '%s-%s-%s' % ('%Y', month_format, day_format))
-        date = datetime.date(*tt[:3])
+        date = datetime.date(*time.strptime(year+month+day, '%Y'+month_format+day_format)[:3])
     except ValueError:
         raise Http404
 

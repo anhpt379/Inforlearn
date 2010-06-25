@@ -19,7 +19,7 @@ class RedirectFallbackMiddleware(object):
             except Redirect.DoesNotExist:
                 pass
         if r is not None:
-            if r.new_path == '':
+            if r == '':
                 return http.HttpResponseGone()
             return http.HttpResponsePermanentRedirect(r.new_path)
 

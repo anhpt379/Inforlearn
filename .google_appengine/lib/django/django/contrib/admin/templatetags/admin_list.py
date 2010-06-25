@@ -4,11 +4,9 @@ from django.contrib.admin.views.main import ORDER_VAR, ORDER_TYPE_VAR, PAGE_VAR,
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils import dateformat
-from django.utils.html import escape, conditional_escape
+from django.utils.html import escape
 from django.utils.text import capfirst
-from django.utils.safestring import mark_safe
-from django.utils.translation import get_date_formats, get_partial_date_formats, ugettext as _
-from django.utils.encoding import smart_unicode, smart_str, force_unicode
+from django.utils.translation import get_date_formats, get_partial_date_formats
 from django.template import Library
 import datetime
 
@@ -18,11 +16,11 @@ DOT = '.'
 
 def paginator_number(cl,i):
     if i == DOT:
-        return u'... '
+        return '... '
     elif i == cl.page_num:
-        return mark_safe(u'<span class="this-page">%d</span> ' % (i+1))
+        return '<span class="this-page">%d</span> ' % (i+1)
     else:
-        return mark_safe(u'<a href="%s"%s>%d</a> ' % (escape(cl.get_query_string({PAGE_VAR: i})), (i == cl.paginator.num_pages-1 and ' class="end"' or ''), i+1))
+        return '<a href="%s"%s>%d</a> ' % (cl.get_query_string({PAGE_VAR: i}), (i == cl.paginator.pages-1 and ' class="end"' or ''), i+1)
 paginator_number = register.simple_tag(paginator_number)
 
 def pagination(cl):
@@ -37,8 +35,8 @@ def pagination(cl):
 
         # If there are 10 or fewer pages, display links to every page.
         # Otherwise, do some fancy
-        if paginator.num_pages <= 10:
-            page_range = range(paginator.num_pages)
+        if paginator.pages <= 10:
+            page_range = range(paginator.pages)
         else:
             # Insert "smart" pagination links, so that there are always ON_ENDS
             # links at either end of the list of pages, and there are always
@@ -50,12 +48,12 @@ def pagination(cl):
                 page_range.extend(range(page_num - ON_EACH_SIDE, page_num + 1))
             else:
                 page_range.extend(range(0, page_num + 1))
-            if page_num < (paginator.num_pages - ON_EACH_SIDE - ON_ENDS - 1):
+            if page_num < (paginator.pages - ON_EACH_SIDE - ON_ENDS - 1):
                 page_range.extend(range(page_num + 1, page_num + ON_EACH_SIDE + 1))
                 page_range.append(DOT)
-                page_range.extend(range(paginator.num_pages - ON_ENDS, paginator.num_pages))
+                page_range.extend(range(paginator.pages - ON_ENDS, paginator.pages))
             else:
-                page_range.extend(range(page_num + 1, paginator.num_pages))
+                page_range.extend(range(page_num + 1, paginator.pages))
 
     need_show_all_link = cl.can_show_all and not cl.show_all and cl.multi_page
     return {
@@ -71,99 +69,72 @@ pagination = register.inclusion_tag('admin/pagination.html')(pagination)
 def result_headers(cl):
     lookup_opts = cl.lookup_opts
 
-    for i, field_name in enumerate(cl.list_display):
-        attr = None
+    for i, field_name in enumerate(lookup_opts.admin.list_display):
         try:
             f = lookup_opts.get_field(field_name)
-            admin_order_field = None
         except models.FieldDoesNotExist:
             # For non-field list_display values, check for the function
-            # attribute "short_description". If that doesn't exist, fall back
-            # to the method name. And __str__ and __unicode__ are special-cases.
-            if field_name == '__unicode__':
-                header = force_unicode(lookup_opts.verbose_name)
-            elif field_name == '__str__':
-                header = smart_str(lookup_opts.verbose_name)
+            # attribute "short_description". If that doesn't exist, fall
+            # back to the method name. And __str__ is a special-case.
+            if field_name == '__str__':
+                header = lookup_opts.verbose_name
             else:
-                if callable(field_name):
-                    attr = field_name # field_name can be a callable
-                else:
-                    try:
-                        attr = getattr(cl.model_admin, field_name)
-                    except AttributeError:
-                        try:
-                            attr = getattr(cl.model, field_name)
-                        except AttributeError:
-                            raise AttributeError, \
-                                "'%s' model or '%s' objects have no attribute '%s'" % \
-                                    (lookup_opts.object_name, cl.model_admin.__class__, field_name)
-
+                attr = getattr(cl.model, field_name) # Let AttributeErrors propagate.
                 try:
                     header = attr.short_description
                 except AttributeError:
-                    if callable(field_name):
-                        header = field_name.__name__
-                    else:
-                        header = field_name
-                    header = header.replace('_', ' ')
+                    header = field_name.replace('_', ' ')
 
             # It is a non-field, but perhaps one that is sortable
-            admin_order_field = getattr(attr, "admin_order_field", None)
-            if not admin_order_field:
+            if not getattr(getattr(cl.model, field_name), "admin_order_field", None):
                 yield {"text": header}
                 continue
 
             # So this _is_ a sortable non-field.  Go to the yield
             # after the else clause.
         else:
-            header = f.verbose_name
+            if isinstance(f.rel, models.ManyToOneRel) and f.null:
+                yield {"text": f.verbose_name}
+                continue
+            else:
+                header = f.verbose_name
 
         th_classes = []
         new_order_type = 'asc'
-        if field_name == cl.order_field or admin_order_field == cl.order_field:
+        if field_name == cl.order_field:
             th_classes.append('sorted %sending' % cl.order_type.lower())
             new_order_type = {'asc': 'desc', 'desc': 'asc'}[cl.order_type.lower()]
 
         yield {"text": header,
                "sortable": True,
                "url": cl.get_query_string({ORDER_VAR: i, ORDER_TYPE_VAR: new_order_type}),
-               "class_attrib": mark_safe(th_classes and ' class="%s"' % ' '.join(th_classes) or '')}
+               "class_attrib": (th_classes and ' class="%s"' % ' '.join(th_classes) or '')}
 
 def _boolean_icon(field_val):
     BOOLEAN_MAPPING = {True: 'yes', False: 'no', None: 'unknown'}
-    return mark_safe(u'<img src="%simg/admin/icon-%s.gif" alt="%s" />' % (settings.ADMIN_MEDIA_PREFIX, BOOLEAN_MAPPING[field_val], field_val))
+    return '<img src="%simg/admin/icon-%s.gif" alt="%s" />' % (settings.ADMIN_MEDIA_PREFIX, BOOLEAN_MAPPING[field_val], field_val)
 
-def items_for_result(cl, result, form):
+def items_for_result(cl, result):
     first = True
     pk = cl.lookup_opts.pk.attname
-    for field_name in cl.list_display:
+    for field_name in cl.lookup_opts.admin.list_display:
         row_class = ''
         try:
             f = cl.lookup_opts.get_field(field_name)
         except models.FieldDoesNotExist:
-            # For non-field list_display values, the value is either a method,
-            # property or returned via a callable.
+            # For non-field list_display values, the value is either a method
+            # or a property.
             try:
-                if callable(field_name):
-                    attr = field_name
-                    value = attr(result)
-                elif hasattr(cl.model_admin, field_name) and \
-                   not field_name == '__str__' and not field_name == '__unicode__':
-                    attr = getattr(cl.model_admin, field_name)
-                    value = attr(result)
-                else:
-                    attr = getattr(result, field_name)
-                    if callable(attr):
-                        value = attr()
-                    else:
-                        value = attr
+                attr = getattr(result, field_name)
                 allow_tags = getattr(attr, 'allow_tags', False)
                 boolean = getattr(attr, 'boolean', False)
+                if callable(attr):
+                    attr = attr()
                 if boolean:
                     allow_tags = True
-                    result_repr = _boolean_icon(value)
+                    result_repr = _boolean_icon(attr)
                 else:
-                    result_repr = smart_unicode(value)
+                    result_repr = str(attr)
             except (AttributeError, ObjectDoesNotExist):
                 result_repr = EMPTY_CHANGELIST_VALUE
             else:
@@ -171,8 +142,6 @@ def items_for_result(cl, result, form):
                 # function has an "allow_tags" attribute set to True.
                 if not allow_tags:
                     result_repr = escape(result_repr)
-                else:
-                    result_repr = mark_safe(result_repr)
         else:
             field_val = getattr(result, f.attname)
 
@@ -197,55 +166,34 @@ def items_for_result(cl, result, form):
             # Booleans are special: We use images.
             elif isinstance(f, models.BooleanField) or isinstance(f, models.NullBooleanField):
                 result_repr = _boolean_icon(field_val)
-            # DecimalFields are special: Zero-pad the decimals.
-            elif isinstance(f, models.DecimalField):
+            # FloatFields are special: Zero-pad the decimals.
+            elif isinstance(f, models.FloatField):
                 if field_val is not None:
                     result_repr = ('%%.%sf' % f.decimal_places) % field_val
                 else:
                     result_repr = EMPTY_CHANGELIST_VALUE
             # Fields with choices are special: Use the representation
             # of the choice.
-            elif f.flatchoices:
-                result_repr = dict(f.flatchoices).get(field_val, EMPTY_CHANGELIST_VALUE)
+            elif f.choices:
+                result_repr = dict(f.choices).get(field_val, EMPTY_CHANGELIST_VALUE)
             else:
-                result_repr = escape(field_val)
-        if force_unicode(result_repr) == '':
-            result_repr = mark_safe('&nbsp;')
+                result_repr = escape(str(field_val))
+        if result_repr == '':
+            result_repr = '&nbsp;'
         # If list_display_links not defined, add the link tag to the first field
-        if (first and not cl.list_display_links) or field_name in cl.list_display_links:
+        if (first and not cl.lookup_opts.admin.list_display_links) or field_name in cl.lookup_opts.admin.list_display_links: 
             table_tag = {True:'th', False:'td'}[first]
             first = False
             url = cl.url_for_result(result)
-            # Convert the pk to something that can be used in Javascript.
-            # Problem cases are long ints (23L) and non-ASCII strings.
-            if cl.to_field:
-                attr = str(cl.to_field)
-            else:
-                attr = pk
-            value = result.serializable_value(attr)
-            result_id = repr(force_unicode(value))[1:]
-            yield mark_safe(u'<%s%s><a href="%s"%s>%s</a></%s>' % \
-                (table_tag, row_class, url, (cl.is_popup and ' onclick="opener.dismissRelatedLookupPopup(window, %s); return false;"' % result_id or ''), conditional_escape(result_repr), table_tag))
+            result_id = str(getattr(result, pk)) # str() is needed in case of 23L (long ints)
+            yield ('<%s%s><a href="%s"%s>%s</a></%s>' % \
+                (table_tag, row_class, url, (cl.is_popup and ' onclick="opener.dismissRelatedLookupPopup(window, %r); return false;"' % result_id or ''), result_repr, table_tag))
         else:
-            # By default the fields come from ModelAdmin.list_editable, but if we pull
-            # the fields out of the form instead of list_editable custom admins
-            # can provide fields on a per request basis
-            if form and field_name in form.fields:
-                bf = form[field_name]
-                result_repr = mark_safe(force_unicode(bf.errors) + force_unicode(bf))
-            else:
-                result_repr = conditional_escape(result_repr)
-            yield mark_safe(u'<td%s>%s</td>' % (row_class, result_repr))
-    if form:
-        yield mark_safe(force_unicode(form[cl.model._meta.pk.name]))
+            yield ('<td%s>%s</td>' % (row_class, result_repr))
 
 def results(cl):
-    if cl.formset:
-        for res, form in zip(cl.result_list, cl.formset.forms):
-            yield list(items_for_result(cl, res, form))
-    else:
-        for res in cl.result_list:
-            yield list(items_for_result(cl, res, None))
+    for res in cl.result_list:
+        yield list(items_for_result(cl,res))
 
 def result_list(cl):
     return {'cl': cl,
@@ -254,8 +202,8 @@ def result_list(cl):
 result_list = register.inclusion_tag("admin/change_list_results.html")(result_list)
 
 def date_hierarchy(cl):
-    if cl.date_hierarchy:
-        field_name = cl.date_hierarchy
+    if cl.lookup_opts.admin.date_hierarchy:
+        field_name = cl.lookup_opts.admin.date_hierarchy
         year_field = '%s__year' % field_name
         month_field = '%s__month' % field_name
         day_field = '%s__day' % field_name
@@ -317,20 +265,15 @@ date_hierarchy = register.inclusion_tag('admin/date_hierarchy.html')(date_hierar
 def search_form(cl):
     return {
         'cl': cl,
-        'show_result_count': cl.result_count != cl.full_result_count,
+        'show_result_count': cl.result_count != cl.full_result_count and not cl.opts.one_to_one_field,
         'search_var': SEARCH_VAR
     }
 search_form = register.inclusion_tag('admin/search_form.html')(search_form)
 
-def admin_list_filter(cl, spec):
+def filter(cl, spec):
     return {'title': spec.title(), 'choices' : list(spec.choices(cl))}
-admin_list_filter = register.inclusion_tag('admin/filter.html')(admin_list_filter)
+filter = register.inclusion_tag('admin/filter.html')(filter)
 
-def admin_actions(context):
-    """
-    Track the number of times the action field has been rendered on the page,
-    so we know which value to use.
-    """
-    context['action_index'] = context.get('action_index', -1) + 1
-    return context
-admin_actions = register.inclusion_tag("admin/actions.html", takes_context=True)(admin_actions)
+def filters(cl):
+    return {'cl': cl}
+filters = register.inclusion_tag('admin/filters.html')(filters)

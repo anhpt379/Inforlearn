@@ -158,7 +158,7 @@ def linked_entry_truncated_title(value, arg):
 @register.filter(name="stream_icon")
 @safe
 def stream_icon(value, arg=None):
-  return '<img src="/themes/%s/icons/favku.gif" class="icon" />' % settings.DEFAULT_THEME
+  return '<img src="/themes/%s/icons/feed.png" style="width: 12px; height: 12px;" class="icon" />' % settings.DEFAULT_THEME
   if type(value) is type(1):
     return '<!-- TODO entry icon goes here -->'
   return '<!-- TODO entry icon goes here -->'

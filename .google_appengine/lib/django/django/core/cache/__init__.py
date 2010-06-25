@@ -17,32 +17,26 @@ See docs/cache.txt for information on the public API.
 
 from cgi import parse_qsl
 from django.conf import settings
-from django.core import signals
 from django.core.cache.backends.base import InvalidCacheBackendError
-from django.utils import importlib
 
-# Name for use in settings file --> name of module in "backends" directory.
-# Any backend scheme that is not in this dictionary is treated as a Python
-# import path to a custom backend.
 BACKENDS = {
+    # name for use in settings file --> name of module in "backends" directory
     'memcached': 'memcached',
+    'simple': 'simple',
     'locmem': 'locmem',
     'file': 'filebased',
     'db': 'db',
     'dummy': 'dummy',
 }
 
-def parse_backend_uri(backend_uri):
-    """
-    Converts the "backend_uri" into a cache scheme ('db', 'memcached', etc), a
-    host and any extra params that are required for the backend. Returns a
-    (scheme, host, params) tuple.
-    """
+def get_cache(backend_uri):
     if backend_uri.find(':') == -1:
         raise InvalidCacheBackendError, "Backend URI must start with scheme://"
     scheme, rest = backend_uri.split(':', 1)
     if not rest.startswith('//'):
         raise InvalidCacheBackendError, "Backend URI must start with scheme://"
+    if scheme not in BACKENDS:
+        raise InvalidCacheBackendError, "%r is not a valid cache backend" % scheme
 
     host = rest[2:]
     qpos = rest.find('?')
@@ -54,22 +48,7 @@ def parse_backend_uri(backend_uri):
     if host.endswith('/'):
         host = host[:-1]
 
-    return scheme, host, params
-
-def get_cache(backend_uri):
-    scheme, host, params = parse_backend_uri(backend_uri)
-    if scheme in BACKENDS:
-        name = 'django.core.cache.backends.%s' % BACKENDS[scheme]
-    else:
-        name = scheme
-    module = importlib.import_module(name)
-    return getattr(module, 'CacheClass')(host, params)
+    cache_class = getattr(__import__('django.core.cache.backends.%s' % BACKENDS[scheme], {}, {}, ['']), 'CacheClass')
+    return cache_class(host, params)
 
 cache = get_cache(settings.CACHE_BACKEND)
-
-# Some caches -- pythont-memcached in particular -- need to do a cleanup at the
-# end of a request cycle. If the cache provides a close() method, wire it up
-# here.
-if hasattr(cache, 'close'):
-    signals.request_finished.connect(cache.close)
-

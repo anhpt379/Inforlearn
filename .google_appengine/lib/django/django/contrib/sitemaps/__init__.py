@@ -1,7 +1,7 @@
-from django.core import urlresolvers, paginator
+from django.core import urlresolvers
 import urllib
 
-PING_URL = "http://www.google.com/webmasters/tools/ping"
+PING_URL = "http://www.google.com/webmasters/sitemaps/ping"
 
 class SitemapNotFound(Exception):
     pass
@@ -29,15 +29,11 @@ def ping_google(sitemap_url=None, ping_url=PING_URL):
 
     from django.contrib.sites.models import Site
     current_site = Site.objects.get_current()
-    url = "http://%s%s" % (current_site.domain, sitemap_url)
+    url = "%s%s" % (current_site.domain, sitemap_url)
     params = urllib.urlencode({'sitemap':url})
     urllib.urlopen("%s?%s" % (ping_url, params))
 
-class Sitemap(object):
-    # This limit is defined by Google. See the index documentation at
-    # http://sitemaps.org/protocol.php#index.
-    limit = 50000
-
+class Sitemap:
     def __get(self, name, obj, default=None):
         try:
             attr = getattr(self, name)
@@ -53,17 +49,11 @@ class Sitemap(object):
     def location(self, obj):
         return obj.get_absolute_url()
 
-    def _get_paginator(self):
-        if not hasattr(self, "_paginator"):
-            self._paginator = paginator.Paginator(self.items(), self.limit)
-        return self._paginator
-    paginator = property(_get_paginator)
-
-    def get_urls(self, page=1):
+    def get_urls(self):
         from django.contrib.sites.models import Site
         current_site = Site.objects.get_current()
         urls = []
-        for item in self.paginator.page(page).object_list:
+        for item in self.items():
             loc = "http://%s%s" % (current_site.domain, self.__get('location', item))
             url_info = {
                 'location':   loc,

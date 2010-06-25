@@ -1,9 +1,5 @@
 // Core javascript helper functions
 
-// basic browser identification & version
-var isOpera = (navigator.userAgent.indexOf("Opera")>=0) && parseFloat(navigator.appVersion);
-var isIE = ((document.all) && (!isOpera)) && parseFloat(navigator.appVersion.split("MSIE ")[1].split(";")[0]);
-
 // Cross-browser event handlers.
 function addEvent(obj, evType, fn) {
     if (obj.addEventListener) {
@@ -75,12 +71,8 @@ function findPosX(obj) {
     var curleft = 0;
     if (obj.offsetParent) {
         while (obj.offsetParent) {
-            curleft += obj.offsetLeft - ((isOpera) ? 0 : obj.scrollLeft);
+            curleft += obj.offsetLeft;
             obj = obj.offsetParent;
-        }
-        // IE offsetParent does not include the top-level 
-        if (isIE && obj.parentElement){
-            curleft += obj.offsetLeft - obj.scrollLeft;
         }
     } else if (obj.x) {
         curleft += obj.x;
@@ -92,12 +84,8 @@ function findPosY(obj) {
     var curtop = 0;
     if (obj.offsetParent) {
         while (obj.offsetParent) {
-            curtop += obj.offsetTop - ((isOpera) ? 0 : obj.scrollTop);
+            curtop += obj.offsetTop;
             obj = obj.offsetParent;
-        }
-        // IE offsetParent does not include the top-level 
-        if (isIE && obj.parentElement){
-            curtop += obj.offsetTop - obj.scrollTop;
         }
     } else if (obj.y) {
         curtop += obj.y;

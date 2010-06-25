@@ -1,5 +1,5 @@
+from django.conf import settings
 from django.core.exceptions import ImproperlyConfigured
-from django.utils.importlib import import_module
 
 _standard_context_processors = None
 
@@ -9,11 +9,9 @@ class ContextPopException(Exception):
 
 class Context(object):
     "A stack container for variable context"
-    def __init__(self, dict_=None, autoescape=True, current_app=None):
+    def __init__(self, dict_=None):
         dict_ = dict_ or {}
         self.dicts = [dict_]
-        self.autoescape = autoescape
-        self.current_app = current_app
 
     def __repr__(self):
         return repr(self.dicts)
@@ -23,14 +21,12 @@ class Context(object):
             yield d
 
     def push(self):
-        d = {}
-        self.dicts = [d] + self.dicts
-        return d
+        self.dicts = [{}] + self.dicts
 
     def pop(self):
         if len(self.dicts) == 1:
             raise ContextPopException
-        return self.dicts.pop(0)
+        del self.dicts[0]
 
     def __setitem__(self, key, value):
         "Set a variable in the current context"
@@ -39,7 +35,7 @@ class Context(object):
     def __getitem__(self, key):
         "Get a variable's value, starting at the current context and going upward"
         for d in self.dicts:
-            if key in d:
+            if d.has_key(key):
                 return d[key]
         raise KeyError(key)
 
@@ -49,29 +45,26 @@ class Context(object):
 
     def has_key(self, key):
         for d in self.dicts:
-            if key in d:
+            if d.has_key(key):
                 return True
         return False
 
-    __contains__ = has_key
+    def __contains__(self, key):
+        return self.has_key(key)
 
     def get(self, key, otherwise=None):
         for d in self.dicts:
-            if key in d:
+            if d.has_key(key):
                 return d[key]
         return otherwise
 
     def update(self, other_dict):
         "Like dict.update(). Pushes an entire dictionary's keys and values onto the context."
-        if not hasattr(other_dict, '__getitem__'):
-            raise TypeError('other_dict must be a mapping (dictionary-like) object.')
         self.dicts = [other_dict] + self.dicts
-        return other_dict
 
 # This is a function rather than module-level procedural code because we only
 # want it to execute if somebody uses RequestContext.
 def get_standard_processors():
-    from django.conf import settings
     global _standard_context_processors
     if _standard_context_processors is None:
         processors = []
@@ -79,13 +72,13 @@ def get_standard_processors():
             i = path.rfind('.')
             module, attr = path[:i], path[i+1:]
             try:
-                mod = import_module(module)
+                mod = __import__(module, {}, {}, [attr])
             except ImportError, e:
-                raise ImproperlyConfigured('Error importing request processor module %s: "%s"' % (module, e))
+                raise ImproperlyConfigured, 'Error importing request processor module %s: "%s"' % (module, e)
             try:
                 func = getattr(mod, attr)
             except AttributeError:
-                raise ImproperlyConfigured('Module "%s" does not define a "%s" callable request processor' % (module, attr))
+                raise ImproperlyConfigured, 'Module "%s" does not define a "%s" callable request processor' % (module, attr)
             processors.append(func)
         _standard_context_processors = tuple(processors)
     return _standard_context_processors
@@ -97,8 +90,8 @@ class RequestContext(Context):
     Additional processors can be specified as a list of callables
     using the "processors" keyword argument.
     """
-    def __init__(self, request, dict=None, processors=None, current_app=None):
-        Context.__init__(self, dict, current_app=current_app)
+    def __init__(self, request, dict=None, processors=None):
+        Context.__init__(self, dict)
         if processors is None:
             processors = ()
         else:

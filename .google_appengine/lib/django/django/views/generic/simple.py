@@ -1,23 +1,21 @@
-from django.template import loader, RequestContext
-from django.http import HttpResponse, HttpResponseRedirect, HttpResponsePermanentRedirect, HttpResponseGone
+from django.shortcuts import render_to_response
+from django.template import RequestContext
+from django.http import HttpResponse, HttpResponsePermanentRedirect, HttpResponseGone
 
-def direct_to_template(request, template, extra_context=None, mimetype=None, **kwargs):
+def direct_to_template(request, template, extra_context={}, **kwargs):
     """
     Render a given template with any extra URL parameters in the context as
     ``{{ params }}``.
     """
-    if extra_context is None: extra_context = {}
     dictionary = {'params': kwargs}
     for key, value in extra_context.items():
         if callable(value):
             dictionary[key] = value()
         else:
             dictionary[key] = value
-    c = RequestContext(request, dictionary)
-    t = loader.get_template(template)
-    return HttpResponse(t.render(c), mimetype=mimetype)
+    return render_to_response(template, dictionary, context_instance=RequestContext(request))
 
-def redirect_to(request, url, permanent=True, **kwargs):
+def redirect_to(request, url, **kwargs):
     """
     Redirect to a given URL.
 
@@ -30,12 +28,8 @@ def redirect_to(request, url, permanent=True, **kwargs):
         )
 
     If the given url is ``None``, a HttpResponseGone (410) will be issued.
-
-    If the ``permanent`` argument is False, then the response will have a 302
-    HTTP status code. Otherwise, the status code will be 301.
     """
     if url is not None:
-        klass = permanent and HttpResponsePermanentRedirect or HttpResponseRedirect
-        return klass(url % kwargs)
+        return HttpResponsePermanentRedirect(url % kwargs)
     else:
         return HttpResponseGone()

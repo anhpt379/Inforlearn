@@ -8,18 +8,13 @@ been reviewed for security issues. Don't use it for production use.
 """
 
 from BaseHTTPServer import BaseHTTPRequestHandler, HTTPServer
-import mimetypes
-import os
-import re
-import stat
-import sys
-import urllib
+from types import ListType, StringType
+import os, re, sys, time, urllib
 
-from django.utils.http import http_date
 from django.utils._os import safe_join
 
 __version__ = "0.1"
-__all__ = ['WSGIServer','WSGIRequestHandler']
+__all__ = ['WSGIServer','WSGIRequestHandler','demo_app']
 
 server_version = "WSGIServer/" + __version__
 sys_version = "Python/" + sys.version.split()[0]
@@ -73,7 +68,7 @@ def _formatparam(param, value=None, quote=1):
 class Headers(object):
     """Manage a collection of HTTP response headers"""
     def __init__(self,headers):
-        if not isinstance(headers, list):
+        if type(headers) is not ListType:
             raise TypeError("Headers must be a list of name/value tuples")
         self._headers = headers
 
@@ -215,15 +210,15 @@ def guess_scheme(environ):
     else:
         return 'http'
 
-_hop_headers = {
+_hoppish = {
     'connection':1, 'keep-alive':1, 'proxy-authenticate':1,
     'proxy-authorization':1, 'te':1, 'trailers':1, 'transfer-encoding':1,
     'upgrade':1
-}
+}.has_key
 
 def is_hop_by_hop(header_name):
     """Return true if 'header_name' is an HTTP/1.1 "Hop-by-Hop" header"""
-    return header_name.lower() in _hop_headers
+    return _hoppish(header_name.lower())
 
 class ServerHandler(object):
     """Manage the invocation of a WSGI application"""
@@ -307,15 +302,14 @@ class ServerHandler(object):
             env.setdefault('SERVER_SOFTWARE',self.server_software)
 
     def finish_response(self):
-        """
-        Send any iterable data, then close self and the iterable
+        """Send any iterable data, then close self and the iterable
 
-        Subclasses intended for use in asynchronous servers will want to
-        redefine this method, such that it sets up callbacks in the event loop
-        to iterate over the data, and to call 'self.close()' once the response
-        is finished.
+        Subclasses intended for use in asynchronous servers will
+        want to redefine this method, such that it sets up callbacks
+        in the event loop to iterate over the data, and to call
+        'self.close()' once the response is finished.
         """
-        if not self.result_is_file() or not self.sendfile():
+        if not self.result_is_file() and not self.sendfile():
             for data in self.result:
                 self.write(data)
             self.finish_content()
@@ -329,7 +323,7 @@ class ServerHandler(object):
         """Compute Content-Length or switch to chunked encoding if possible"""
         try:
             blocks = len(self.result)
-        except (TypeError, AttributeError, NotImplementedError):
+        except (TypeError,AttributeError,NotImplementedError):
             pass
         else:
             if blocks==1:
@@ -342,7 +336,7 @@ class ServerHandler(object):
 
         Subclasses can extend this to add other defaults.
         """
-        if 'Content-Length' not in self.headers:
+        if not self.headers.has_key('Content-Length'):
             self.set_content_length()
 
     def start_response(self, status, headers,exc_info=None):
@@ -358,14 +352,14 @@ class ServerHandler(object):
         elif self.headers is not None:
             raise AssertionError("Headers already set!")
 
-        assert isinstance(status, str),"Status must be a string"
+        assert type(status) is StringType,"Status must be a string"
         assert len(status)>=4,"Status must be at least 4 characters"
         assert int(status[:3]),"Status message must begin w/3-digit code"
         assert status[3]==" ", "Status message must have a space after code"
         if __debug__:
             for name,val in headers:
-                assert isinstance(name, str),"Header names must be strings"
-                assert isinstance(val, str),"Header values must be strings"
+                assert type(name) is StringType,"Header names must be strings"
+                assert type(val) is StringType,"Header values must be strings"
                 assert not is_hop_by_hop(name),"Hop-by-hop headers not allowed"
         self.status = status
         self.headers = self.headers_class(headers)
@@ -376,11 +370,11 @@ class ServerHandler(object):
         if self.origin_server:
             if self.client_is_modern():
                 self._write('HTTP/%s %s\r\n' % (self.http_version,self.status))
-                if 'Date' not in self.headers:
+                if not self.headers.has_key('Date'):
                     self._write(
-                        'Date: %s\r\n' % http_date()
+                        'Date: %s\r\n' % time.asctime(time.gmtime(time.time()))
                     )
-                if self.server_software and 'Server' not in self.headers:
+                if self.server_software and not self.headers.has_key('Server'):
                     self._write('Server: %s\r\n' % self.server_software)
         else:
             self._write('Status: %s\r\n' % self.status)
@@ -388,7 +382,7 @@ class ServerHandler(object):
     def write(self, data):
         """'write()' callable as specified by PEP 333"""
 
-        assert isinstance(data, str), "write() argument must be string"
+        assert type(data) is StringType,"write() argument must be string"
 
         if not self.status:
             raise AssertionError("write() before start_response()")
@@ -401,20 +395,8 @@ class ServerHandler(object):
             self.bytes_sent += len(data)
 
         # XXX check Content-Length and truncate if too many bytes written?
-
-        # If data is too large, socket will choke, so write chunks no larger
-        # than 32MB at a time.
-        length = len(data)
-        if length > 33554432:
-            offset = 0
-            while offset < length:
-                chunk_size = min(33554432, length)
-                self._write(data[offset:offset+chunk_size])
-                self._flush()
-                offset += chunk_size
-        else:
-            self._write(data)
-            self._flush()
+        self._write(data)
+        self._flush()
 
     def sendfile(self):
         """Platform-specific file transmission
@@ -554,9 +536,6 @@ class WSGIRequestHandler(BaseHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
         from django.conf import settings
         self.admin_media_prefix = settings.ADMIN_MEDIA_PREFIX
-        # We set self.path to avoid crashes in log_message() on unsupported
-        # requests (like "OPTIONS").
-        self.path = ''
         BaseHTTPRequestHandler.__init__(self, *args, **kwargs)
 
     def get_environ(self):
@@ -671,23 +650,10 @@ class AdminMediaHandler(object):
                 headers = {'Content-type': 'text/plain'}
                 output = ['Permission denied: %s' % environ['PATH_INFO']]
             else:
-                # This is a very simple implementation of conditional GET with
-                # the Last-Modified header. It makes media files a bit speedier
-                # because the files are only read off disk for the first
-                # request (assuming the browser/client supports conditional
-                # GET).
-                mtime = http_date(os.stat(file_path)[stat.ST_MTIME])
-                headers = {'Last-Modified': mtime}
-                if environ.get('HTTP_IF_MODIFIED_SINCE', None) == mtime:
-                    status = '304 NOT MODIFIED'
-                    output = []
-                else:
-                    status = '200 OK'
-                    mime_type = mimetypes.guess_type(file_path)[0]
-                    if mime_type:
-                        headers['Content-Type'] = mime_type
-                    output = [fp.read()]
-                    fp.close()
+                status = '200 OK'
+                headers = {}
+                output = [fp.read()]
+                fp.close()
         start_response(status, headers.items())
         return output
 

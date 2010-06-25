@@ -8,46 +8,37 @@ ImproperlyConfigured.
 """
 
 from django.core.exceptions import ImproperlyConfigured
-from django.db.backends import *
-from django.db.backends.creation import BaseDatabaseCreation
 
 def complain(*args, **kwargs):
     raise ImproperlyConfigured, "You haven't set the DATABASE_ENGINE setting yet."
 
-def ignore(*args, **kwargs):
-    pass
-
 class DatabaseError(Exception):
     pass
 
-class IntegrityError(DatabaseError):
-    pass
-
-class DatabaseOperations(BaseDatabaseOperations):
-    quote_name = complain
-
-class DatabaseClient(BaseDatabaseClient):
-    runshell = complain
-
-class DatabaseIntrospection(BaseDatabaseIntrospection):
-    get_table_list = complain
-    get_table_description = complain
-    get_relations = complain
-    get_indexes = complain
-
-class DatabaseWrapper(object):
-    operators = {}
+class DatabaseWrapper:
     cursor = complain
     _commit = complain
-    _rollback = ignore
+    _rollback = complain
 
-    def __init__(self, *args, **kwargs):
-        self.features = BaseDatabaseFeatures()
-        self.ops = DatabaseOperations()
-        self.client = DatabaseClient(self)
-        self.creation = BaseDatabaseCreation(self)
-        self.introspection = DatabaseIntrospection(self)
-        self.validation = BaseDatabaseValidation()
+    def __init__(self, **kwargs):
+        pass
 
     def close(self):
-        pass
+        pass # close()
+
+supports_constraints = False
+quote_name = complain
+dictfetchone = complain
+dictfetchmany = complain
+dictfetchall = complain
+get_last_insert_id = complain
+get_date_extract_sql = complain
+get_date_trunc_sql = complain
+get_limit_offset_sql = complain
+get_random_function_sql = complain
+get_deferrable_sql = complain
+get_fulltext_search_sql = complain
+get_drop_foreignkey_sql = complain
+get_sql_flush = complain
+
+OPERATOR_MAPPING = {}

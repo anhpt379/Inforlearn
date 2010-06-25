@@ -1,82 +1,48 @@
-import os
 from django.conf import settings
 from django.core import signals
-from django.core.exceptions import ImproperlyConfigured
-from django.utils.functional import curry
-from django.utils.importlib import import_module
+from django.dispatch import dispatcher
 
-__all__ = ('backend', 'connection', 'DatabaseError', 'IntegrityError')
+__all__ = ('backend', 'connection', 'DatabaseError')
 
 if not settings.DATABASE_ENGINE:
     settings.DATABASE_ENGINE = 'dummy'
 
-def load_backend(backend_name):
-    try:
-        # Most of the time, the database backend will be one of the official
-        # backends that ships with Django, so look there first.
-        return import_module('.base', 'django.db.backends.%s' % backend_name)
-    except ImportError, e:
-        # If the import failed, we might be looking for a database backend
-        # distributed external to Django. So we'll try that next.
-        try:
-            return import_module('.base', backend_name)
-        except ImportError, e_user:
-            # The database backend wasn't found. Display a helpful error message
-            # listing all possible (built-in) database backends.
-            backend_dir = os.path.join(__path__[0], 'backends')
-            try:
-                available_backends = [f for f in os.listdir(backend_dir)
-                        if os.path.isdir(os.path.join(backend_dir, f))
-                        and not f.startswith('.')]
-            except EnvironmentError:
-                available_backends = []
-            available_backends.sort()
-            if backend_name not in available_backends:
-                error_msg = "%r isn't an available database backend. Available options are: %s\nError was: %s" % \
-                    (backend_name, ", ".join(map(repr, available_backends)), e_user)
-                raise ImproperlyConfigured(error_msg)
-            else:
-                raise # If there's some other error, this must be an error in Django itself.
+try:
+    backend = __import__('django.db.backends.%s.base' % settings.DATABASE_ENGINE, {}, {}, [''])
+except ImportError, e:
+    # The database backend wasn't found. Display a helpful error message
+    # listing all possible database backends.
+    from django.core.exceptions import ImproperlyConfigured
+    import os
+    backend_dir = os.path.join(__path__[0], 'backends')
+    available_backends = [f for f in os.listdir(backend_dir) if not f.startswith('_') and not f.startswith('.') and not f.endswith('.py') and not f.endswith('.pyc')]
+    available_backends.sort()
+    if settings.DATABASE_ENGINE not in available_backends:
+        raise ImproperlyConfigured, "%r isn't an available database backend. Available options are: %s" % \
+            (settings.DATABASE_ENGINE, ", ".join(map(repr, available_backends)))
+    else:
+        raise # If there's some other error, this must be an error in Django itself.
 
-backend = load_backend(settings.DATABASE_ENGINE)
+get_introspection_module = lambda: __import__('django.db.backends.%s.introspection' % settings.DATABASE_ENGINE, {}, {}, [''])
+get_creation_module = lambda: __import__('django.db.backends.%s.creation' % settings.DATABASE_ENGINE, {}, {}, [''])
+runshell = lambda: __import__('django.db.backends.%s.client' % settings.DATABASE_ENGINE, {}, {}, ['']).runshell()
 
-# `connection`, `DatabaseError` and `IntegrityError` are convenient aliases
-# for backend bits.
-
-# DatabaseWrapper.__init__() takes a dictionary, not a settings module, so
-# we manually create the dictionary from the settings, passing only the
-# settings that the database backends care about. Note that TIME_ZONE is used
-# by the PostgreSQL backends.
-connection = backend.DatabaseWrapper({
-    'DATABASE_HOST': settings.DATABASE_HOST,
-    'DATABASE_NAME': settings.DATABASE_NAME,
-    'DATABASE_OPTIONS': settings.DATABASE_OPTIONS,
-    'DATABASE_PASSWORD': settings.DATABASE_PASSWORD,
-    'DATABASE_PORT': settings.DATABASE_PORT,
-    'DATABASE_USER': settings.DATABASE_USER,
-    'TIME_ZONE': settings.TIME_ZONE,
-})
+connection = backend.DatabaseWrapper(**settings.DATABASE_OPTIONS)
 DatabaseError = backend.DatabaseError
-IntegrityError = backend.IntegrityError
 
 # Register an event that closes the database connection
 # when a Django request is finished.
-def close_connection(**kwargs):
-    connection.close()
-signals.request_finished.connect(close_connection)
+dispatcher.connect(connection.close, signal=signals.request_finished)
 
 # Register an event that resets connection.queries
 # when a Django request is started.
-def reset_queries(**kwargs):
+def reset_queries():
     connection.queries = []
-signals.request_started.connect(reset_queries)
+dispatcher.connect(reset_queries, signal=signals.request_started)
 
 # Register an event that rolls back the connection
 # when a Django request has an exception.
-def _rollback_on_exception(**kwargs):
+def _rollback_on_exception():
     from django.db import transaction
-    try:
-        transaction.rollback_unless_managed()
-    except DatabaseError:
-        pass
-signals.got_request_exception.connect(_rollback_on_exception)
+    transaction.rollback_unless_managed()
+dispatcher.connect(_rollback_on_exception, signal=signals.got_request_exception)

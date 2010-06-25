@@ -23,11 +23,10 @@
   {% endif %}
   {% if not hide_links %}
   {% if not entry.extra.comment_count %}
-    <a href="{% url_for entry request %}#comments" class="add-comment">Gửi bình luận</a>
+    &nbsp;&nbsp;&nbsp;<a href="{% url_for entry request %}#comments" class="add-comment">Gửi bình luận</a>&nbsp;&nbsp;&nbsp;
   {% else %}
-    <a href="{% url_for entry request %}#comments" class="comments">{{entry.extra.comment_count}} ý kiến</a>
+    &nbsp;&nbsp;&nbsp;<a href="{% url_for entry request %}#comments" class="comments">{{entry.extra.comment_count}} ý kiến</a>&nbsp;&nbsp;&nbsp;
   {% endif %}
-
   {% entry_remove request.user entry user_is_admin %}
   {% endif %}
 </p>

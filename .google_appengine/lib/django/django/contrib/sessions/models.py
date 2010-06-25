@@ -1,20 +1,44 @@
-import base64
+import base64, md5, random, sys, datetime
 import cPickle as pickle
-
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import gettext_lazy as _
 from django.conf import settings
-from django.utils.hashcompat import md5_constructor
-
 
 class SessionManager(models.Manager):
     def encode(self, session_dict):
-        """
-        Returns the given session dictionary pickled and encoded as a string.
-        """
+        "Returns the given session dictionary pickled and encoded as a string."
         pickled = pickle.dumps(session_dict)
-        pickled_md5 = md5_constructor(pickled + settings.SECRET_KEY).hexdigest()
+        pickled_md5 = md5.new(pickled + settings.SECRET_KEY).hexdigest()
         return base64.encodestring(pickled + pickled_md5)
+
+    def get_new_session_key(self):
+        "Returns session key that isn't being used."
+        # The random module is seeded when this Apache child is created.
+        # Use person_id and SECRET_KEY as added salt.
+        while 1:
+            session_key = md5.new(str(random.randint(0, sys.maxint - 1)) + str(random.randint(0, sys.maxint - 1)) + settings.SECRET_KEY).hexdigest()
+            try:
+                self.get(session_key=session_key)
+            except self.model.DoesNotExist:
+                break
+        return session_key
+
+    def get_new_session_object(self):
+        """
+        Returns a new session object.
+        """
+        # FIXME: There is a *small* chance of collision here, meaning we will
+        # return an existing object. That can be fixed when we add a way to
+        # validate (and guarantee) that non-auto primary keys are unique. For
+        # now, we save immediately in order to reduce the "window of
+        # misfortune" as much as possible.
+        created = False
+        while not created:
+            obj, created = self.get_or_create(session_key=self.get_new_session_key(),
+                    expire_date = datetime.datetime.now())
+            # Collision in key generation, so re-seed the generator
+            random.seed()
+        return obj
 
     def save(self, session_key, session_dict, expire_date):
         s = self.model(session_key, self.encode(session_dict), expire_date)
@@ -23,7 +47,6 @@ class SessionManager(models.Manager):
         else:
             s.delete() # Clear sessions with no data.
         return s
-
 
 class Session(models.Model):
     """
@@ -42,12 +65,10 @@ class Session(models.Model):
     the sessions documentation that is shipped with Django (also available
     on the Django website).
     """
-    session_key = models.CharField(_('session key'), max_length=40,
-                                   primary_key=True)
+    session_key = models.CharField(_('session key'), maxlength=40, primary_key=True)
     session_data = models.TextField(_('session data'))
     expire_date = models.DateTimeField(_('expire date'))
     objects = SessionManager()
-
     class Meta:
         db_table = 'django_session'
         verbose_name = _('session')
@@ -56,7 +77,7 @@ class Session(models.Model):
     def get_decoded(self):
         encoded_data = base64.decodestring(self.session_data)
         pickled, tamper_check = encoded_data[:-32], encoded_data[-32:]
-        if md5_constructor(pickled + settings.SECRET_KEY).hexdigest() != tamper_check:
+        if md5.new(pickled + settings.SECRET_KEY).hexdigest() != tamper_check:
             from django.core.exceptions import SuspiciousOperation
             raise SuspiciousOperation, "User tampered with session cookie."
         try:

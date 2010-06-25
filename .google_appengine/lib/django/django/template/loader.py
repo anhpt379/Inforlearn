@@ -22,7 +22,6 @@
 
 from django.core.exceptions import ImproperlyConfigured
 from django.template import Origin, Template, Context, TemplateDoesNotExist, add_to_builtins
-from django.utils.importlib import import_module
 from django.conf import settings
 
 template_source_loaders = None
@@ -47,12 +46,12 @@ def find_template_source(name, dirs=None):
     # circular import errors. See Django ticket #1292.
     global template_source_loaders
     if template_source_loaders is None:
-        loaders = []
+        template_source_loaders = []
         for path in settings.TEMPLATE_LOADERS:
             i = path.rfind('.')
             module, attr = path[:i], path[i+1:]
             try:
-                mod = import_module(module)
+                mod = __import__(module, globals(), locals(), [attr])
             except ImportError, e:
                 raise ImproperlyConfigured, 'Error importing template source loader %s: "%s"' % (module, e)
             try:
@@ -63,8 +62,7 @@ def find_template_source(name, dirs=None):
                 import warnings
                 warnings.warn("Your TEMPLATE_LOADERS setting includes %r, but your Python installation doesn't support that type of template loading. Consider removing that line from TEMPLATE_LOADERS." % path)
             else:
-                loaders.append(func)
-        template_source_loaders = tuple(loaders)
+                template_source_loaders.append(func)
     for loader in template_source_loaders:
         try:
             source, display_name = loader(name, dirs)

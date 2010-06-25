@@ -4,9 +4,9 @@
 {% load nonce avatar format entry %}
 <div id="current-stream">
   {% ifnotequal entry.owner entry.actor %}
-    {% linked_avatar entry.actor_ref "u" request %}
+    {% linked_avatar entry.actor_ref "f" request %}
   {% else %}
-    {% linked_avatar entry.owner_ref "u" request %}
+    {% linked_avatar entry.owner_ref "f" request %}
   {% endifnotequal %}
 
   <div class="top"><div class="bottom">

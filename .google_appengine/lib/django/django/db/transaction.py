@@ -16,10 +16,6 @@ try:
     import thread
 except ImportError:
     import dummy_thread as thread
-try:
-    from functools import wraps
-except ImportError:
-    from django.utils.functional import wraps  # Python 2.3, 2.4 fallback.
 from django.db import connection
 from django.conf import settings
 
@@ -30,17 +26,16 @@ class TransactionManagementError(Exception):
     """
     pass
 
-# The states are dictionaries of lists. The key to the dict is the current
+# The state is a dictionary of lists. The key to the dict is the current
 # thread and the list is handled as a stack of values.
 state = {}
-savepoint_state = {}
 
 # The dirty flag is set by *_unless_managed functions to denote that the
 # code under transaction management has changed things to require a
 # database commit.
 dirty = {}
 
-def enter_transaction_management(managed=True):
+def enter_transaction_management():
     """
     Enters transaction management for a running thread. It must be balanced with
     the appropriate leave_transaction_management call, since the actual state is
@@ -51,14 +46,13 @@ def enter_transaction_management(managed=True):
     when no current block is running).
     """
     thread_ident = thread.get_ident()
-    if thread_ident in state and state[thread_ident]:
+    if state.has_key(thread_ident) and state[thread_ident]:
         state[thread_ident].append(state[thread_ident][-1])
     else:
         state[thread_ident] = []
         state[thread_ident].append(settings.TRANSACTIONS_MANAGED)
-    if thread_ident not in dirty:
+    if not dirty.has_key(thread_ident):
         dirty[thread_ident] = False
-    connection._enter_transaction_management(managed)
 
 def leave_transaction_management():
     """
@@ -66,9 +60,8 @@ def leave_transaction_management():
     over to the surrounding block, as a commit will commit all changes, even
     those from outside. (Commits are on connection level.)
     """
-    connection._leave_transaction_management(is_managed())
     thread_ident = thread.get_ident()
-    if thread_ident in state and state[thread_ident]:
+    if state.has_key(thread_ident) and state[thread_ident]:
         del state[thread_ident][-1]
     else:
         raise TransactionManagementError("This code isn't under transaction management")
@@ -91,7 +84,7 @@ def set_dirty():
     changes waiting for commit.
     """
     thread_ident = thread.get_ident()
-    if thread_ident in dirty:
+    if dirty.has_key(thread_ident):
         dirty[thread_ident] = True
     else:
         raise TransactionManagementError("This code isn't under transaction management")
@@ -103,23 +96,17 @@ def set_clean():
     should happen.
     """
     thread_ident = thread.get_ident()
-    if thread_ident in dirty:
+    if dirty.has_key(thread_ident):
         dirty[thread_ident] = False
     else:
         raise TransactionManagementError("This code isn't under transaction management")
-    clean_savepoints()
-
-def clean_savepoints():
-    thread_ident = thread.get_ident()
-    if thread_ident in savepoint_state:
-        del savepoint_state[thread_ident]
 
 def is_managed():
     """
     Checks whether the transaction manager is in manual or in auto state.
     """
     thread_ident = thread.get_ident()
-    if thread_ident in state:
+    if state.has_key(thread_ident):
         if state[thread_ident]:
             return state[thread_ident][-1]
     return settings.TRANSACTIONS_MANAGED
@@ -147,7 +134,6 @@ def commit_unless_managed():
     """
     if not is_managed():
         connection._commit()
-        clean_savepoints()
     else:
         set_dirty()
 
@@ -174,38 +160,6 @@ def rollback():
     connection._rollback()
     set_clean()
 
-def savepoint():
-    """
-    Creates a savepoint (if supported and required by the backend) inside the
-    current transaction. Returns an identifier for the savepoint that will be
-    used for the subsequent rollback or commit.
-    """
-    thread_ident = thread.get_ident()
-    if thread_ident in savepoint_state:
-        savepoint_state[thread_ident].append(None)
-    else:
-        savepoint_state[thread_ident] = [None]
-    tid = str(thread_ident).replace('-', '')
-    sid = "s%s_x%d" % (tid, len(savepoint_state[thread_ident]))
-    connection._savepoint(sid)
-    return sid
-
-def savepoint_rollback(sid):
-    """
-    Rolls back the most recent savepoint (if one exists). Does nothing if
-    savepoints are not supported.
-    """
-    if thread.get_ident() in savepoint_state:
-        connection._savepoint_rollback(sid)
-
-def savepoint_commit(sid):
-    """
-    Commits the most recent savepoint (if one exists). Does nothing if
-    savepoints are not supported.
-    """
-    if thread.get_ident() in savepoint_state:
-        connection._savepoint_commit(sid)
-
 ##############
 # DECORATORS #
 ##############
@@ -218,12 +172,12 @@ def autocommit(func):
     """
     def _autocommit(*args, **kw):
         try:
-            enter_transaction_management(managed=False)
+            enter_transaction_management()
             managed(False)
             return func(*args, **kw)
         finally:
             leave_transaction_management()
-    return wraps(func)(_autocommit)
+    return _autocommit
 
 def commit_on_success(func):
     """
@@ -238,8 +192,7 @@ def commit_on_success(func):
             managed(True)
             try:
                 res = func(*args, **kw)
-            except:
-                # All exceptions must be handled here (even string ones).
+            except Exception, e:
                 if is_dirty():
                     rollback()
                 raise
@@ -249,7 +202,7 @@ def commit_on_success(func):
             return res
         finally:
             leave_transaction_management()
-    return wraps(func)(_commit_on_success)
+    return _commit_on_success
 
 def commit_manually(func):
     """
@@ -266,4 +219,4 @@ def commit_manually(func):
         finally:
             leave_transaction_management()
 
-    return wraps(func)(_commit_manually)
+    return _commit_manually

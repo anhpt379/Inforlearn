@@ -602,12 +602,6 @@ ul.stream li img.multiple {
     background: transparent url(bg-photo-multiple.gif) no-repeat;
 }
 
-ul.stream li a.comments, ul.stream li a.add-comment,
-ul.stream li a.confirm-delete, div#comments ul li a.confirm-delete,
-ul.stream li a.confirm-subscribe, div#comments ul li a.confirm-subscribe {
-    background: transparent url(comment.gif) no-repeat 0% 50%;
-}
-
 ul.stream li a.comments:hover, ul.stream li a.add-comment:hover,
 ul.stream li a.confirm-delete:hover, div#comments ul li a.confirm-delete:hover,
 ul.stream li a.confirm-subscribe:hover, div#comments ul li a.confirm-subscribe:hover {

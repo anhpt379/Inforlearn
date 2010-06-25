@@ -5,12 +5,12 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Django\n"
+"Project-Id-Version: Django 0.95\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2006-03-21 18:43+0800\n"
 "PO-Revision-Date: 2006-09-25 08:35+0800\n"
-"Last-Translator: Qing Feng <paradise.qingfeng@gmail.com>\n"
-"Language-Team: Qing Feng <paradise.qingfeng@gmail.com>\n"
+"Last-Translator: limodou <limodou@gmail.com>\n"
+"Language-Team: limodou <limodou@gmail.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -46,7 +46,7 @@ msgstr "清除全部"
 #: contrib/admin/media/js/dateparse.js:32
 #: contrib/admin/media/js/calendar.js:24
 msgid "January February March April May June July August September October November December"
-msgstr "一月 二月 三月 四月 五月 六月 七月 八月 九月 十月 十一月 十二月"
+msgstr "一月 二月 三月 四月 五月 六月 六月 七月 八月 九月 十月 十一月 十二月"
 
 #: contrib/admin/media/js/dateparse.js:33
 msgid "Sunday Monday Tuesday Wednesday Thursday Friday Saturday"
