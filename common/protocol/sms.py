@@ -3,6 +3,7 @@ from common import exception
 from common import throttle
 from common import component
 from common.protocol import base
+from common.clean import encoding
 
 
 class SmsMessage(object):

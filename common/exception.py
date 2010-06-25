@@ -89,7 +89,7 @@ class Catcher(object):
     return None
 
   def __exit__(self, exc_type, exc_value, exc_tb):
-    if isinstance(exc_type, exception.Error):
+    if isinstance(exc_type, Error):
       self.request.errors.append((exc_type, exc_value, exc_tb))
       return True
     return
@@ -216,7 +216,7 @@ class GaeLoginRequiredException(RedirectException):
 
   def build_url(self, request):
     from google.appengine.api import users
-    url = users.create_login_url(redirect_to)
+    url = users.create_login_url(request)
     return url
 
 

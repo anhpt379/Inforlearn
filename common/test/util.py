@@ -148,7 +148,7 @@ class FakeMemcache(object):
     return count
 
   def decr(self, key, delta=1):
-    return incr(key, delta= -(delta))
+    return self.incr(key, delta= -(delta))
 
   def delete(self, key, seconds=0):
     # NOTE: doesn't support seconds

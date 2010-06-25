@@ -101,7 +101,7 @@ def generate_api_docs():
   public_api_methods = api.PublicApi.methods.keys()
   public_decorators = ['throttle', 'owner_required']
 
-  allowed_names = public_api_methods + public_decorators
+#  allowed_names = public_api_methods + public_decorators
   for v in variables:
     if v.name in public_api_methods:
       prefix = "method"
@@ -127,7 +127,7 @@ def build_docs():
   txts = glob.glob(os.path.join(DOC_DIR, '*.txt'))
   for t in txts:
     basename = os.path.basename(t)
-    baseroot, ext = os.path.splitext(basename)
+    baseroot = os.path.splitext(basename)[0]
     outname = os.path.join(API_TEMPLATE_DIR, 'built_%s.html' % baseroot)
 
     logging.info('  for %s...' % baseroot)
@@ -228,8 +228,8 @@ def clean(skip_zip=False):
 
 # Helpers
 def generate_secret_key():
- bits = random.getrandbits(10)
- return md5.new(str(time.time()) + str(bits)).hexdigest()
+  bits = random.getrandbits(10)
+  return md5.new(str(time.time()) + str(bits)).hexdigest()
 
 def required(s):
   if not s:
@@ -272,7 +272,6 @@ def rst_docs(api_doc):
   from epydoc import apidoc
 
   sig_template = '**%(shortname)s** (%(args_list)s)'
-  dec_template = ' * %(decorator)s'
 
   shortname = str(api_doc.canonical_name).split('.')[-1]
   args_list = ', '.join(api_doc.posargs)
@@ -323,5 +322,5 @@ if __name__ == "__main__":
   if len(sys.argv) > 1:
     command = sys.argv[1]
 
-  if command.startswith('config'):
-    build_config(True)
+#  if command.startswith('config'):
+#    build_config(True)

@@ -3,6 +3,7 @@ from django.conf import settings
 from django.utils import html
 from common import component
 from common.protocol import base
+from common.clean import encoding
 
 
 class JID(object):

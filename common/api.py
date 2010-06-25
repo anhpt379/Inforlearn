@@ -662,8 +662,6 @@ def activation_request_email(api_user, nick, email):
   email = normalize.email(email)
   validate.email(email)
 
-  actor_ref = actor_get(api_user, nick)
-
   # check whether they've already tried to activate this email
   # if they have send them the same code
   # TODO(tyler): Abstract into activation_get_or_create
@@ -685,8 +683,6 @@ def activation_request_email(api_user, nick, email):
 @owner_required
 def activation_request_mobile(api_user, nick, mobile):
   mobile = clean.mobile(mobile)
-
-  actor_ref = actor_get(api_user, nick)
 
   # check whether they've already tried to activate this email
   # if they have send them the same code
@@ -796,10 +792,10 @@ def actor_add_contact(api_user, owner, target):
   # Subscribe owner to all of target's streams
   streams = stream_get_actor(ROOT, target)
   for stream in streams:
-    sub = subscription_request(api_user,
-                               topic=stream.key().name(),
-                               target='inbox/%s/overview' % owner
-                              )
+    subscription_request(api_user,
+                         topic=stream.key().name(),
+                         target='inbox/%s/overview' % owner
+                        )
 
   owner_streams = stream_get_actor(api_user, owner)
   for stream in owner_streams:
@@ -1005,7 +1001,7 @@ def actor_get_contacts_safe(api_user, nick, limit=48, offset=None):
   try:
     return actor_get_contacts(api_user, nick, limit, offset)
   except exception.ApiException:
-     return []
+    return []
 
 @owner_required
 def actor_get_contacts_since(api_user, nick, limit=30, since_time=None):
@@ -1013,7 +1009,7 @@ def actor_get_contacts_since(api_user, nick, limit=30, since_time=None):
   query = Relation.gql('WHERE owner = :1 AND relation = :2 AND target > :3',
                        nick,
                        'contact',
-                       offset)
+                       since_time)
   results = query.fetch(limit)
   return [x.target for x in results]
 
@@ -1176,9 +1172,9 @@ def actor_remove_contact(api_user, owner, target):
   # Unsubscribe owner from all of target's streams
   streams = stream_get_actor(ROOT, target)
   for stream in streams:
-    sub = subscription_remove(ROOT,
-                              topic=stream.key().name(),
-                              target='inbox/%s/overview' % owner)
+    subscription_remove(ROOT,
+                        topic=stream.key().name(),
+                        target='inbox/%s/overview' % owner)
 
   # If owner is private mark all subscriptions to her streams as pending
   if owner_ref.privacy < PRIVACY_PUBLIC:
@@ -1258,12 +1254,12 @@ def avatar_upload(api_user, nick, content):
     path = 'avatar_%s_%s' % (path_uuid, img_size)
 
     # TODO: Check for hash collisions before uploading (!!)
-    img_ref = image_set(api_user,
-                        nick,
-                        path=path,
-                        content=img_data,
-                        format='jpg',
-                        size=img_size)
+    image_set(api_user,
+              nick,
+              path=path,
+              content=img_data,
+              format='jpg',
+              size=img_size)
   # XXX end transaction
 
   # TODO(termie): this returns somewhat differently than background_upload below,
@@ -1598,9 +1594,9 @@ def channel_part(api_user, nick, channel):
   # Unsubscribe owner from all of target's streams
   streams = stream_get_actor(ROOT, channel)
   for stream in streams:
-    sub = subscription_remove(ROOT,
-                              topic=stream.key().name(),
-                              target='inbox/%s/overview' % actor_ref.nick)
+    subscription_remove(ROOT,
+                        topic=stream.key().name(),
+                        target='inbox/%s/overview' % actor_ref.nick)
   # XXX end transaction
 
   return rel_ref
@@ -1656,7 +1652,7 @@ def channel_post(api_user, **kw):
   #presence = _set_presence(**values)
   entry = _add_entry(stream, new_values=values)
   subscribers = _subscribers_for_channel_entry(stream, entry)
-  inboxes = _add_inboxes_for_entry(subscribers, stream, entry)
+  _add_inboxes_for_entry(subscribers, stream, entry)
   _notify_subscribers_for_entry(subscribers, actor_ref, stream, entry)
   # XXX end transaction
 
@@ -1869,7 +1865,7 @@ def entry_get(api_user, entry):
     # if this is a comment ensure that the parent exists
     if entry_ref.entry:
       # A comment
-      parent_entry = entry_get(api_user, entry_ref.entry)
+      entry_get(api_user, entry_ref.entry)
 
     # ensure the author exists
     actor_get(api_user, entry_ref.actor)
@@ -2097,7 +2093,7 @@ def keyvalue_get(api_user, nick, keyname):
 @owner_required
 def keyvalue_prefix_list(api_user, nick, keyname):
   if not keyname:
-    return ResultWrapper(keyvalues, keyvalues=None)
+    return ResultWrapper(keyvalues=None)
   nick = clean.nick(nick)
   key_name_lower = unicode(keyname)
   key_name_upper = key_name_lower + "\xEF\xBF\xBD".decode('utf-8')
@@ -3035,10 +3031,10 @@ def task_process_any(api_user, nick=None):
 
       method_ref = PublicApi.get_method(task_ref.action)
 
-      rv = method_ref(actor_ref,
-                      _task_ref=task_ref,
-                      *task_ref.args,
-                      **task_ref.kw)
+      method_ref(actor_ref,
+                 _task_ref=task_ref,
+                 *task_ref.args,
+                 **task_ref.kw)
 
       logging.warning('task_process_any is deprecated, deleting old task')
       task_ref.delete()

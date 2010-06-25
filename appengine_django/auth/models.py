@@ -16,17 +16,13 @@
 App Engine compatible models for the Django authentication framework.
 """
 
+import urllib
 from django.core import mail
 from django.core.exceptions import ImproperlyConfigured
 from django.db import models
 from django.utils.encoding import smart_str
-import urllib
-
 from django.db.models.manager import EmptyManager
-
-from google.appengine.api import users
 from google.appengine.ext import db
-
 from appengine_django.models import BaseModel
 
 

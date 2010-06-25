@@ -68,7 +68,7 @@ class HistoryTest(ViewTestCase):
     """Tests setting and getting presence on the history page"""
     presence = "This is the presence"
     user = 'popular'
-    r = self.login(user)
+    self.login(user)
     r = self.set_presence(user, presence)
     r = self.assertRedirectsPrefix(r, '/user/popular?flash')
     self.assertContains(r, presence)
@@ -89,8 +89,8 @@ class HistoryTest(ViewTestCase):
     """Tests setting and getting presence on the history page"""
     presence = "This is the presence"
     user = 'popular'
-    r = self.login(user)
-    r = self.set_presence(user, presence)
+    self.login(user)
+    self.set_presence(user, presence)
 
     # Retrieve for another user
     r = self.login_and_get('unpopular', '/user/popular')
@@ -109,7 +109,7 @@ class HistoryTest(ViewTestCase):
     self.assertContains(r, 'href="/user/popular/atom"')
 
   def test_browse_older(self):
-    popular_ref = api.actor_get(api.ROOT, 'popular')
+#    popular_ref = api.actor_get(api.ROOT, 'popular')
     existing_entries_per_page = views.ENTRIES_PER_PAGE
     # change the entries per page setting to make sure that the paging
     # link shows up
@@ -143,7 +143,7 @@ class OverviewTest(ViewTestCase):
     self.assertTemplateUsed(r, 'actor/templates/overview.html')
 
   def test_public_overview_when_signed_out(self):
-    r = self.login_and_get(None, '/user/popular/overview')
+    self.login_and_get(None, '/user/popular/overview')
     # self.assert_error_contains(r, "Not allowed", 403)
 
   def test_private_overview_when_signed_in_as_self(self):
@@ -152,7 +152,7 @@ class OverviewTest(ViewTestCase):
     self.assertTemplateUsed(r, 'actor/templates/overview.html')
 
   def test_private_overview_when_signed_out(self):
-    r = self.login_and_get(None, '/user/celebrity/overview')
+    self.login_and_get(None, '/user/celebrity/overview')
     # self.assert_error_contains(r, "Not allowed", 403)
 
   def set_presence(self, user, location):
@@ -169,7 +169,7 @@ class OverviewTest(ViewTestCase):
     """Tests setting and getting presence on the overview page"""
     presence = "This is the presence"
     user = 'popular'
-    r = self.login(user)
+    self.login(user)
     r = self.set_presence(user, presence)
     r = self.assertRedirectsPrefix(r, '/user/popular/overview?flash')
     self.assertContains(r, presence)
@@ -234,7 +234,7 @@ class ItemTest(ViewTestCase):
     self.assertContains(r, 'entry_remove_comment', 0)
 
   def test_private_item_when_signed_out(self):
-    r = self.login_and_get(None, '/user/girlfriend/presence/16961')
+    self.login_and_get(None, '/user/girlfriend/presence/16961')
     # self.assert_error_contains(r, 'girlfriend', 403)
 
   def test_private_item_when_signed_in_as_poster(self):
@@ -278,7 +278,7 @@ class CommentTest(ViewTestCase):
   entry = 'stream/popular@example.com/presence/12345'
 
   def test_email_notification(self):
-    r = self.login('hermit')
+    self.login('hermit')
     content = 'TEST COMMENT'
     params = {'entry_add_comment': '',
               'nick': 'hermit@example.com',
@@ -301,7 +301,7 @@ class CommentTest(ViewTestCase):
       self.assertTemplateUsed(r, 'actor/templates/item.html')
 
   def test_email_notification_entities(self):
-    r = self.login('hermit')
+    self.login('hermit')
     content = 'TEST COMMENT single quote \' ç'
     params = {'entry_add_comment': '',
               'nick': 'hermit@example.com',
@@ -311,7 +311,7 @@ class CommentTest(ViewTestCase):
               '_nonce': util.create_nonce('hermit@example.com',
                                           'entry_add_comment')
               }
-    r = self.client.post('/user/popular/presence/12345',
+    self.client.post('/user/popular/presence/12345',
                          params)
 
     self.exhaust_queue_any()
@@ -364,14 +364,14 @@ class ContactsTest(ViewTestCase):
   def test_email_notification(self):
     # new follower
 
-    r = self.login('hermit')
+    self.login('hermit')
     params = {'actor_add_contact': '',
               'owner': 'hermit@example.com',
               'target': 'popular@example.com',
               '_nonce': util.create_nonce('hermit@example.com',
                                           'actor_add_contact')
               }
-    r = self.client.post('/user/popular', params)
+    self.client.post('/user/popular', params)
 
     self.assertEqual(len(mail.outbox), 1, 'new follower')
 

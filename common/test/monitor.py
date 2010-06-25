@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django import test
 from common import monitor
+from common import exception
 
 
 class MonitorTest(test.TestCase):

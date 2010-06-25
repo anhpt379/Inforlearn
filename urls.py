@@ -1,6 +1,5 @@
 from django.conf import settings
-from django.conf.urls.defaults import *
-
+from django.conf.urls.defaults import patterns, include
 from common import patterns as common_patterns
 
 urlpatterns = patterns('',

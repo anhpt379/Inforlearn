@@ -317,8 +317,8 @@ def api_loaddata(request):
 
         real_obj.put()
       return count
-    except Exception, e:
-     raise
+    except Exception:
+      raise
 
   #count = db.run_in_transaction(_loaddata)
   count = _loaddata()
@@ -408,7 +408,7 @@ def api_task_queue(request):
   """
   try:
     task_ref = api.Task.from_request(request)
-  except Exception, e:
+  except Exception:
     logging.exception('Unhandled exception while building task ref')
     logging.warning('request.post %s', request.POST)
     return http.HttpResponse('')

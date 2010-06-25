@@ -55,11 +55,11 @@ class IfPredNode(template.Node):
   def render(self, context):
     try:
       val1 = self.var1.resolve(context)
-    except VariableDoesNotExist:
+    except template.VariableDoesNotExist:
       val1 = None
     try:
       val2 = self.var2.resolve(context)
-    except VariableDoesNotExist:
+    except template.VariableDoesNotExist:
       val2 = None
 
     predicate = self.predicate

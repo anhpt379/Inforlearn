@@ -16,13 +16,8 @@
 
 import sys
 import types
-
 from google.appengine.ext import db
-
-from django import VERSION
 from django.core.exceptions import ObjectDoesNotExist
-from django.db.models.fields import Field
-from django.db.models.options import Options
 from django.db.models.loading import register_models, get_model
 
 

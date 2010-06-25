@@ -48,9 +48,9 @@ class GoogleSMTPConnection(SMTPConnection):
     if not email_message.to:
       return False
     try:
-      if (isinstance(email_message,gmail.EmailMessage)):
-        e = message
-      elif (isinstance(email_message,mail.EmailMessage)):
+      if (isinstance(email_message, gmail.EmailMessage)):
+        e = email_message
+      elif (isinstance(email_message, mail.EmailMessage)):
         e = gmail.EmailMessage(sender=email_message.from_email,
                                to=email_message.to,
                                subject=email_message.subject,

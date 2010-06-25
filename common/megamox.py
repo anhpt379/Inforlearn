@@ -1,5 +1,5 @@
 
-from mox import *
+import mox
 import stubout
 
 
@@ -44,7 +44,7 @@ class ExtendedStubOut(stubout.StubOutForTesting):
       setattr(parent, child_name, old_child)
     self.cache = []
 
-class ExtendedMockMethod(MockMethod):
+class ExtendedMockMethod(mox.MockMethod):
   def __init__(self, method_name, call_queue, replay_mode,
                method_to_mock=None, description=None, stub=None):
     super(ExtendedMockMethod, self).__init__(
@@ -65,7 +65,7 @@ class ExtendedMockMethod(MockMethod):
     self._once = True
     return self
 
-class ExtendedMox(Mox):
+class ExtendedMox(mox.Mox):
   def __init__(self, *args, **kw):
     super(ExtendedMox, self).__init__(*args, **kw)
     self.stubs = ExtendedStubOut()
@@ -86,7 +86,7 @@ class ExtendedMox(Mox):
     attr_to_replace = getattr(obj, attr_name)
 
     # Check for a MockAnything. This could cause confusing problems later on.
-    if attr_to_replace == MockAnything():
+    if attr_to_replace == mox.MockAnything():
       raise TypeError('Cannot mock a MockAnything! Did you remember to '
                       'call UnsetStubs in your previous test?')
 

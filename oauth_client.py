@@ -15,11 +15,14 @@ AUTHORIZATION_URL = BASE_URL + '/api/authorize'
 CONSUMER_KEY = 'TESTDESKTOPCONSUMER'
 CONSUMER_SECRET = 'secret'
 
+RESOURCE_URL = ''
+CALLBACK_URL = ''
+
 try:
   from oauth import rsa as oauth_rsa
-  USE_RSA=True
+  USE_RSA = True
 except ImportError:
-  USE_RSA=False
+  USE_RSA = False
 
 # example client using httplib with headers
 class SimpleOAuthClient(oauth.OAuthClient):

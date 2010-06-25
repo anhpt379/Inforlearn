@@ -1,4 +1,5 @@
 from django.conf import settings as django_settings
+from google.appengine.api import users
 from common import component
 from common import util
 

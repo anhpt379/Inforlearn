@@ -1,10 +1,12 @@
 import xmlrpclib
 from django.conf import settings
 from api import xmlrpc
+from oauth import oauth
 from common import api
 from common import clean
 from common import legacy
 from common import oauth_util
+from common import util
 from common.protocol import xmpp
 from common.test import base
 from common.test import util as test_util
@@ -42,7 +44,7 @@ class SignInTest(ImTestCase):
   from_jid = xmpp.JID.from_uri('test@example.com/demo')
   def test_sign_in(self):
     self.assertEqual(len(xmpp.outbox), 0)
-    r = self.sign_in(self.from_jid, 'hermit')
+    self.sign_in(self.from_jid, 'hermit')
     self.assertEqual(len(xmpp.outbox), 1)
 
 class NotificationsTest(ImTestCase):
@@ -51,7 +53,7 @@ class NotificationsTest(ImTestCase):
     actor_pre_ref = api.actor_get(api.ROOT, 'hermit')
     self.assertEqual(actor_pre_ref.extra.get('im_notify', False), False)
 
-    r = self.sign_in(self.from_jid, 'hermit')
+    self.sign_in(self.from_jid, 'hermit')
 
     self.send(self.from_jid, 'start')
 
@@ -111,8 +113,8 @@ class PostTest(ImTestCase):
   from_jid = xmpp.JID.from_uri('test@example.com/demo')
   def test_post_signed_in(self):
     message = "test post"
-    r = self.sign_in(self.from_jid, 'hermit')
-    r = self.send(self.from_jid, message)
+    self.sign_in(self.from_jid, 'hermit')
+    self.send(self.from_jid, message)
 
 class ChannelPostTest(ImTestCase):
   from_jid = xmpp.JID.from_uri('test@example.com/demo')
@@ -133,21 +135,21 @@ class ChannelPostTest(ImTestCase):
 
   def test_post_signed_in(self):
     post = "%s %s" % (self.channel, self.message)
-    r = self.sign_in(self.from_jid, 'popular')
-    r = self.send(self.from_jid, post)
+    self.sign_in(self.from_jid, 'popular')
+    self.send(self.from_jid, post)
     self.verify_post_present()
 
   def test_post_not_signed_in(self):
     post = "%s %s" % (self.channel, self.message)
-    r = self.send(self.from_jid, post)
+    self.send(self.from_jid, post)
     self.verify_post_not_present()
 
   def test_post_not_member(self):
     # Test posting to a channel, where the user is not a member.
     # (user automatically joined).
     post = "%s %s" % (self.channel, self.message)
-    r = self.sign_in(self.from_jid, 'hermit')
-    r = self.send(self.from_jid, post)
+    self.sign_in(self.from_jid, 'hermit')
+    self.send(self.from_jid, post)
     self.verify_post_present()
 
     # TODO(tyler): Add test to verify the user is now a member and following
@@ -189,7 +191,7 @@ class OAuthTest(base.ViewTestCase):
 
   def test_update_bad_type(self):
     """Verify that sending a bad auth mode fails"""
-    r = self.login('popular')
+    self.login('popular')
     r = self.client.post('/api/keys/TESTDESKTOPCONSUMER', {
       'nick': 'popular@example.com',
       '_nonce': util.create_nonce('popular', 'oauth_consumer_update'),
@@ -207,7 +209,7 @@ class OAuthTest(base.ViewTestCase):
 
   def test_update(self):
     """Verify that sending a good auth mode succeeds"""
-    r = self.login('popular')
+    self.login('popular')
     r = self.client.post('/api/keys/TESTDESKTOPCONSUMER', {
       'nick': 'popular@example.com',
       '_nonce': util.create_nonce('popular', 'oauth_consumer_update'),
@@ -224,7 +226,7 @@ class OAuthTest(base.ViewTestCase):
     self.assertContains(r, 'New App Name')
 
   def test_delete(self):
-    r = self.login('popular')
+    self.login('popular')
     r = self.client.get('/api/keys/TESTDESKTOPCONSUMER', {
       'nick': 'popular@example.com',
       '_nonce': util.create_nonce('popular', 'oauth_consumer_delete'),
@@ -240,7 +242,7 @@ class OAuthTest(base.ViewTestCase):
     self.assertWellformed(r)
 
   def test_revoke_access_token(self):
-    r = self.login('popular')
+    self.login('popular')
     r = self.client.get('/api/tokens', {
       '_nonce': util.create_nonce('popular', 'oauth_revoke_access_token'),
       'oauth_revoke_access_token': '',
@@ -280,8 +282,8 @@ class SmsTestCase(base.ViewTestCase):
 class SmsPostTest(SmsTestCase):
   def test_post_signed_in(self):
     message = "test post"
-    r = self.sign_in(self.popular, 'popular')
-    r = self.send(self.popular, message)
+    self.sign_in(self.popular, 'popular')
+    self.send(self.popular, message)
 
     self.exhaust_queue_any()
 
@@ -304,7 +306,7 @@ class XmlRpcTest(base.FixturesTestCase):
     xml = xmlrpclib.dumps((params,), 'actor_get')
     response = self.client.post('/api/xmlrpc', xml, 'text/xml')
     rv = xmlrpclib.loads(response.content)
-    actor = api.actor_get(api.ROOT, 'popular')
+#    actor = api.actor_get(api.ROOT, 'popular')
     expected = {
         'actor': {'avatar_updated_at': '2001-01-01 00:00:00',
                   'extra': {'follower_count': 4,
