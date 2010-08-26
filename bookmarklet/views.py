@@ -40,19 +40,8 @@ def get_text(begin_str, end_str, document):
   return re.compile(s, re.DOTALL |  re.IGNORECASE).findall(document)
 
 @alternate_nick
-def actor_post(request, format='html'):
-  if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
-      + request.META.get("PATH_INFO")        \
-      + request.META.get("QUERY_STRING")
-  else:
-    s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
-      + request.META.get("PATH_INFO")
-  key_name = "html:%s" % s.strip()
-    
-  nick = request.COOKIES.get("user")
+def actor_post(request, format='html'):    
+  nick = request.COOKIES.get("username")
   if nick is None:
     redirect_to = "%s?message=%s" % (request.META.get("PATH_INFO"), 
                                      request.GET.get("message"))
@@ -67,6 +56,17 @@ def actor_post(request, format='html'):
   if not request.user or view.nick != request.user.nick:
     # Instead of displaying the overview, redirect to the public-facing page
     return http.HttpResponseRedirect(view.url())
+  
+  if request.META.get("QUERY_STRING").startswith("offset"):
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")        \
+      + request.META.get("QUERY_STRING")
+  else:
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")
+  key_name = "html:%s" % s.strip()
 
   handled = common_views.handle_view_action(
       request,

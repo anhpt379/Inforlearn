@@ -38,18 +38,6 @@ def alternate_nick(f):
 
 @alternate_nick
 def actor_history(request, nick=None, format='html'):
-  if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
-      + request.META.get("PATH_INFO")        \
-      + request.META.get("QUERY_STRING")
-  else:
-    s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
-      + request.META.get("PATH_INFO")
-  key_name = "html:%s" % s.strip()
-#  return http.HttpResponse(key_name)
-  
   nick = clean.nick(nick)
   view = api.actor_lookup_nick(request.user, nick)
 
@@ -65,6 +53,18 @@ def actor_history(request, nick=None, format='html'):
       message = 'Subscription requested.'
     return util.RedirectFlash(view.url(), message)
 
+  if request.META.get("QUERY_STRING").startswith("offset"):
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")        \
+      + request.META.get("QUERY_STRING")
+  else:
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")
+  key_name = "html:%s" % s.strip()
+#  return http.HttpResponse(key_name)
+  
   handled = common_views.handle_view_action(
       request,
       { 'entry_remove': request.path,
@@ -242,17 +242,6 @@ def actor_invite(request, nick, format='html'):
 
 @alternate_nick
 def actor_overview(request, nick, format='html'):
-  if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
-      + request.META.get("PATH_INFO")        \
-      + request.META.get("QUERY_STRING")
-  else:
-    s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
-      + request.META.get("PATH_INFO")
-  key_name = "html:%s" % s.strip()
-    
   nick = clean.nick(nick)
 
   view = api.actor_lookup_nick(request.user, nick)
@@ -263,6 +252,17 @@ def actor_overview(request, nick, format='html'):
   if not request.user or view.nick != request.user.nick:
     # Instead of displaying the overview, redirect to the public-facing page
     return http.HttpResponseRedirect(view.url())
+
+  if request.META.get("QUERY_STRING").startswith("offset"):
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")        \
+      + request.META.get("QUERY_STRING")
+  else:
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")
+  key_name = "html:%s" % s.strip()
 
   handled = common_views.handle_view_action(
       request,
@@ -548,6 +548,13 @@ def actor_item(request, nick=None, item=None, format='html'):
 
 @alternate_nick
 def actor_contacts(request, nick=None, format='html'):
+  nick = clean.nick(nick)
+
+  view = api.actor_lookup_nick(request.user, nick)
+
+  if not view:
+    raise exception.UserDoesNotExistError(nick, request.user)
+
   if request.META.get("QUERY_STRING").startswith("offset"):
     s = str(request.COOKIES.get('username'))      \
       + request.META.get("PATH_INFO")  \
@@ -557,13 +564,6 @@ def actor_contacts(request, nick=None, format='html'):
       + request.META.get("PATH_INFO")
   key_name = "html:%s" % s.strip()
   
-  nick = clean.nick(nick)
-
-  view = api.actor_lookup_nick(request.user, nick)
-
-  if not view:
-    raise exception.UserDoesNotExistError(nick, request.user)
-
   handled = common_views.handle_view_action(
       request,
       { 'actor_add_contact': request.path,

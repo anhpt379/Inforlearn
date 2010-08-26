@@ -73,12 +73,10 @@ def channel_index(request, format='html'):
 
   if request.META.get("QUERY_STRING").startswith("offset"):
     s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
       + request.META.get("PATH_INFO")        \
       + request.META.get("QUERY_STRING")
   else:
     s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
       + request.META.get("PATH_INFO")
   key_name = "html:%s" % s.strip()
   
@@ -182,12 +180,10 @@ def channel_index_signedout(request, format='html'):
   # for the Our Picks section of the sidebar
   if request.META.get("QUERY_STRING").startswith("offset"):
     s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
       + request.META.get("PATH_INFO")        \
       + request.META.get("QUERY_STRING")
   else:
     s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
       + request.META.get("PATH_INFO")
   key_name = "html:%s" % s.strip()
   
@@ -233,12 +229,10 @@ def channel_history(request, nick, format='html'):
 
   if request.META.get("QUERY_STRING").startswith("offset"):
     s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
       + request.META.get("PATH_INFO")        \
       + request.META.get("QUERY_STRING")
   else:
     s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
       + request.META.get("PATH_INFO")
   key_name = "html:%s" % s.strip()
 
@@ -410,12 +404,10 @@ def channel_item(request, nick, item=None, format='html'):
 
   if request.META.get("QUERY_STRING").startswith("offset"):
     s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
       + request.META.get("PATH_INFO")        \
       + request.META.get("QUERY_STRING")
   else:
     s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
       + request.META.get("PATH_INFO")
   key_name = "html:%s" % s.strip()
 

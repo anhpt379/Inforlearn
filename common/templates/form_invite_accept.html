@@ -30,8 +30,8 @@
   bạn cần phải có một tài khoản và đang đăng nhập.
   </p>
 
-  <a href="/login?redirect_to={{request.path|urlencode}}"> Đăng nhập</a>
+  <a href="http://{{DOMAIN}}/login?redirect_to={{request.path|urlencode}}"> Đăng nhập</a>
   | 
-  <a href="/join?redirect_to={{request.path|urlencode}}"> Đăng ký</a>
+  <a href="http://{{DOMAIN}}/join?redirect_to={{request.path|urlencode}}"> Đăng ký</a>
 
 {% endif %}
