@@ -1,5 +1,5 @@
 input[type = "text"], input[type = "password"] {
-  background: white url(/images/fieldbg.gif) repeat-x 50% 0%;
+  background: white url(http://{{COOKIELESS_DOMAIN}}/images/fieldbg.gif) repeat-x 50% 0%;
   border-bottom: 1px solid #DDD;
   border-left: 1px solid #C3C3C3;
   border-right: 1px solid #C3C3C3;
@@ -279,7 +279,7 @@ div#side-nav ul li {
 }
 
 div#side-nav ul a {
-  background: url(../images/bg_side_nav.gif) no-repeat 0 0.4em;
+  background: url(http://{{COOKIELESS_DOMAIN}}/images/bg_side_nav.gif) no-repeat 0 0.4em;
   text-decoration: none;
   display: block;
   color: #666;
@@ -472,7 +472,7 @@ div#side-search {
 }
 
 div#sidebar div#mobile h3 {
-  background: transparent url(../images/red.png) no-repeat 0 50%;
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/images/red.png) no-repeat 0 50%;
   margin: 0;
   padding: 0.5em 0 0.3em 30px;
 }
@@ -484,34 +484,34 @@ div#sidebar div#mobile p {
 }
 
 div#sidebar div#mobile h3.location {
-  background-image: url(../images/location.gif);
+  background-image: url(http://{{COOKIELESS_DOMAIN}}/images/location.gif);
   border-top: solid 1px #f1f1f1;
 }
 
 div#sidebar div#mobile h3.near-by {
-  background-image: url(../images/near-by.gif);
+  background-image: url(http://{{COOKIELESS_DOMAIN}}/images/near-by.gif);
   border-top: solid 1px #f1f1f1;
 }
 
 div#sidebar div#mobile h3.calendar {
-  background-image: url(../images/calendar.gif);
+  background-image: url(http://{{COOKIELESS_DOMAIN}}/images/calendar.gif);
   border-top: solid 1px #f1f1f1;
 }
 
 div#sidebar div#mobile h3.availability-green {
-  background-image: url(../images/green.png);
+  background-image: url(http://{{COOKIELESS_DOMAIN}}/images/green.png);
 }
 
 div#sidebar div#mobile h3.availability-orange {
-  background-image: url(../images/orange.png);
+  background-image: url(http://{{COOKIELESS_DOMAIN}}/images/orange.png);
 }
 
 div#sidebar div#mobile h3.availability-red {
-  background-image: url(../images/red.png);
+  background-image: url(http://{{COOKIELESS_DOMAIN}}/images/red.png);
 }
 
 div#sidebar div#mobile h3.availability-gray {
-  background-image: url(../images/gray.png);
+  background-image: url(http://{{COOKIELESS_DOMAIN}}/images/gray.png);
 }
 
 div#sidebar div#channels a.edit, div#sidebar div#streams a.edit, div#sidebar div#contacts a.edit, div#sidebar div#members a.edit, div#sidebar div#admins a.edit, div#sidebar div.first a.edit {
@@ -674,7 +674,7 @@ div.tour div.body h2 {
 }
 
 div.tour div.body ul li, #join #sidebar ul li {
-  background: transparent url(../images/dot.gif) no-repeat 0 0.3em;
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/images/dot.gif) no-repeat 0 0.3em;
   padding-left: 20px;
   font-size: 1.2em;
   color: #8f8f8f;
@@ -924,7 +924,7 @@ div#find-friends div#contacts ul li input {
 }
 
 div#find-friends div#contacts ul li span.checked {
-  background: transparent url(../images/checked.gif) no-repeat 0 50%;
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/images/checked.gif) no-repeat 0 50%;
   margin-top: 5px;
   display: block;
   height: 16px;
@@ -1244,7 +1244,7 @@ div.contacts ul.float li p.foot a.remove {
 }
 
 div.contacts ul.float li p.foot a.add {
-  background: transparent url(../images/add.gif) no-repeat 0 50%;
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/images/add.gif) no-repeat 0 50%;
   padding-left: 12px;
 }
 
@@ -1526,7 +1526,7 @@ div#content div#current-stream p {
 }
 
 div#current-stream a.confirm-delete {
-  background: transparent url(../images/delete.gif) no-repeat 0 50%;
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/images/delete.gif) no-repeat 0 50%;
   padding-left: 12px;
 }
 
@@ -1562,7 +1562,7 @@ div#form-message p#counter {
 }
 
 p#message-container {
-  background: transparent url(../images/bg-form-bubble.gif) no-repeat 0 50%;
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/images/bg-form-bubble.gif) no-repeat 0 50%;
   text-align: center;
   line-height: 1em;
   width: 389px;
@@ -1586,7 +1586,7 @@ div#form-message textarea#message {
   margin: 0;
   padding: 0;
   
-  background: white url(/images/fieldbg.gif) repeat-x 50% 0%;
+  background: white url(http://{{COOKIELESS_DOMAIN}}/images/fieldbg.gif) repeat-x 50% 0%;
   border-bottom: 1px solid #DDD;
   border-left: 1px solid #C3C3C3;
   border-right: 1px solid #C3C3C3;
@@ -1633,7 +1633,7 @@ div#form-message p.buttons input {
 }
 
 img#current-icon {
-  background: transparent url(../images/bg_select.gif) no-repeat 100% 100%;
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/images/bg_select.gif) no-repeat 100% 100%;
   border: solid 1px #d6d6d6;
   cursor: pointer;
   float: left;
@@ -1831,17 +1831,17 @@ ul.stream li a:hover {
 }
 
 ul.stream li a.comments, ul.stream li a.add-comment, ul.stream li a.confirm-delete, div#comments ul li a.confirm-delete, ul.stream li a.confirm-subscribe, div#comments ul li a.confirm-subscribe {
-  background: transparent url(../images/comment.gif) no-repeat scroll 0 50%;
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/images/comment.gif) no-repeat scroll 0 50%;
   white-space: nowrap;
   padding-left: 15px;
 }
 
 ul.stream li a.confirm-delete, div#comments ul li a.confirm-delete {
-  background: transparent url(../images/delete.gif) no-repeat scroll 0 50%;
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/images/delete.gif) no-repeat scroll 0 50%;
 }
 
 ul.stream li a.confirm-subscribe, div#comments ul li a.confirm-subscribe {
-  background-image: url(../images/remove.gif);
+  background-image: url(http://{{COOKIELESS_DOMAIN}}/images/remove.gif);
 }
 
 ul.stream li.comment img.photo {
@@ -1891,7 +1891,7 @@ ul.stream li.date h3 {
 }
 
 div#stream a.feed {
-  background: transparent url(../images/feed-icon.png) no-repeat 0 50%;
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/images/feed-icon.png) no-repeat 0 50%;
   padding-left: 16px;
   padding-top: 2px;
   margin-top: 1em;
@@ -2544,7 +2544,7 @@ div.accordion div.wide textarea {
 textarea {
   overflow: visible !important;
   height: 7em;
-    background: white url(/images/fieldbg.gif) repeat-x 50% 0%;
+    background: white url(http://{{COOKIELESS_DOMAIN}}/images/fieldbg.gif) repeat-x 50% 0%;
   border-bottom: 1px solid #DDD;
   border-left: 1px solid #C3C3C3;
   border-right: 1px solid #C3C3C3;
@@ -2585,7 +2585,7 @@ div.accordion div.tab div.buttons {
 }
 
 div.buttons span.loader, p.buttons span.loader {
-  background: transparent url(../images/throbber.gif) no-repeat 50% 50%;
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/images/throbber.gif) no-repeat 50% 50%;
   font-size: 1em;
   width: 16px;
   display: none;
@@ -2759,7 +2759,7 @@ div#a img {
 }
 
 div#pwstatus {
-  background: #fff url(../images/pwstatus.gif) repeat-x 0 0;
+  background: #fff url(http://{{COOKIELESS_DOMAIN}}/images/pwstatus.gif) repeat-x 0 0;
   position: absolute;
   margin-top: -2em;
   right: 25px;
@@ -2836,7 +2836,7 @@ div#streams ul li a.unsubscribe:hover, div#streams ul li a.subscribe:hover, div.
 }
 
 div#sidebar div.location p, div#sidebar div.location form div {
-  background: transparent url(../images/location.png) no-repeat 0 50%;
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/images/location.png) no-repeat 0 50%;
   padding: 0.5em 0 0.3em 30px;
 }
 
@@ -2919,7 +2919,7 @@ div#content div.bottom div.body div.contacts {
 }
 
 div.contacts ul.float li p.foot a.remove, div#current-stream a.confirm-spam, div#comments ul li a.confirm-spam {
-  background: transparent url(../images/remove.gif) no-repeat 0 50%;
+  background: transparent url(..http://{{COOKIELESS_DOMAIN}}/images/remove.gif) no-repeat 0 50%;
   padding-left: 12px;
 }
 
@@ -2998,4 +2998,630 @@ div.tabs div.tab p.help, #settings form div p.help {
 div.highlight code, dl dd code {
   padding: 0.1em;
 }
+
+
+
+/* screen.css */
+
+div#content div.path {
+  background: #96C63F url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-main.gif) repeat-x 0px 0px;
+  color: white;
+  margin: 0px -15px 15px;
+  padding: 7px 15px 10px;
+}
+
+div.green_title {
+  background: #96C63F url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-main.gif) repeat-x 0px 0px;
+  color: white;
+  width: 592px;
+  padding-bottom: 3px;
+  margin-left: 7px;
+}
+
+div#header-container {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-header.png) repeat-x 0 100%;
+}
+
+div#content {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-content-bottom.png) no-repeat 0 100%;
+}
+
+div#content div.top.b {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-content-top-g.png) no-repeat;
+}
+
+div#content div.main {
+  background: #96c63f url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-main.gif) repeat-x 0 0;
+}
+
+div.wide div#content {
+  background-image: url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-content-w-bottom.png);
+}
+
+div.wide div#content div.top {
+  background-image: url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-content-w-top.png);
+}
+
+div.wide div#content div.top.b {
+  background-image: url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-content-w-top-g.png);
+}
+
+div.wide div#content div.top {
+  background-image: url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-content-w-top-g.png);
+}
+
+div.wide div#content div.bottom {
+  background-image: url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-content-w.png);
+}
+
+div#content div#current-stream div.top {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-stream-current-bottom.gif) no-repeat 0 100%;
+}
+
+div#content div#current-stream div.bottom {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-stream-current-top.gif) no-repeat;
+}
+
+div#sidebar {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-sidebar-bottom.png) no-repeat 0 100%;
+}
+
+div#sidebar div.top {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-sidebar-top.png) no-repeat;
+}
+
+div#sidebar div.top.b {
+  background-image: url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-sidebar-top-g.png);
+}
+
+div#sidebar div.bottom {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-sidebar.png) repeat-y;
+}
+
+div#sidebar h2, div#side-nav h2, div#leave-comment h2 {
+  background: #a8d94f;
+}
+
+ul#main-nav li.current {
+  background: #9c0;
+}
+
+ul#sub-nav {
+  background: #96c73f;
+}
+
+ul#sub-nav.b {
+  background: #adde53;
+}
+
+ul#sub-nav li {
+  border-bottom: 1px solid #96c73f;
+  background: #e1f0c5;
+}
+
+ul#sub-nav li a {
+  color: #96c73f;
+}
+
+div#side-nav ul li.current a {
+  background-color: #fff;
+  color: #86bd33;
+}
+
+div#intro h1 {
+  color: #94bf1b;
+}
+
+div#intro ul li#create {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/icons/jaiku-bubble.gif) no-repeat 0 20%;
+}
+
+div#intro ul li#follow {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/icons/jaiku-couple.gif) no-repeat 0 20%;
+}
+
+div#intro ul li#client {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/icons/jaiku-message.gif) no-repeat 0 20%;
+}
+
+div#map {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-map.gif) no-repeat;
+}
+
+div#tour-3 div.note {
+  background: #a2e7f2;
+}
+
+div.tour div.body h3 {
+  color: #73ca02;
+}
+
+p.notice {
+  background: #fffdcf;
+}
+
+div.error {
+  background: #fdd;
+}
+
+p.error, span.error {
+  color: #c33;
+}
+
+p.success {
+  color: #3c3;
+}
+
+ul.steps {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-steps-line.gif) repeat-x 0 50%;
+  list-style-type: none;
+  overflow: hidden;
+  font-size: 1.1em;
+  margin: .5em 20px 0;
+  padding: 0;
+}
+
+ul.steps li {
+  line-height: 1.2em;
+  float: left;
+  width: 82px;
+  margin: 0;
+  padding: 0;
+}
+
+ul.steps li a, ul.steps li strong {
+  text-align: center;
+  display: block;
+  height: 100%;
+  color: #999;
+  padding: .5em 0 135px;
+}
+
+ul.steps li a:hover {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-step-2.gif) no-repeat 50% 100%;
+  color: #99cc01;
+}
+
+ul.steps li.current a {
+  color: #99cc01;
+}
+
+ul.steps li#step-2 {
+  margin: 0 115px;
+}
+
+ul.steps li#step-1 a, ul.steps li#step-1 a:hover {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-step-1.gif) no-repeat 50% 100%;
+}
+
+ul.steps li#step-1.current a {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-step-1-sel.gif) no-repeat 50% 100%;
+}
+
+ul.steps li#step-1.done a {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-step-1-done.gif) no-repeat 50% 100%;
+}
+
+ul.steps li#step-2 a, ul.steps li#step-2 a:hover {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-step-2.gif) no-repeat 50% 100%;
+}
+
+ul.steps li#step-2.current a {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-step-2-sel.gif) no-repeat 50% 100%;
+}
+
+ul.steps li#step-2.done a {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-step-2-done.gif) no-repeat 50% 100%;
+}
+
+ul.steps li#step-3 a, ul.steps li#step-3 a:hover {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-step-3.gif) no-repeat 50% 100%;
+}
+
+ul.steps li#step-3.current a {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-step-3-sel.gif) no-repeat 50% 100%;
+}
+
+ul.steps li#step-3.done a {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-step-3-done.gif) no-repeat 50% 100%;
+}
+
+#contacts div.body {
+  margin-left: 0;
+}
+
+div#welcome-start {
+  font-size: 1.2em;
+}
+
+div#welcome-start img {
+  margin: 0 auto 1em;
+}
+
+div#welcome-start p, div#welcome-start h1 {
+  text-align: center;
+  margin: inherit auto;
+}
+
+div#welcome-start ul {
+  list-style-type: none;
+  margin: 1em auto;
+  padding: 0;
+}
+
+div#welcome-start ul li {
+  color: #666;
+  margin: 0;
+  padding: .5em 0 .4em 20px;
+}
+
+div#welcome-start ul li#step-1 {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-step-1-small.png) no-repeat 0 50%;
+}
+
+div#welcome-start ul li#step-2 {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-step-2-small.png) no-repeat 0 50%;
+}
+
+div#welcome-start ul li#step-3 {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-step-3-small.png) no-repeat 0 50%;
+}
+
+div#welcome-done {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/welcome-done.png) no-repeat 12% 50%;
+  padding: 60px 0 100px 220px;
+}
+
+div#find-friends div#contacts ul {
+  border: 2px solid #fff;
+  background: #fff;
+  overflow: auto;
+  height: 300px;
+  margin: 1em 0;
+}
+
+div#find-friends div#contacts div.buttons {
+  text-align: right;
+  padding: 0;
+}
+
+div#find-friends div#contacts div.buttons span {
+  float: left;
+}
+
+div#find-friends div#contacts ul li {
+  border-top: 1px solid #eee;
+  overflow: hidden;
+  clear: both;
+  padding: .4em 0;
+}
+
+div#find-friends div#contacts ul li.alternate {
+  background: #e9e9e9;
+}
+
+div#find-friends div#contacts ul li img.photo {
+  height: 20px;
+  width: 20px;
+  margin: 0 5px;
+}
+
+div#find-friends div#contacts ul li h3 {
+  margin-top: .1em;
+  float: left;
+  padding: 0;
+}
+
+div#find-friends div#contacts ul li p {
+  line-height: 1em;
+  float: left;
+  margin: .2em 0 0;
+  padding: 0;
+}
+
+div#find-friends div#contacts ul li p.foot {
+  width: 200px;
+  float: right;
+  padding: 0;
+}
+
+div#find-friends div#contacts ul li input {
+  margin-top: .2em;
+  float: left;
+}
+
+div#find-friends div#contacts ul li span.checked {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/checked.gif) no-repeat 0 50%;
+  margin-top: 5px;
+  display: block;
+  height: 16px;
+  width: 16px;
+  float: left;
+}
+
+#welcome div.buttons {
+  text-align: right;
+}
+
+div.buttons button {
+  background: transparent;
+  white-space: nowrap;
+  line-height: 1em;
+  font-size: .9em;
+  display: block;
+  border: none;
+  float: right;
+  margin: 0;
+  padding: 0;
+}
+
+div.buttons big, div#welcome-start big {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-foot-step-dis.gif) no-repeat 0 0;
+  text-align: center;
+  overflow: hidden;
+  display: block;
+  height: 32px;
+  float: right;
+  margin: 0;
+  padding: 0;
+}
+
+div#welcome-start big {
+  width: 140px;
+  float: none;
+  margin: 0 auto 1em;
+}
+
+div.buttons big.active, div#welcome-start big {
+  background-image: url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-foot-step.gif);
+}
+
+div.buttons button:hover big.active, div.buttons big.active:hover, div#welcome-start big:hover {
+  background-position: 0 -32px;
+}
+
+div.buttons big a, div.buttons big span, div.buttons big.active a, div#welcome-start big a {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-foot-step-dis-r.gif) no-repeat 100% 0;
+  display: block;
+  height: 14px;
+  color: #fff;
+  margin: 0;
+  padding: 8px 30px 10px;
+}
+
+div.buttons big.active span, div.buttons big.active a, div#welcome-start big a {
+  background-image: url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-foot-step-r.gif);
+}
+
+div.buttons button:hover big.active span, div.buttons big.active:hover a, div#welcome-start big:hover a {
+  background-position: 100% -32px;
+}
+
+p.foot-note {
+  color: #666;
+}
+
+a:link, a:visited {
+  -webkit-transition-duration: .3s;
+  -webkit-transition-property: color, background;
+  color: #4183C4;
+}
+
+a:hover, a:link:hover, a:visited:hover {
+  text-decoration: underline;
+  color: #009bc7;
+}
+
+#self .vcard p.phone {
+  color: #ae3695;
+}
+
+div.main a img.photo, div.main img.photo {
+  border: solid 1px #9ac64a;
+}
+
+#settings div.body dd {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-settings-profile.gif) no-repeat 95% 90%;
+}
+
+#settings div.body dd#design {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-settings-design.gif) no-repeat 95% 90%;
+}
+
+#settings div.body dd#notifications {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-settings-notifications.gif) no-repeat 95% 90%;
+}
+
+#settings div.body dd#feeds {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-settings-feeds.gif) no-repeat 95% 90%;
+}
+
+div#form-message p {
+  color: #e7fdbd;
+}
+
+#content ul.stream li.presence div.top, #content ul.stream li.comment div.top {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-stream-bottom.gif) no-repeat 0 100%;
+}
+
+#sidebar ul.stream li.presence div.top {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-stream-small-bottom.gif) no-repeat 0 100%;
+}
+
+#content ul.stream li.presence div.bottom, #content ul.stream li.comment div.bottom {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-stream-top.gif) no-repeat;
+}
+
+#sidebar ul.stream li.presence div.bottom {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-stream-small-top.gif) no-repeat;
+}
+
+ul.stream li img.ext {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-photo.gif) no-repeat top right;
+}
+
+ul.stream li img.multiple {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-photo-multiple.gif) no-repeat;
+}
+
+ul.stream li a.comments, ul.stream li a.comments:hover {
+  color: #81b920;
+}
+
+div#stream a.rss:hover {
+  background-color: #009bc7;
+}
+
+div.paging a:hover {
+  text-decoration: underline;
+  background: transparent;
+}
+
+div#stream div.controls a.comment {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/comment.png) no-repeat 0 50%;
+}
+
+form#activation div.box {
+  background: #e7e7e7 url(http://{{COOKIELESS_DOMAIN}}/themes/default/sms-code.gif) no-repeat 98% 50%;
+}
+
+form#change-number div.box, form#activate-number div.box {
+  background: #e7e7e7 url(http://{{COOKIELESS_DOMAIN}}/themes/default/sms-get.gif) no-repeat 98% 35%;
+}
+
+h1 span.beta {
+  vertical-align: super;
+  font-style: italic;
+  font-size: .6em;
+}
+
+a img.photo, a:visited img.photo {
+  border: solid 1px #e5e5e5;
+}
+
+#mobile div#s60 {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/mobile-s60.jpg) no-repeat 15% 35%;
+  border: solid 10px #96c63f;
+  position: relative;
+  width: 540px;
+  padding: 120px 10px 0;
+}
+
+#mobile div#s60 h2 {
+  background: #96c63f;
+  position: absolute;
+  color: #fff;
+  left: 0;
+  top: 0;
+  margin: 0;
+  padding: .1em .3em .1em 0;
+}
+
+#mobile div.download {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-arrow.png) no-repeat 50% 2%;
+  width: 200px;
+  float: left;
+  margin: 0 -10px 4em;
+  padding: 27px 30px 30px 50px;
+}
+
+#mobile div.details {
+  margin: -90px 10px 0 260px;
+}
+
+#mobile div.body h3 {
+  font: bold 1.3em "Trebuchet MS", Arial, Helvetica, sans-serif;
+  margin-bottom: 0;
+  color: #333;
+}
+
+#mobile div.body p {
+  margin-bottom: 1em;
+  color: #333;
+}
+
+#mobile div.body div.download p {
+  margin-bottom: 0;
+  color: #666;
+}
+
+div#sidebar div.download {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-mobile-small.gif) no-repeat 50% 0;
+  font-size: 1.1em;
+  min-height: 85px;
+  float: none;
+  width: auto;
+  color: #666;
+  margin: 0 -8px 1em;
+  padding: 29px 56px 0 19px;
+}
+
+div#sidebar div#mobile div.download p {
+  margin: 0;
+}
+
+#frontpage div#mobile {
+  padding-top: 1em;
+}
+
+div#content div.top, body.single div#header-container {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-content-top-g.png) no-repeat;
+}
+
+div#content div.bottom, body.single div#header {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-content.png) repeat-y;
+}
+
+div#current-stream a.confirm-delete:hover, div#intro ul li#more h3 a, div.contacts ul.float li h3 a, div#contacts ul.float li h3 a:hover, div#followers ul.float li h3 a, div.contacts ul.float li p.foot a.remove:hover, div.contacts ul.float li p.foot a.add:hover, ul.stream li a.comments:hover, ul.stream li a.add-comment:hover, ul.stream li a.confirm-delete:hover, div#comments ul li a.confirm-delete:hover, ul.stream li a.confirm-subscribe:hover, div#comments ul li a.confirm-subscribe:hover {
+  color: #009bc7;
+}
+
+div.tip, #mobile div.download a:hover {
+  background: #96c63f;
+  color: #fff;
+}
+
+#mobile div.download a {
+  color: #96c63f;
+}
+
+div.path h1 a, div.path h1 a:hover {
+  color: #FEFEFE;
+}
+
+div.highlight, div#contacts ul.float li.contact, div#followers ul.float li.contact, div.avatars li label:hover, div.backgrounds li label:hover, div#form-icons label.selected {
+  background: #dbeaff;
+}
+
+div#contacts ul.float li.follower {
+  background: #fff;
+}
+
+div.notice, div.reminder {
+  border: solid 1px #f1cb2f;
+  background: #fffdcf;
+}
+
+.vcard a:hover img.photo, div#sidebar div#channels ul li a:hover img.photo, a:hover img.photo {
+  border: solid 1px #009bc7;
+}
+
+#sidebar .vcard a:hover img.photo, div.contacts ul.float li a:hover img.photo, ul.stream li a:hover img.photo {
+  border-color: #009bc7;
+}
+
+div.avatars li.selected label, div.backgrounds li.selected label, div#form-icons label:hover {
+  background: #009bc7;
+}
+
+#content ul.stream li.comment div.top, div#comments ul li div.top {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-comment-bottom.gif) no-repeat 0 100%;
+}
+
+#content ul.stream li.comment div.bottom, div#comments ul li div.bottom {
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/themes/default/bg-comment-top.gif) no-repeat;
+}
+
+
+
 

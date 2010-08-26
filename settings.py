@@ -8,7 +8,7 @@ import os.path
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
-WILDCARD_USER_SUBDOMAINS_ENABLED = False
+WILDCARD_USER_SUBDOMAINS_ENABLED = True
 
 ADMINS = (
 #    ('AloneRoad', 'AloneRoad@Gmail.com'),

@@ -8,6 +8,7 @@ from common.models import File
 from common.slimmer import css_slimmer
 from common.jsmin import jsmin
 from cachepy import cachepy as cache
+from settings import COOKIELESS_DOMAIN
 
 @decorator.cache_forever
 def blob_image_jpg(request, nick, path):
@@ -48,12 +49,14 @@ def css(request):
   if css_data:
     response.write(css_data)
     return response
-  
+
   try:
     css_data = open(path).read()
   except IOError:
     return http.HttpResponseNotFound()
   
+  css_data = css_data.replace("{{COOKIELESS_DOMAIN}}", 
+                              COOKIELESS_DOMAIN)
   css_data = css_slimmer(css_data)
   cache.set(path, css_data)
   

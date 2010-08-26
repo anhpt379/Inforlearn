@@ -34,7 +34,7 @@
               class="selected"
             {% endifequal %}>
           <label>
-            <img src="/image/{{bg.path}}_thumb.jpg" alt=""/>
+            <img src="http://{{COOKIELESS_DOMAIN}}/image/{{bg.path}}_thumb.jpg" alt=""/>
             <input type="radio" 
                    {% ifequal bg.path view.extra.bg_image %} 
                      checked="checked"

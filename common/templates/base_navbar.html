@@ -101,10 +101,10 @@
     {% if not LOCAL_MODE %}
       <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.3/jquery.min.js"></script>
     {% else %}
-      <script type="text/javascript" src="/js/jquery.min.js"></script>
+      <script type="text/javascript" src="http://{{COOKIELESS_DOMAIN}}/js/jquery.min.js"></script>
     {% endif %}
     
-    <script type="text/javascript" src="/js/core.js"></script>
+    <script type="text/javascript" src="http://{{COOKIELESS_DOMAIN}}/js/core.js"></script>
   
     {% block bottomscripts %}
     {% endblock %}

@@ -2,7 +2,9 @@ DOMAIN = 'www.inforlearn.com'
 
 SITE_NAME = 'Inforlearn'
 
-COOKIE_DOMAIN = 'inforlearn.com'
+COOKIE_DOMAIN = 'www.inforlearn.com'
+
+COOKIELESS_DOMAIN = 'static.inforlearn.com'
 
 NS_DOMAIN = 'inforlearn.appspot.com'
 
@@ -21,3 +23,4 @@ DEBUG = False
 SECRET_KEY = 'f245e0b233c1baba0521a8792031d879'
 
 SSL_LOGIN_ENABLED = False
+

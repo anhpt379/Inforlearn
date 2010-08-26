@@ -19,48 +19,55 @@
     <link rel="me" type="text/html" href="{{view.extra.homepage}}"/>
     {% endif %}
   
-    <link rel="icon" href="/themes/{{DEFAULT_THEME|urlencode}}/favicon.ico" type="image/x-icon" />
+    <link rel="icon" href="http://{{COOKIELESS_DOMAIN}}/themes/{{DEFAULT_THEME|urlencode}}/favicon.ico" type="image/x-icon" />
   
     {# base stylesheet #}
     {% if not request.mobile %}
-      <link rel="stylesheet" type="text/css" href="http://{{DOMAIN}}/css/core.css?17" media="screen,projection" />
-      <link rel="stylesheet" type="text/css" href="http://{{DOMAIN}}/css/prototip.css" />
+      <link rel="stylesheet" type="text/css" href="http://{{COOKIELESS_DOMAIN}}/css/core.css" media="screen,projection" />
+      <link rel="stylesheet" type="text/css" href="http://{{COOKIELESS_DOMAIN}}/css/prototip.css" />
       <!--[if lte IE 6]>
         <link rel="stylesheet" type="text/css" href="http://{{DOMAIN}}/css/ie.css?13"/>
       <![endif]-->
     {% else %}
-      <link rel="stylesheet" type="text/css" href="http://{{DOMAIN}}/css/mobile.css?17" media="screen,projection" />
+      <link rel="stylesheet" type="text/css" href="http://{{COOKIELESS_DOMAIN}}/css/mobile.css?17" media="screen,projection" />
       {# iphone viewport definition #}
       <meta name="viewport" content="maximum-scale=2.0, width=device-width,initial-scale=1.0" />
     {% endif %}
   
+  
+    
+    {% comment %}
+    
     {# per-user theme override, usually set by a site admin #}
     {% if view.extra.theme %}
       {% if not request.mobile %}
-        <link rel="stylesheet" type="text/css" href="http://{{DOMAIN}}/themes/{{view.extra.theme|urlencode}}/screen.css" media="screen,projection" />
+        <link rel="stylesheet" type="text/css" href="http://{{COOKIELESS_DOMAIN}}/css/screen.css" media="screen,projection" />
         <!--[if lte IE 6]>
           <link rel="stylesheet" type="text/css" href="http://{{DOMAIN}}/themes/{{view.extra.theme|urlencode}}/screen-ie.css"/>
         <![endif]-->
       {% else %}
-        <link rel="stylesheet" type="text/css" href="http://{{DOMAIN}}/themes/{{view.extra.theme|urlencode}}/mobile.css" media="screen,projection" />
+        <link rel="stylesheet" type="text/css" href="http://{{COOKIELESS_DOMAIN}}/themes/{{view.extra.theme|urlencode}}/mobile.css" media="screen,projection" />
       {% endif %}
     {% else %}
       {% if not request.mobile %}
-        <link rel="stylesheet" type="text/css" href="http://{{DOMAIN}}/themes/{{DEFAULT_THEME|urlencode}}/screen.css" media="screen,projection" />
+        <link rel="stylesheet" type="text/css" href="http://{{COOKIELESS_DOMAIN}}/css/screen.css" media="screen,projection" />
         <!--[if lte IE 6]>
           <link rel="stylesheet" type="text/css" href="http://{{DOMAIN}}/themes/{{DEFAULT_THEME|urlencode}}/screen-ie.css"/>
         <![endif]-->
       {% else %}
-        <link rel="stylesheet" type="text/css" href="http://{{DOMAIN}}/themes/{{DEFAULT_THEME|urlencode}}/mobile.css" media="screen,projection" />
+        <link rel="stylesheet" type="text/css" href="http://{{COOKIELESS_DOMAIN}}/themes/{{DEFAULT_THEME|urlencode}}/mobile.css" media="screen,projection" />
       {% endif %}
     {% endif %}
+    
+    {% endcomment %}
+  
   
     {# per-user custom background #}
     {% if not request.mobile %}
       <style type="text/css">
         body {
           {% if view.extra.bg_image %}
-            background-image: url("http://{{DOMAIN}}/image/{{view.extra.bg_image|urlencode}}.jpg");
+            background-image: url("http://{{COOKIELESS_DOMAIN}}/image/{{view.extra.bg_image|urlencode}}.jpg");
             background-attachment: fixed;
             background-position: center;
           {% endif %}
@@ -92,30 +99,29 @@
     {% if not LOCAL_MODE %}
       <script type='text/javascript' src='http://ajax.googleapis.com/ajax/libs/prototype/1.6.1/prototype.js'></script>
     {% else %}
-      <script type='text/javascript' src='/js/prototype.js'></script>
+      <script type='text/javascript' src='http://{{COOKIELESS_DOMAIN}}/js/prototype.js'></script>
     {% endif %}
-    <script type='text/javascript' src='/js/prototip/prototip.js'></script>
+    <script type='text/javascript' src='http://{{COOKIELESS_DOMAIN}}/js/prototip/prototip.js'></script>
     
     {% if not DEBUG %}
       <!-- Google Analytics -->
-      <script type="text/javascript">
-      
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-10855304-2']);
-        _gaq.push(['_setDomainName', '.inforlearn.com']);
-        _gaq.push(['_trackPageview']);
-      
-        (function() {
-          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-      
-      </script>
+    <script type="text/javascript">
+    
+      var _gaq = _gaq || [];
+      _gaq.push(['_setAccount', 'UA-10855304-2']);
+      _gaq.push(['_trackPageview']);
+    
+      (function() {
+        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+      })();
+    
+    </script>
     {% endif %}
   </head>
   <body {% ifequal area 'home'%}{% if request.user %}onload="document.message_form.message.focus();" {% endif %}{% endifequal %}
-        style="display: none; {% if not view.extra.bg_image %} background: url(/images/backgrounds/{{ bg_image|auto_background }}); background-attachment: fixed; background-position: center; {% endif %}" {% block bodytag %}{% if area %} id="{{area}}"{% endif %}{% if not request.user %}class="global"{% endif %}{% endblock %}>
+        style="display: none; {% if not view.extra.bg_image %} background: url(http://{{COOKIELESS_DOMAIN}}/images/backgrounds/{{ bg_image|auto_background }}); background-attachment: fixed; background-position: center; {% endif %}" {% block bodytag %}{% if area %} id="{{area}}"{% endif %}{% if not request.user %}class="global"{% endif %}{% endblock %}>
       
     {% block body %}
     {% endblock %}
@@ -139,8 +145,8 @@
                   images[i].src = preload.arguments[i]
               }
           }
-          preload("http://{{DOMAIN}}/themes/default/unchecked.png",
-                  "http://{{DOMAIN}}/images/prototip/styles/default/close_hover.png");
+          preload("http://{{COOKIELESS_DOMAIN}}/themes/default/unchecked.png",
+                  "http://{{COOKIELESS_DOMAIN}}/images/prototip/styles/default/close_hover.png");
         </script>
       </div>
     {{component.best.analytics.footer|safe}}

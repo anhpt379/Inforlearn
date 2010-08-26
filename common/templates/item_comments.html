@@ -61,12 +61,12 @@
               ob  = $j(".image_language");
                 if(defaultLang == "vn"){
                     defaultLang = "en";
-                    ob.attr("src", "/themes/{{DEFAULT_THEME|urlencode}}/unchecked.png");
+                    ob.attr("src", "http://{{COOKIELESS_DOMAIN}}/themes/{{DEFAULT_THEME|urlencode}}/unchecked.png");
                     AVIMObj.setMethod(-1);
                 }
                 else{
                     defaultLang = "vn";
-                    ob.attr("src", "/themes/{{DEFAULT_THEME|urlencode}}/checked.png");
+                    ob.attr("src", "http://{{COOKIELESS_DOMAIN}}/themes/{{DEFAULT_THEME|urlencode}}/checked.png");
                     AVIMObj.setMethod(0);
                 }
             });
@@ -84,19 +84,19 @@
               ob = $j(".image_language");
               if(defaultLang == "vn"){
                 defaultLang = "en";
-                ob.attr("src", "/themes/{{DEFAULT_THEME|urlencode}}/unchecked.png");
+                ob.attr("src", "http://{{COOKIELESS_DOMAIN}}/themes/{{DEFAULT_THEME|urlencode}}/unchecked.png");
                 AVIMObj.setMethod(-1);
               }
               else{
                 defaultLang = "vn";
-                ob.attr("src", "/themes/{{DEFAULT_THEME|urlencode}}/checked.png");
+                ob.attr("src", "http://{{COOKIELESS_DOMAIN}}/themes/{{DEFAULT_THEME|urlencode}}/checked.png");
                 AVIMObj.setMethod(0);
               }
             }
           </script>
           
           <img class="image_language" 
-               src="/themes/{{DEFAULT_THEME|urlencode}}/checked.png" 
+               src="http://{{COOKIELESS_DOMAIN}}/themes/{{DEFAULT_THEME|urlencode}}/checked.png" 
                style="vertical-align:middle; 
                       display: inline; 
                       height: 16px; 
