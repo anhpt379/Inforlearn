@@ -1,0 +1,19 @@
+{% extends 'common/templates/form_add_contacts.html' %}
+
+{% block buttons %}
+  {% if contacts %}
+    <input type="hidden" name="redirect_to" value="{{redirect_to}}" />
+    <button type="submit">
+      <big class="active"><span>&#8250; Thêm bạn</span></big>
+    </button>
+    <br/>
+    <br/>
+    <p style="float: right;">
+      hoặc<a href="/welcome/done?redirect_to={{redirect_to|urlencode}}">bỏ qua bước này</a>
+    </p>
+  {% else %}
+    <big class="active">
+      <a href="/welcome/done?redirect_to={{redirect_to|urlencode}}">&#8250; Tiếp tục</a>
+    </big>
+  {% endif %}
+{% endblock %}

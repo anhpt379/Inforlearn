@@ -1,0 +1,12 @@
+{% load format %}
+
+{% if actor.last_entry_ref %}
+  <span>
+    {{actor.last_entry_ref.extra.title|urlize}}
+    {{actor.last_entry_ref.created_at|je_timesince}} trước
+  </span>
+{% endif %}
+  <p>{{ actor.extra.member_count }} thành viên</p>
+  <span>
+    {{ actor.extra.description|linebreaks}}
+  </span>

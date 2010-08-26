@@ -1,0 +1,13 @@
+{% extends 'common/templates/form_photo.html' %}
+
+{% block buttons %}
+<div class="buttons">
+  <button type="submit" name="continue" value="1">
+    <big class="active">
+      <span>&#8250; Tiếp tục</span>
+    </big>
+  </button>
+  <br><br>
+    <a style="float:right;" href="/welcome/2?redirect_to={{redirect_to|urlencode}}">bỏ qua bước này</a>
+</div>
+{% endblock %}

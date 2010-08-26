@@ -1,0 +1,8 @@
+cron: 
+- description: daily data export
+  url: /export/channel_members
+  schedule: every day 02:30
+
+- description: daily data export
+  url: /export/user_contacts
+  schedule: every day 02:30

@@ -1,0 +1,147 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!--
+
+Design by Free CSS Templates
+http://www.freecsstemplates.org
+Released for free under a Creative Commons Attribution 2.5 License
+
+Title      : Excess
+Version    : 1.0
+Released   : 20090210
+Description: A two-column, fixed-width and lightweight template ideal for 1024x768 resolutions. Suitable for blogs and small websites.
+
+-->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<title>uploadify.appspot.com, host your own files sharing service</title>
+<meta name="keywords" content="" />
+<meta name="description" content="" />
+<link href="/css/style.css" rel="stylesheet" type="text/css" />
+<link href="/css/uploadify.css" rel="stylesheet" type="text/css" />
+<link href="/css/jquery.alerts.css" rel="stylesheet" type="text/css" />
+<script type="text/javascript" src="/js/jquery-1.3.2.min.js"></script>
+<script type="text/javascript" src="/js/swfobject.js"></script>
+<script type="text/javascript" src="/js/jquery.uploadify.v2.1.0.min.js"></script>
+<script type="text/javascript" src="/js/jquery-ui-1.7.2.custom.min.js"></script>
+<script type="text/javascript" src="/js/jquery.alerts.js"></script>
+
+<script type="text/javascript">
+function confirmDelete(){
+
+	var delLink = $(this).attr("href");
+
+	jConfirm("<strong>Del " + $(this).prev().text() + " ?</strong>\n\nPress OK to continue", 'Confirmation delete', function(r) {
+		if (r) {
+			$.ajax({
+				url: delLink,
+				success: function(id, event){
+					$('#file' + id).remove();
+				}
+	    	});
+   		} 
+	});
+	return false;
+}
+</script>
+
+<script type="text/javascript">
+$(document).ready(function() {
+
+	$('.delete').click(confirmDelete);
+	
+	$("#uploadify").uploadify({
+		'uploader'       : '/swf/uploadify.swf',
+		'script'         : '/uploadify/upload',
+		'cancelImg'      : '/images/cancel.png',
+		'folder'         : 'upload',
+		'queueID'        : 'fileQueue',
+		'wmode'          : 'transparent',
+		'scriptData'	 : {'user': '{{ current_user }}'},
+		'simUploadLimit' : 3,
+		'sizeLimit'      : 999990,
+		'auto'           : true,
+		'multi'          : true,
+		onComplete		 : function(event, queueID, fileObj, response, data) {
+		     $('#filesUploaded').prepend(response).find('.delete:first').click(confirmDelete);
+
+		}
+	});
+});
+</script>
+</head>
+<body>
+<!-- start header -->
+<div id="header">
+	<div id="logo">
+		<h1><a href="/">Uploadify<sub><small>.appspot.com</small></sub></a></h1>
+		<h2>Host your own files sharing service</h2>
+	</div>
+	<div id="menu">
+		<ul>
+			<li class="active">
+			{% if not current_user %}
+	    		{{ _('<a href="%(url)s">Sign in</a>') % {"url": escape(users.create_login_url(request.uri))} }}
+	  		{% else %}
+	    		<a href="{{ escape(users.create_logout_url(request.uri)) }}">{{ _("Sign out") }}</a>
+	  		{% end %}
+			</li>
+		</ul>
+	</div>
+</div>
+<!-- end header -->
+
+<!-- start page -->
+<div id="page">
+	<!-- start content -->
+	<div id="content">
+		<div class="post">
+			<h2 class="title"><b>Welcome to </b>Uploadify</h2>
+			<p class="date">&nbsp;<b>&nbsp;</b></p>
+			<div class="entry">
+				<p>With <a href="/">uploadify.appspot.com</a> you can upload multiple files and share the links. This project uses <a href="http://jquery.com/" target="_blank">jQuery</a>, the plugins <a href="http://www.uploadify.com" target="_blank">Uploadify</a>, <a href="http://abeautifulsite.net/notebook/87" target="_blank">Alert Dialogs</a> and the <a href="http://www.tornadoweb.org" target="_blank">Tornado</a> framework. <b>DO NOT use directly this site</b> (my dev site) but download the source <a href="/source-v4.zip">here</a> and host your own version.</p>
+				<div>
+					<div id="fileQueue"></div>
+					<input type="file" name="uploadify" id="uploadify" />
+					<p><a href="javascript:jQuery('#uploadify').uploadifyClearQueue()">Cancel All Uploads</a></p>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- end content -->
+	<!-- start sidebar -->
+	<div id="sidebar">
+		<ul>
+			<li>
+				<h2><strong>your</strong> uploaded files</h2>
+				<ul id="filesUploaded">
+				{% for file in files %}
+					{{ print_file_link(file) }}
+				{% end %}
+				</ul>
+			</li>
+		</ul>
+	</div>
+	<!-- end sidebar -->
+	<div style="clear: both;">&nbsp;</div>
+</div>
+<!-- end page -->
+<!-- start footer -->
+<div id="footer">
+	<div id="footer-menu"></div>
+	<p id="legal">(c) 2009 uploadify.appspot.com. Design by <a href="http://www.freecsstemplates.org/">Free CSS Templates</a>.</p>
+</div>
+<!-- end footer -->
+<!-- start Google Analytics -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-4155622-8");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+<!-- end Google Analytics -->
+</body>
+</html>

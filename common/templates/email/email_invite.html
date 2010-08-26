@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block body %}
+<p>{{full_name}} ({{nick_name}}) mời bạn tham gia {{SITE_NAME}}.</p>
+<p>{{SITE_NAME}} là nơi bạn có thể chia sẻ và nhận về các kiến thức/kinh nghiệm
+được mỗi người tổng hợp ở từng lĩnh vực. Bạn cũng có thể sử dụng nó để giữ kết
+nối với bạn bè, cập nhật các tin tức mới, các mối quan tâm mới của bạn bè mình. 
+Nhấn vào liên kết này để đồng ý hoặc từ chối.</p>
+<p><a href="{{accept_url}}">Xem lời mời</a> (<a href="{{accept_mobile_url}}">di động</a>)</p>
+<p>Mong gặp lại bạn tại {{SITE_NAME}}!</p>
+{% endblock %}

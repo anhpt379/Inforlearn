@@ -1,0 +1,47 @@
+**entry_add_comment** (api_user, _task_ref, \*\*kw)
+
+
+Adds a comment to the given entry.
+
+  PARAMS:
+    * _task_ref - admin-only, task to resume
+    * content - the text content of the comment
+    * stream - the key to the stream in which the entry being commented on
+      resides; example: ``stream/popular@example.com/presence``
+    * entry - the key to the parent entry associated with this comment; example:
+      ``stream/popular@example.com/presence/12347``
+    * nick - the actor making the comment
+    * uuid - optional; a unique identifier for this comment; if absent, a new
+      one will be generated
+
+  ``stream`` is formatted as 'stream/{nick}/{slug}'; and ``entry`` is formatted
+  as 'stream/{nick}/{slug}/{entry uuid}'.
+
+  For the comment stream, ``slug`` is always "comments." Similarly, for the
+  presence stream, ``slug`` is always "presence." For other streams, ``slug`` is
+  some incomprehensible uuid.
+
+  RETURNS: a `stream_entry_ref`_
+
+  EXAMPLE API RETURN:
+
+  ::
+
+    {'status': 'ok',
+     'rv': {'comment': {'stream': 'stream/test@example.com/comments',
+                        'uuid': '1234567890abcdef',
+                        'entry': 'stream/root@example.com/presence/12345',
+                        'owner': 'root@example.com',
+                        'actor': 'test@example.com',
+                        'extra': {'content': 'a comment!',
+                                  'entry_stream': 'stream/root@example.com/presence',
+                                  'entry_title': 'please comment on me',
+                                  'entry_actor': 'root@example.com',
+                                  'entry_uuid': '12345',
+                                  }
+                        }
+            }
+     }
+
+  .. _stream_entry_ref: /api/docs/model_stream_entry_ref
+  

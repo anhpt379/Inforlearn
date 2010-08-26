@@ -1,0 +1,98 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"> 
+ 
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en"> 
+  <head> 
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/> 
+    <title> 
+      Inforlearn | URL Zipper
+    </title> 
+    <meta name="description" content="URLZipper, rút gọn link" /> 
+    <link rel="me" type="text/html" href="http://inforlearn.com"/> 
+    <link rel="icon" href="/static/favicon.ico" type="image/x-icon" /> 
+    <link rel="stylesheet" type="text/css" href="css/core.css" media="screen,projection" /> 
+    <link rel="stylesheet" type="text/css" href="themes/default/screen.css" media="screen,projection" /> 
+  </head> 
+
+  <body style="" class="single"> 
+    <div id="header-container"> 
+    </div> 
+    <div id="container" > 
+      <div id="content">
+        <div class="top b">
+          <div class="bottom"> 
+            <div class="body" id="welcome-start"> 
+              <div style="width: 510px; padding: 20px; text-align: left;">
+                <h1 href="/">URL Zipper</h1>
+                {% if error_404 or urly or error_href %}
+                  <div style="margin-top: 5px; margin-bottom: 15px;">
+                    {% if error_404 %}
+                      <div id="notice" class="notice"">
+                        Liên kết này không tồn tại.
+                      </div>
+                    {% endif %}
+                    
+                    {% if error_href %}
+                      <div id="notice" class="notice"">
+                        <p>Địa chỉ URL sai, vui lòng nhập chính xác.</p>
+                      </div>
+                    {% endif %}
+                    
+                    {% if urly %}
+                      {{ urly.href }}<br>
+                      <input id="href" name="href" type="text" style="margin-top: 5px; padding: 3px; width: 510px; border: 1px solid #cccccc;" value="http://rut-gon-link.appspot.com/{{ urly.code }}" />
+                      <script type="text/javascript" language="javascript">window.onload = copy("http://ur.ly/{{ urly.code }}");</script>
+                      <script type="text/javascript" language="javascript">window.onload = focus("href");</script>
+                    {% endif %}
+                  </div>
+                {% endif %}
+                
+                {% if not urly %}
+                  <form action="new.html" method="get" accept-charset="utf-8">
+                    <textarea style="margin-bottom: 5px; width: 99%; border: 1px solid #cccccc;" name="href" id="href" rows="2">{{ default_href }}</textarea>
+                    <div style="width: 150px; float: right;">
+                      <button type="submit" style="background: transparent;
+                                                   border-style: none;
+                                                   display: block;
+                                                   float: right;
+                                                   font-size: 0.9em;
+                                                   line-height: 1em;
+                                                   margin: 0px;
+                                                   padding: 0px;
+                                                   white-space: nowrap;">
+                        <big class="active">
+                          <span style="padding: 8px 30px 10px;">› Rút gọn</span>
+                        </big>
+                      </button>
+                      <br><br>
+                        <small style="float: right; margin-top: -20px;">
+                          hoặc  <a href="/">quay về trang chủ</a>
+                        </small> 
+                    </div>
+                    <div style="width: 350px; margin-top: -60px;">
+                     <br><br>
+                    Kéo liên kết <a href="javascript:location.href='http://rut-gon-link.appspot.com/new.html?href='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title)">URL-Zipper</a>
+                    này lên thanh bookmark <br>
+                    Nó sẽ tựthu gọn link trang bạn đang xem ngay khi bạn nhấn vào nó.
+                    </div>
+                  </form>
+                {% endif %}
+               
+  
+              <script type="text/javascript">
+                var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+                document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+              </script>
+              
+              <script type="text/javascript">
+                try {
+                  var pageTracker = _gat._getTracker("UA-81531-8");
+                  pageTracker._trackPageview();
+                } catch(err) {}
+              </script>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body> 
+</html> 

@@ -1,0 +1,4 @@
+{{full_name}} vừa xóa bạn khỏi danh sách bạn bè của anh (cô) ấy.
+
+
+{% include "common/templates/email/signature.txt" %}

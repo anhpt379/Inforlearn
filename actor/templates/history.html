@@ -1,0 +1,70 @@
+{% extends 'common/templates/base_sidebar.html' %}
+{% load nonce avatar vcard actor %}
+{% block title %}
+  {% ifequal request.user.nick view.nick %}
+    Những tin được gửi lên từ tài khoản của bạn
+  {% else %}
+    Những tin được gửi lên từ {{ view.display_nick }}
+  {% endifequal %}
+{% endblock %}
+
+{% block content %}
+  {% ifequal request.user.nick view.nick %}
+    {% include 'common/templates/message_form.html' %}
+  {% else %}
+    {% include 'form_error.html' %}
+    <div class="main">
+      <div class="vcard" id="profile">
+        {% with view as actor %}
+          {% include 'common/templates/vcard_full.html' %}
+        {% endwith %}
+  
+        {% if request.user %}
+          {% if user_is_contact %}
+          <p class="contact" style="margin-top: 20px;">
+            {{ view.display_nick }} hiện đã ở trong danh sách liên hệ của bạn.
+            {% actor_remove_contact request.user request.user view %}
+          </p>
+          {% else %}
+          <p style="margin-top: 20px;">
+            {% actor_add_contact_long request.user request.user view %}
+          </p>
+          {% endif %}
+        {% endif %}
+      </div>
+    </div>
+  {% endifequal %}
+
+  {% if not request.mobile %}
+    {% ifequal view.nick request.user.nick %}
+    <ul id="sub-nav">
+      <li class="first">
+        <a href="{{view.url}}/overview">Tường nhà</a>
+      </li>
+      <li class="current">
+        <a href="{{view.url}}">Gửi lên bởi tôi</a>
+      </li>
+    </ul>
+    {% endifequal %}
+  {% endif %}
+
+  <div id='stream'>   
+    {% include 'common/templates/stream.html' %}
+    {% include 'common/templates/paging.html' %}
+    {% include 'common/templates/feeds.html' %}
+  </div>
+{% endblock %}
+
+
+{% block sidebar %}
+  {% if not user_is_private %}
+    {% include 'common/templates/sidebar_location.html' %}
+    {% include 'common/templates/sidebar_contacts.html' %}
+    {% include 'common/templates/sidebar_channels.html' %}
+    {% with view_streams as streams %}
+      {% include 'common/templates/sidebar_streams.html' %}
+    {% endwith %}
+  {% else %}
+    {% include 'actor/templates/sidebar_privateuser.html' %}
+  {% endif %}
+{% endblock %}

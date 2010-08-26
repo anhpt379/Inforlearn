@@ -1,0 +1,46 @@
+{% load nonce %}
+
+{% if request.user.extra.mobile or activation %}
+<form action="" method="post" id="change-number">
+{% else %}
+<form action="" method="post" id="activate-number">
+  <h2>Kích hoạt với số điện thoại đang sử dụng của bạn</h2>
+{% endif %}
+
+  <p>
+    Gửi tin từ điện thoại di động là cách nhanh nhất để cập nhật và nhận tin tức
+    khi bạn không ở gần máy tính. Nhập số điện thoại của bạn vào ô dưới đây và 
+    nhấn nút Kích hoạt. Hệ thống sẽ gửi một tin nhắn xác nhận đến điện thoại của bạn.
+  </p>
+  {% include 'form_error.html' %}
+  <div class="box">
+    <h3>Nhập số điện thoại di động đang sử dụng</h3>
+    <div>
+      <label for="mobile">Số điện thoại</label>
+      {% if view.extra.mobile %}
+      <input type="text" name="mobile" id="mobile" value="{{request.user.mobile}}" />
+      {% else %}
+      <input type="text" name="mobile" id="mobile" value="{{activation.content}}" />
+      {% endif %}
+      <p class="help">
+      <strong>Chỉ hỗ trợ số điện thoại của Việt Nam</strong><br />
+      Sử dụng định dạng quốc tế (+841673450799) <br />
+      Thêm +84 vào trước số điện thoại của bạn. 
+      </p>
+    </div>
+  </div>
+  <div class="buttons">
+    {{request.user|noncefield:"activation_request_mobile"}}      
+    <input type="hidden" name="activation_request_mobile" value="" />
+    <input type="hidden" name="nick" value="{{view.nick}}" />
+    {% block buttons %}
+    {% if SMS_ENABLED %}
+    <input type="submit" value="Activate"/>
+    {% else %}
+    <span class="error">Chức năng gửi tin và nhận thông báo qua điện thoại hiện 
+    thời đã bị vô hiệu hóa</span>
+    <input type="submit" value="Kích hoạt" disabled="disabled"/>
+    {% endif %}
+    {% endblock %}
+  </div>
+</form>

@@ -1,0 +1,41 @@
+{% load avatar nonce format %}
+
+<ul class="float">
+  {% for channel in channel_tiles %}
+    <li {% cycle '' 'class="odd"' %} id="tooltip_{{channel.display_nick}}">
+      {% linked_avatar channel "u" request %}
+  
+      <h3><a href="{% url_for channel request %}">{{channel.display_nick}}</a></h3>
+      
+      {% if channel.extra.member_count %}
+        <p class="members">
+          {{ channel.extra.member_count }} thành viên
+          {% if channel.i_am_admin %}
+            | <a href="{% url_for channel request %}/settings">Thiết lập</a>
+          {% else %}
+            {% if channel.i_am_member %}
+              | <a class="confirm" href="{% url_for channel request %}?part={{channel.nick|urlencode}}&amp;{{channel|nonceparam:"channel_part"}}&amp;redirect_to={{request.path}}">
+              Rời khỏi {{channel.display_nick}}</a>
+            {% endif %}
+          {% endif %}
+        </p>
+      {% endif %}
+    </li>
+    {% if channel.extra.description %}
+	    <script type='text/javascript'>
+		  new Tip("tooltip_{{channel.display_nick}}", "Thành viên: {{channel.extra.member_count}}<br>" +
+		                                    "Mô tả: {{channel.extra.description|popup_description}}<br>" +
+		                                    "Website: <a href='{{channel.extra.external_url}}' target='_new'>{{channel.extra.external_url}}</a>", {
+		    title: "{{ channel.display_nick }}",
+		    stem: 'bottomRight',
+		    hideOn: false,
+		    hideAfter: 0.25,
+		    delay: 0.5,
+		    closeButton: true,
+		    hook: {target: 'topLeft', tip: 'bottomRight'},
+		    offset: { x: 60, y: 0 }
+		  });
+		  </script>
+	  {% endif %}
+  {% endfor %}
+</ul>

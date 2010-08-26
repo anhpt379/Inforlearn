@@ -1,0 +1,40 @@
+Prerequisites
+=============
+
+Hardware Requirements
+---------------------
+
+Operating System Requirements
+-----------------------------
+
+
+Software Prerequisites
+----------------------
+
+  * dumbo:
+    
+    easy_install dumbo
+
+How to use
+----------
+
+1. Tải dữ liệu về
+  
+  * Công cụ trích xuất dữ liệu: địa chỉ /export/*
+  * Dữ liệu được nén dưới dạng zlib
+  * Các hành động hỗ trợ:
+    - lấy user_history: /export/user_history
+    sau khi giải nén, dữ liệu có dạng như sau:
+          user|channel
+    
+    
+    
+2. Tiến hành
+  dữ liệu input lưu dưới file
+
+  run: chạy RecommendationEngine
+  
+  reformat_as_csv: Chuyển từ output của RS thành định dạng dữ liệu Google App Engine hỗ trợ
+  
+  items.csv: file dữ liệu trước khi upload lên database
+

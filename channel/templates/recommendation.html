@@ -1,0 +1,65 @@
+{% extends 'common/templates/base_wide.html' %}
+{% load nonce avatar vcard format %}
+{% block title %}Nhóm{% endblock %}
+
+{% block content %}
+  <div class="path">
+    <h1>{{SITE_NAME}} - Recommended for You</h1>
+  </div>
+  {% if not request.mobile %}
+    <div id="sidebar">
+      <div class="tip">
+        {{content|random_tips}}
+      </div>
+
+		<div id="ourpicks" class="groups">
+		  <h2>Nhóm nổi bật</h2>
+		  {% with channels as channel_tiles %}
+		    
+			<ul class="float">
+			  {% for channel in channel_tiles %}
+			    <li {% cycle '' 'class="odd"' %}>
+			      {% linked_avatar channel "t" request %}
+			  
+			      <h3><a href="{% url_for channel request %}">{{channel.display_nick}}</a></h3>
+
+			      {% if channel.extra.member_count %}
+			        <p class="members">
+			          {{ channel.extra.member_count }} thành viên 
+			          {% if channel.i_am_admin %}
+			            | <a href="{% url_for channel request %}/settings">Thiết lập</a>
+			          {% else %}
+			            {% if channel.i_am_member %}
+			              | <a class="confirm" href="{% url_for channel request %}?part={{channel.nick|urlencode}}&amp;{{channel|nonceparam:"channel_part"}}&amp;redirect_to={{request.path}}">
+			              Rời khỏi {{channel.display_nick}}</a>
+			            {% endif %}
+			          {% endif %}
+			        </p>
+			      {% endif %}
+			    </li>
+			  {% endfor %}
+			</ul>
+
+		  {% endwith %}
+		
+		  <p class="more">
+		  <a href="/channel/browse">&#8250; Xem thêm</a>
+		  </p>
+		</div>
+      
+
+
+      {% include 'common/templates/sidebar_search.html' %}
+    </div>
+  {% else %}
+    {% include 'channel/templates/sidebar_ourpicks.html' %}
+  {% endif %}
+  
+  <div class="body">
+    <div class="groups">
+    {% with actors as channel_tiles %}
+      {% include 'channel/templates/channel_tiles.html' %}
+    {% endwith %}
+    </div>
+  </div>
+{% endblock %}

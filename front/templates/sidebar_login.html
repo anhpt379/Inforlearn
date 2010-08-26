@@ -1,0 +1,48 @@
+{% load format %}
+<div id="sign-in">
+  <h2>Đăng nhập</h2>
+  {% include 'form_error.html' %}
+  <form id="front-loginform" action="/login" method="post">
+    {% if redirect_to %}
+      <input type="hidden" name="redirect_to" value="{{redirect_to}}" />
+    {% endif %}
+  
+    <div style="padding: 0px;">
+      <label for="field-log"><strong>Tên đăng nhập:</strong></label>
+      <input style="margin-left: 5px; font-size: 1.4em;"
+             id="field-log" 
+             name="log" 
+             type="text" 
+             tabindex="1" 
+             size="18"
+             value="{{user_login}}" />
+    </div>
+  
+    <div style="padding: 0px;">
+      <label for="field-pwd"><strong>Mật khẩu:</strong></label>
+      <input style="margin-left: 5px; font-size: 1.4em;"
+             id="field-pwd" 
+             name="pwd" 
+             type="password" 
+             tabindex="2" 
+             size="18"
+             value="" />
+    </div>
+  
+    <div class="radio" style="padding: 0px; display: inline;">
+      <input type="checkbox" 
+             id="field-rememberme" 
+             name="rememberme" 
+             tabindex="3" 
+             value="1" 
+             {% if rememberme %}
+               checked="checked"
+             {% endif %}/>
+           <label style="display: inline;" for="field-rememberme"> Ghi nhớ</label>
+    </div>
+  
+    <div class="buttons" style=" float: right; margin-right: 3px; margin-top: 5px;">
+      <input type="submit" class="button" tabindex="4" value="Đăng nhập"/>
+    </div>
+  </form>
+</div>

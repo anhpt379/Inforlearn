@@ -1,0 +1,11 @@
+{% load error %}
+{% if request.errors %}  
+ 
+  <div id="error" class="error" style="padding-bottom: 13px; text-align: center;">
+    {% for error in request.errors %}
+      {{error|error_to_html}}
+    {% endfor %}
+  </div>
+  
+{% endif %}
+

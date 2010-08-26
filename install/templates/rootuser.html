@@ -1,0 +1,18 @@
+{% extends 'common/templates/base_single.html' %}
+{% load nonce %}
+{% block title %}Thiết lập tài khoản root{% endblock %}
+{% block content %}
+
+{% if not root_user %}
+{% include 'form_error.html' %}
+<form id="rootuser" action="/install" method="post">
+  {{None|noncefield:"create_root"}}
+  <div class="buttons">
+    <input type="submit" value="Kích hoạt quyền hạn cao nhất cho tài khoản: {{ROOT_NICK}}"/>
+  </div>
+</form>
+{% else %}
+<p>{{ROOT_NICK}} đã được kích hoạt.</p>
+{% endif %}
+
+{% endblock %}

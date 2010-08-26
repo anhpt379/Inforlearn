@@ -1,0 +1,67 @@
+{% load nonce %}
+<h2>Hiển thị</h2>
+{% include 'form_error.html' %}
+<form id="form-design" action="" method="post" enctype="multipart/form-data">
+  {{request.user|noncefield:"update_design"}}
+  <div id="picker" style="float: right;"></div>
+  <div>
+    <label id="bg_color">Màu nền</label>
+    <input type="text" name="bg_color" id="bg_color" class="colorwell" value="{{view.extra.bg_color|default:"#F1F1F1"}}" />
+  </div>
+  <div>
+    <label id="bg_image">Ảnh nền</label>
+    <input type="hidden" name="MAX_FILE_SIZE" value="400000" /> 
+    <input type="hidden" name="action" value="upload" /> 
+    <input type="file" name="bg_image" id="bg_image" value="" />
+    <p class="help">
+    Dung lượng ảnh tối đa là 200KB.
+    </p>
+  </div>
+<!--  <div>-->
+<!--    <label id="bg_repeat">Lặp lại ảnh này</label>-->
+<!--    <input type="checkbox" name="bg_repeat" id="bg_repeat" -->
+<!--    {% ifnotequal view.extra.bg_repeat "no-repeat" %}checked="checked"{% endifnotequal %} />-->
+<!--  </div>-->
+  Bạn cũng có thể chọn một ảnh nền trong thư viện dưới đây:
+
+  <div class="backgrounds">
+    <ul>
+        {% for bg in backgrounds %}
+        <li {% ifequal bg.path view.extra.bg_image %} 
+              class="selected"
+            {% endifequal %}>
+          <label>
+            <img src="/image/{{bg.path}}_thumb.jpg" alt=""/>
+            <input type="radio" 
+                   {% ifequal bg.path view.extra.bg_image %} 
+                     checked="checked"
+                   {% endifequal %} 
+                   value="{{bg.path}}" />
+          </label>
+        </li>
+        {% endfor %}
+        <input type="hidden" id="background"/>
+      </ul>
+  </div>
+
+  <div class="buttons">
+    {% if redirect_to %}
+    <input type="hidden" name="redirect_to" value="{{redirect_to}}" />
+    {% endif %}
+    <input type="submit" class="button" value="Lưu thay đổi"/>
+    hoặc <a href="?restore=1">Khôi phục trạng thái mặc định</a>
+    
+    {% if redirect_to %}
+    <input type="hidden" name="redirect_to" value="{{redirect_to}}" />
+    {% endif %}
+    <button type="submit" name="continue" value="2" style="margin-top: 20px;">
+      <big class="active">
+        <span>&#8250; Tiếp tục</span>
+      </big>
+    </button>
+    <p><a href="/welcome/3?redirect_to={{redirect_to|urlencode}}">bỏ qua bước này</a></p>
+  
+  </div>
+</form>
+<script type="text/javascript" src="/js/badge.js"></script>
+

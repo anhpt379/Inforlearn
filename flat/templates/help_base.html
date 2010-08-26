@@ -1,0 +1,30 @@
+{% extends 'common/templates/base_wide.html' %}
+{% block title %}Trợ giúp{% endblock %}
+{% block content %}
+<div class="path">
+  <h1>{{path}}</h1>
+</div>
+
+<div id="side-nav">
+  <ul>
+    <li class="first{% ifequal page "index" %} current{% endifequal %}">
+      <a href="/help">Thông tin liên hệ</a>
+    </li>
+    <li {% ifequal page "im" %}class="current"{% endifequal %} >
+      <a href="/help/im">Gửi và nhận tin từ IM Client</a>
+    </li>      
+    <li {% ifequal page "commands" %}class="current"{% endifequal %} >
+      <a href="/help/commands">Cú pháp khi sử dụng IM Client</a>
+    </li>
+    <li {% ifequal page "im_clients" %}class="current"{% endifequal %} >
+      <a href="/help/im_clients">Danh sách IM Client hỗ trợ XMPP</a>
+    </li>
+  </ul>
+</div>
+
+<div class="body">
+  {% block help %}
+  {% endblock %}
+</div>
+
+{% endblock %}

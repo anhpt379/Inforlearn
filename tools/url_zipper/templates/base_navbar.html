@@ -1,0 +1,91 @@
+{% extends 'templates/base.html' %}
+{% load format %}
+
+{% block body %}
+  <div id="header-container">
+    <div id="header">
+      {% if not request.mobile %}
+        <div id="helper-nav">
+          <p id="login">
+            {% block login %}
+              {% if request.user %}
+                {% actor_link request.user request %} | 
+                <a href="{{request.user.url}}/settings">Thiết lập</a> | 
+                <a href="http://{{DOMAIN}}/logout">Đăng xuất</a>
+              {% else %}
+                Đã là thành viên? 
+                {% if SUBDOMAINS_ENABLED %}
+                  <a href="http://{{DOMAIN}}/login?redirect_to=http://{{request.META.HTTP_HOST}}{{request.META.PATH_INFO}}">Đăng nhập</a>
+                {% else %}
+                  <a href="http://{{DOMAIN}}/login?redirect_to={{request.META.PATH_INFO}}">Đăng nhập</a>
+                {% endif %}
+              {% endif %}
+            {% endblock %}
+          </p>
+        </div>
+      {% endif %}
+
+      {% block logo %}
+        <a href="/" id="logo">
+          <img src="/themes/{{DEFAULT_THEME|urlencode}}/logo.png" 
+               height="73" 
+               width="89" 
+               alt="{{SITE_NAME}}" />
+        </a>
+      {% endblock %}
+            
+      {% if not request.mobile %}
+        {% block mainnav %}
+        <ul id="main-nav">
+          {% if request.user %} {# The logged-in navigation #}
+            <li {% ifequal area "home" %}class="current"{% endifequal %} >
+              <span><a href="{{request.user.url}}/overview">Nhà tôi</a></span>
+            </li>
+            <li {% ifequal area "people" %}class="current"{% endifequal %} >
+              <span><a href="{{request.user.url}}/contacts">Bạn bè</a></span>
+            </li>
+            <li {% ifequal area "channel" %}class="current"{% endifequal %} >
+              <span><a href="http://{{DOMAIN}}/channel">Nhóm</a></span>
+            </li>
+            <li {% ifequal area "explore"%}class="current"{% endifequal %} >
+              <span><a href="http://{{DOMAIN}}/explore">Khám phá</a></span>
+            </li>
+          {% else %}
+            <li {% ifequal area "frontpage" %}class="current"{% endifequal %} >
+              <span><a href="http://{{DOMAIN}}/">Nhà tôi</a></span>
+            </li>
+            <li {% ifequal area "tour" %}class="current"{% endifequal %} >
+              <span><a href="http://{{DOMAIN}}/tour">Giới thiệu</a></span>
+            </li>
+            <li {% ifequal area "channel" %}class="current"{% endifequal %} >
+              <span><a href="http://{{DOMAIN}}/channel">Nhóm</a></span>
+            </li>
+            <li {% ifequal area "explore" %}class="current"{% endifequal %} >
+              <span><a href="http://{{DOMAIN}}/explore">Khám phá</a></span>
+            </li>
+          {% endif %}
+        </ul>
+        {% endblock %}
+      {% endif %}
+    </div>
+  </div>
+  <div id="container" {% block containertag %}{% if style %} class="{{style}}"{% endif %}{% endblock %}>
+    {% block flash %}
+      {% include 'common/templates/flash.html' %}  
+    {% endblock %}
+    
+    {% block above_container %}
+    {% endblock %}
+      
+    {% block container %}
+    {% endblock %}
+  </div>
+  {% if not request.mobile %}
+  
+    <script src="/js/avim.js" type="text/javascript"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.2.3/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/core.js"></script>
+    {% block bottomscripts %}
+    {% endblock %}
+  {% endif %}
+{% endblock %}

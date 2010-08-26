@@ -1,0 +1,66 @@
+{% extends 'common/templates/base_wide.html' %}
+{% block title %}Giới thiệu{% endblock %}
+
+{% block content %}
+  <div class="path">
+    <h1>Giới thiệu</h1>
+  </div>
+  
+  <div id="side-nav">
+    <ul>
+      <li class="first{% ifequal page "index" %} current{% endifequal %}">
+        <a href="/help">Thông tin liên hệ</a>
+      </li>
+      <li {% ifequal page "im" %}class="current"{% endifequal %} >
+        <a href="/help/im">Gửi và nhận tin từ IM Client</a>
+      </li>
+      <li {% ifequal page "commands" %}class="current"{% endifequal %} >
+        <a href="/help/commands">Cú pháp khi sử dụng IM Client</a>
+      </li>
+      <li {% ifequal page "im_clients" %}class="current"{% endifequal %} >
+        <a href="/help/im_clients">Danh sách IM Client hỗ trợ XMPP</a>
+      </li>
+      <li>  
+        <a href="/api">Developer's API Document</a>
+      </li>
+    </ul>
+  </div>
+  
+  <div class="body">
+    <div style="font-size: 1.1em;">
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;
+        Kết hợp tư tưởng của <a href="http://www.slideshare.net/charlesjennings/8-reasons-to-focus-on-informal-social-learning" target="_new">Social Learning</a> và ý tưởng về việc bất cứ ai cũng có 
+        những kiến thức nên được chia sẻ tới tất cả mọi người, Inforlearn cố gắng 
+        tạo ra một nền tảng cho phép tất cả mọi người chia sẻ, thảo luận và khám phá 
+        kiến thức một cách đơn giản nhất.
+      </p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;  
+        Thông qua việc kết nối mọi người và các nguồn kiến thức lại với nhau, 
+        <a href="http://www.slideshare.net/T212/recommender-systems-1311490" target="_new">Recommendation Engine</a> - một engine phân tích các dữ liệu về những mối liên kết 
+        giữa người dùng - người dùng và người dùng với các nhóm kiến thức khác nhau 
+        - sử dụng các thuật toán của nó, sẽ đưa ra cho bạn những gợi ý hữu ích về 
+        những người nên kết bạn hay những nhóm nên tham gia.
+      </p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;
+        Inforlearn bao gồm 2 thành phần: <br>&nbsp;&nbsp;&nbsp;&nbsp;
+        • Thành phần xử lý các tương tác với người dùng: được phát triển và mở rộng từ 
+        <a href="http://code.google.com/p/jaikuengine/">jaikuengine</a>, một dự án mã nguồn mở của Google Inc, sử dụng ngôn ngữ lập trình 
+        <a href="http://www.slideshare.net/climatewarrior/python-quickstart-for-programmers-python-kung-fu" target="_new">Python</a> và nền tảng điện toán đám mây <a href="http://www.slideshare.net/rajdeep/introduction-to-google-app-engine-presentation" target="_new">Google App Engine</a> làm nền tảng chính.<br>&nbsp;&nbsp;&nbsp;&nbsp;
+        • Thành phần xử lý các bài toán phân tích dữ liệu - Recommendation Engine: sử 
+        dụng mô hình MapReduce và Hadoop Streaming để giải quyết bài toán khối lượng 
+        dữ liệu và thời gian tính toán.
+      </p>
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="http://github.com/AloneRoad/Inforlearn/commits/1.0beta5" target="_new">Mã nguồn Inforlearn</a> đuợc cung cấp dưới giấy phép <a href="http://www.apache.org/licenses/LICENSE-2.0.html" target="_new">Apache License v2.0</a> và 
+        <a href="http://creativecommons.org/licenses/by-nc-sa/3.0/" target="_new">Creative Commons Attribution-NonCommercial-ShareAlike 3.0 Unported</a>. 
+      </p> 
+      <p>&nbsp;&nbsp;&nbsp;&nbsp;
+        Nếu bạn quan tâm đến dự án này, hãy liên hệ với chúng tôi qua email 
+        <a href="mailto:contact@inforlearn.com">contact@inforlearn.com</a>. 
+        Mọi ý tưởng và kiến nghị đều được hoan nghênh 
+        <img style='display: inline; vertical-align: middle; margin-bottom: 7px;' src='http://us.i1.yimg.com/us.yimg.com/i/mesg/emoticons7/1.gif'>.
+      </p>
+    </div>
+  </div>
+{% endblock %}
+

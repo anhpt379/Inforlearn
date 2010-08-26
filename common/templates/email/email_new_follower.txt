@@ -1,0 +1,8 @@
+{{full_name}} vừa thêm bạn vào danh sách bạn bè của anh (cô) ấy.
+
+Để thêm {{full_name}} vào danh sách bạn bè của bạn, mở liên kết sau và nhấn vào "Kết bạn".
+  
+     {{email_url}}
+
+
+{% include "common/templates/email/signature.txt" %}

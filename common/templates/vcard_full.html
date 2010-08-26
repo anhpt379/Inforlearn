@@ -1,0 +1,13 @@
+{% load avatar %}
+{{actor|avatar:"f"}}
+<h1 class="fn" style="margin-left: 85px; padding-top: 5px;">
+  <span style="font-size: 1.5em;" class="nickname">{{actor.display_nick}}</span>
+  <span class="full-name">{{actor.extra.full_name}}</span>
+  {# XXX this should just be "name" for i18n purposes #}
+</h1>
+
+<!--<p class="message">-->
+<!--  <a href="{{actor.url}}/presence/last">-->
+<!--    {% include 'common/templates/presence_line.html' %}-->
+<!--  </a>-->
+<!--</p>-->

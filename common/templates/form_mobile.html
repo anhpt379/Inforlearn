@@ -1,0 +1,46 @@
+
+{% include 'form_error.html' %}
+{% if mobile %} {# already active #}
+  <p>
+  Chức năng gửi nhận tin qua SMS đã được kích hoạt. Các thông báo hiện thời đang 
+    {{sms_notify|yesno:"ON,OFF"}}
+    <a href="{{view.url}}/settings/notifications">
+      (Change notification options)
+    </a>
+  </p>
+  <div class="box">
+    <p>
+    Số điện thoại của bạn:
+    </p>
+    <p class="centered">
+    <big><strong>{{mobile}}</strong></big>
+    </p>
+    <p class="centered">
+    Bạn phải làm sạch nó bằng cách gửi SIGN OUT tới <strong>{{SMS_TARGET}}</strong>
+    </p>
+  </div>
+{% else %}
+  <p>SMS là cách nhanh nhất để gửi tin và nhận cập nhật khi bạn không ở cạnh máy
+  vi tính. Để sử dụng dịch vụ này bạn cần xác thực số di động của mình.
+  </p>
+  <div class="box">
+    <h3>Đăng nhập qua SMS</h3>
+    <ol>
+      <li>Gửi tin: <strong>SIGN IN &lt;your screenname&gt; &lt;your password&gt;</strong> đến <strong>{{SMS_TARGET}}</strong></li>
+    </ol>
+  </div>
+{% endif %}
+<ul>
+  <li><a href="http://{{DOMAIN}}/sms">Trợ giúp</a></li>
+  <li><a href="http://{{DOMAIN}}/settings/notifications">Thay đổi các tùy chọn nhận tin</a></li>
+  <li><a href="http://{{DOMAIN}}/help/commands">Danh sách các cú pháp có thể sử dụng từ các trình IM</a></li>
+</ul>
+
+<div class="buttons">
+  {% block buttons %}
+  {% if SMS_ENABLED %}
+  {% else %}
+  <span class="error">Chức năng gửi tin và nhận cập nhật qua SMS hiện thời bị vô hiệu hóa</span>
+  {% endif %}
+  {% endblock %}
+</div>

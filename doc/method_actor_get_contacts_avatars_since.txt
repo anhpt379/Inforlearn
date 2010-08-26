@@ -1,0 +1,26 @@
+**actor_get_contacts_avatars_since** (api_user, nick, limit, since_time)
+
+
+Returns the contacs of the actor by the given nick.
+
+  An actor is always considered as her own contact.
+  If the ``since_time`` parameter is set, only contacts whose avatars were
+  updated afterwards will be included.
+
+  PARAMS:
+    * nick - the nick of the actor whose contacts are to be returned
+    * limit - optional parameter; specifies the number of contacts to return
+
+        * defaults to 30
+        * max is 1000
+    * since_time - optional parameter; for filtering results by avatar's last
+      update time
+
+      * defaults to the beginning of time
+      * see `request timestamp`_ for format
+
+  RETURNS: a list of `actor_ref`_
+
+  .. _actor_ref: /api/docs/model_actor_ref
+  .. _request timestamp: /api/docs/request_timestamp
+  

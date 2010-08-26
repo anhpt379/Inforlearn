@@ -1,0 +1,38 @@
+{% extends 'api/templates/api_base.html' %}
+{% load nonce %}
+{% block api %}
+
+<h2 style="margin-top: 0px;">Danh sách các khóa đã kích hoạt</h2>
+
+{% for consumer_token_ref in consumer_tokens %}
+<div class="boxy" 
+     style="margin-bottom: 10px; background-color: {% cycle 'white' '#DDD' %}">
+	<div style="font-size: 12px;">
+		<div style="float: right;">
+			Secret:<br />
+      <span class="disable-fadeout"><b>{{consumer_token_ref.secret}}</b></span>
+		</div>
+
+		Key:<br />
+    <span style="font-weight: bold; font-size: 16px;" class="disable-fadeout">{{consumer_token_ref.key_}}</span>
+	</div>
+
+	<div style="clear: both; font-size: 12px; padding: 1em 0;">
+    <b>Quyền:</b> {{consumer_token_ref.perms}}<br />
+    <b>Hoạt động: </b>{{consumer_token_ref.created_at|timesince}} trước<br />
+		<b>Consumer:</b> 
+    <span style="color: #0c0; font-weight: bold;" class="disable-fadeout">
+      {{consumer_token_ref.consumer}}
+    </span>
+    <br />
+    <h3 style="display: inline; text-align: right; float: right; ">
+      <a style="position:relative;top:0px;left:0px"
+         href="?oauth_revoke_access_token=&amp;{{request.user|nonceparam:"oauth_revoke_access_token"}}&amp;key={{consumer_token_ref.key_}}" class="confirm-delete" title="Loại bỏ khóa API này">
+        Loại bỏ</a>
+    </h3>
+    <br />
+	</div>
+</div>
+
+{% endfor %}
+{% endblock %}

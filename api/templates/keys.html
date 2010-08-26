@@ -1,0 +1,54 @@
+{% extends 'api/templates/api_base.html' %}
+{% load nonce %}
+{% block api %}
+
+<p>Mỗi ứng dụng cần sử dụng một api key riêng biệt để giúp Inforlearn giám sát 
+việc truy cập và các tác động của ứng dụng này lên tài khoản của bạn.</p>
+
+<div>
+  <h2 style="display: inline;">API Keys</h2>
+  {% include 'form_error.html' %}
+  <form action="" method="post">
+    {{request.user|noncefield:"oauth_generate_consumer"}}
+    <input type='hidden' name='oauth_generate_consumer' value='' />
+    <input type='hidden' name='nick' value='{{request.user.nick}}' />
+    <div class='buttons' style="display: inline; padding-left: 390px;">
+      <input type="submit" class="button" id="generate" value="Tạo khóa mới"/>
+    </div>
+  </form>
+</div>
+
+{% for consumer_token_ref in consumer_tokens %}
+<div class="boxy" style="margin-bottom: 10px; padding: 10px; border-bottom: 1px dotted #CCC; ">
+	<div style="font-size: 12px;">
+
+		<div style="float: right;">
+
+			Secret:<br />
+      <span><b>{{consumer_token_ref.secret}}</b></span>
+		</div>
+
+		Key:<br />
+    <span style="font-weight: bold; font-size: 16px;" class='disable-fadeout'>{{consumer_token_ref.key_}}</span>
+	</div>
+
+	<div style="clear: both; font-size: 12px; padding: 1em 0;">
+
+    <b>Ứng dụng:</b> {{consumer_token_ref.app_name}} |
+    <b>Hoạt động:</b>{{consumer_token_ref.created_at|timesince}} trước | 
+		<b>Trạng thái:</b> 
+    <span style="color: #0c0; font-weight: bold;" class="disable-fadeout">{{consumer_token_ref.status}}</span> |
+
+		<b>Loại ứng dụng:</b>
+    {{consumer_token_ref.type}}
+	</div>
+
+	<div style="clear: both; font-size: 12px; padding-bottom: 10px; text-align: right;">
+    <a href="/api/keys/{{consumer_token_ref.key_}}">Sửa thông tin</a>
+	</div>
+</div>
+
+{% endfor %}
+
+
+{% endblock %}

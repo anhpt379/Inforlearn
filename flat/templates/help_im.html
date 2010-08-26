@@ -1,0 +1,47 @@
+{% extends 'flat/templates/help_base.html' %}
+
+{% block help %}
+<p>
+    {{SITE_NAME}} cho phép bạn tương tác với hệ thống sử dụng các trình IM Client hỗ trợ XMPP.
+</p>
+<h2>Vì sao tôi cần chức năng này?</h2>
+<p> &nbsp;&nbsp;&nbsp;&nbsp;
+    Bạn sẽ nhận được tất cả các tin mới, bình luận mới từ bạn bè của bạn hoặc các nhóm quan tâm, và có thể gửi tin nhắn và bình luận ngay từ trình IM yêu thích của bạn. Tất cả đều theo thời gian thực ^^ (Chức năng này sử dụng cơ chế Push - khác với Pull, vốn là cơ chế đang sử dụng cho phiên bản web). 
+</p>
+<h2>Vậy, làm sao để sử dụng nó?</h2>
+<p>
+Bước 1: Mở trình IM - tất nhiên phải có tên trong danh sách được hỗ trợ <img style='display: inline; vertical-align: middle; margin-bottom: 7px;' src='http://us.i1.yimg.com/us.yimg.com/i/mesg/emoticons7/1.gif'>. <br>
+Các trình IM hay dùng bao gồm: GTalk, Adium, Pidgin. Danh sách đầy đủ bạn có thể xem <a href="/help/im_clients">tại đây</a>. <br><br> 
+Bước 2: Thêm <b>{{IM_BOT}}</b> vào danh sách liên lạc. <br><br> 
+Bước 3: Gửi tới <b>{{IM_BOT}}</b> một tin nhắn với cú pháp như sau (không có `&lt;` và `&gt;`): <br>
+<pre>
+              <b>SIGN IN &lt;Tên đăng nhập&gt; &lt;Mật khẩu&gt; ↵</b>
+</pre>
+<p>
+    Sau khi lệnh trên được thực hiện thành công, gõ <b>START ↵</b> để bắt đầu nhận thông báo <img style='display: inline; vertical-align: middle; margin-bottom: 7px;' src='http://us.i1.yimg.com/us.yimg.com/i/mesg/emoticons7/1.gif'>. 
+</p>
+<!--
+<h2>Communicating with the bot</h2>
+<p>
+    If you want to stop receiving notifications, you can simply send 'STOP' via IM, and we'll stop.
+</p>
+<p>
+    To post to your stream, you just type in your message and hit Send.  You'll get a notification (kinda like an echo) of your post, just so you know it's gone through as it should. 
+</p>
+<p>
+    To comment on a post (or a comment), use the @ symbol to direct your comment to a user (example: "@lordi Rock on!") Doing this will add your comment to the most recent thread that person participated in.
+</p>
+<p>
+    If you want to add a new contact, you can FOLLOW [contact]  ( e.g. "FOLLOW jyri").  If you want to remove a contact, you can LEAVE [contact].
+</p>
+<p>
+    Similarly, you can join and leave our channels - with JOIN or LEAVE (e.g. "JOIN #squid").  You can also post to channels by prefixing your message with #channelname ( e.g. "#squid Fresh squid fried with lime juice and garlic, served on a bed of crispy noodles = YUMMY!")
+</p>
+-->
+<ul>
+    <li><a href="/help/im_clients">Danh sách các trình IM Client hỗ trợ</a></li>
+    <li><a href="/help/commands">Các lênh hỗ trợ khi sử dụng IM Client</a></li>
+    <li><a href="/settings/im">Kích hoạt tài khoản IM của bạn</a></li>
+    <li><a href="/settings/notifications">Thay đổi các tùy chọn thông báo</a></li>
+</ul>
+{% endblock %}

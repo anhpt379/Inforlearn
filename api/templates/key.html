@@ -1,0 +1,82 @@
+{% extends 'api/templates/api_base.html' %}
+{% load nonce %}
+
+{% block path %}
+  <a href="http://{{DOMAIN}}/api">API</a> / <a href="/api/keys">API Keys</a> / {{full_page}}
+{% endblock %}
+
+{% block api %}
+
+<div class="boxy" style="margin-bottom: 10px;">
+	<div style="font-size: 12px;">
+		<div style="float: right;">
+			Secret:<br />
+      <span><b>{{consumer_token_ref.secret}}</b></span>
+		</div>
+
+		Key:<br />
+    <span style="font-weight: bold; font-size: 16px;">
+      {{consumer_token_ref.key_}}
+    </span>
+	</div>
+
+	<div style="clear: both; font-size: 12px; padding: 1em 0;">
+    <form method="post" action="">
+      {{request.user|noncefield:"oauth_consumer_update"}}
+      <input type="hidden" name="oauth_consumer_update" />
+      <input type="hidden" name="nick" value="{{request.user.nick}}" />
+      <input type="hidden" name="consumer_key"
+             value="{{consumer_token_ref.key_}}" />
+
+      <br />
+      <b>Lần tác động cuối: </b>{{consumer_token_ref.created_at|timesince}} trước | 
+		  <b>Trạng thái:</b>
+      <span style="color: #0c0; font-weight: bold;"class="disable-fadeout">
+        {{consumer_token_ref.status}}
+      </span> |
+
+		  <b>Loại ứng dụng:</b>
+      <span style="color: #000; font-weight: bold;">
+        {{consumer_token_ref.type}}
+      </span>
+      {% comment %}
+      <br />
+      <label for="web">Web Application</label>
+      <input type="radio" id="web" name="consumer_type" value="{{OAUTH_WEB}}"
+             {% ifequal consumer_token_ref.type "web" %}
+               checked="checked"
+             {% endifequal %} />
+      <br />
+      <label for="desktop">Desktop App</label>
+      <input type="radio" id="desktop" name="consumer_type"
+             value="{{OAUTH_DESKTOP}}"
+             {% ifequal consumer_token_ref.type "desktop" %}
+               checked="checked"
+             {% endifequal %} />
+      <br />
+      <label for="mobile">Mobile App</label>
+      <input type="radio" id="mobile" name="consumer_type"
+             value="{{OAUTH_MOBILE}}"
+             {% ifequal consumer_token_ref.type "mobile" %}
+               checked="checked"
+             {% endifequal %} />
+      {% endcomment %}
+      | 
+      <a style="position:relative;top:0px;left:0px"
+         href="?oauth_consumer_delete=&amp;{{request.user|nonceparam:"oauth_consumer_delete"}}&amp;nick={{request.user.nick}}&amp;consumer_key={{consumer_token_ref.key_}}" class="confirm-delete" title="Xóa">
+        Xóa bỏ
+      </a>
+      <br />
+      <br />
+      <div>
+        <b><label style="width: 80px;">Tên ứng dụng:</label></b>
+        <input type="text" name="app_name" value="{{consumer_token_ref.app_name|default_if_none:""}}" />
+        <div class='buttons' style="display: inline; padding-left: 5px;">
+          <input type="submit" class="button" value="Lưu" />
+        </div>
+      </div>
+    </form>
+	</div>
+</div>
+
+{% endblock %}

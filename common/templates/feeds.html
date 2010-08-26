@@ -1,0 +1,7 @@
+{% load format %}
+
+<p class="tools">
+  <a class="feed" href="{% ifnotequal request.path "/" %}{{request.path}}{% endifnotequal %}/atom">Atom</a>
+  <a class="feed" href="{% ifnotequal request.path "/" %}{{request.path}}{% endifnotequal %}/rss">RSS</a>
+  <a class="feed" href="{% ifnotequal request.path "/" %}{{request.path}}{% endifnotequal %}/json">JSON</a>
+</p>

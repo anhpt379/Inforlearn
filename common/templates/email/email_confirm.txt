@@ -1,0 +1,8 @@
+Cảm ơn bạn đã tham gia {{SITE_NAME}}, {{full_name}}!
+
+Bạn cần phải hoàn thành bước xác nhận này để hoàn tất quá trình đăng ký. Sau khi hoàn thành, bạn sẽ có thể kích hoạt chức năng gửi thông báo qua email khi có người theo đuôi hoặc có ý kiến bình luận mới. 
+
+Hãy nhấn vào liên kết sau để hoàn tất: {{email_link}}
+
+
+{% include "common/templates/email/signature.txt" %}

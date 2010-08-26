@@ -1,0 +1,24 @@
+{% extends 'common/templates/base_sidebar.html' %}
+{% load nonce avatar vcard %}
+
+{% block content %}
+  <h2>Tạo {{ channel_name }}?</h2>
+  {% if request.user %}
+    {% include 'common/templates/message_form.html' %}
+    <p>Để tạo nhóm, hãy viết tin nhắn đầu tiên và nhấn "Gửi".</p>
+  {% else %}
+    <p>Muốn tạo nhóm, trước tiên bạn phải đăng nhập</p>
+  {% endif %}
+  <div id='stream'></div>
+{% endblock %}
+
+{% block sidebar %}
+  Quản lý <br />
+  <ul>
+    <li>Bạn!</li>
+  </ul>
+  Thành viên <br />
+  <ul>
+    <li>Bạn!</li>
+  </ul>
+{% endblock %}

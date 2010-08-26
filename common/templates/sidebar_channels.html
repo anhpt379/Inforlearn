@@ -1,0 +1,36 @@
+{% load vcard %}
+<div id="channels" class='contacts'>
+  {% ifequal request.user.nick view.nick %}
+    <h2>Nhóm ({{ channels_count }})</h2>
+    <a href="{% url channel.views.channel_index %}" class="edit">Quản lý</a>
+  {% else %}
+    <h2>Nhóm {{view.display_nick}} tham gia ({{channels_count}})</h2>
+  {% endifequal %}
+
+  {% if channels %}
+    <ul>
+    {% for channel in channels %}
+      <li>
+        {% with channel as actor %}
+        {% include 'common/templates/vcard_tile_rel.html' %}
+        {% endwith %}
+      </li>
+    {% endfor %}
+    </ul>
+    
+    {% if channels_more %}
+      {% ifequal request.user.nick view.nick %}
+      <p class="more">
+        <a href="{% url channel.views.channel_index %}">&#8250; Xem thêm</a>
+      </p>
+      {% endifequal %}
+    {% endif %}
+  {% else %}
+    <p>
+    {% ifequal request.user.nick view.nick %}
+    Bạn có thể bắt đầu bằng việc 
+    <a href="{% url channel.views.channel_browse %}">gia nhập một vài nhóm</a>
+    {% endifequal %}
+    </p>    
+  {% endif %}
+</div>

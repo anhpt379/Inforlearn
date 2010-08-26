@@ -1,0 +1,10 @@
+{% extends 'common/templates/form_mobile_activate.html' %}
+{% block buttons %}
+<input type="hidden" name="redirect_to" value="{{redirect_to}}" />
+<button type="submit">
+  <big class="active"><span>&#8250; Gửi tin nhắn kích hoạt</span></big>
+</button>
+<p style="float: right;">
+  hoặc <a href="/welcome/3?redirect_to={{redirect_to|urlencode}}">bỏ qua bước này</a>
+</p>
+{% endblock %}

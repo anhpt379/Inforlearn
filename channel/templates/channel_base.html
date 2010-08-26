@@ -1,0 +1,26 @@
+{% extends 'common/templates/base_wide.html' %}
+{% load nonce avatar vcard format %}
+{% block title %}Nhóm{% endblock %}
+
+{% block content %} 
+  {% if not request.mobile %}
+    <div id="sidebar" style="margin-top: 40px;">
+      <div class="tip">
+        {{content|random_tips}}
+      </div>
+      
+      {% include 'channel/templates/sidebar_ourpicks.html' %}
+      {% include 'common/templates/sidebar_search.html' %}
+    </div>
+  {% else %}
+    {% include 'channel/templates/sidebar_ourpicks.html' %}
+  {% endif %}
+  
+  <div class="path">
+    <h1>Quản lý nhóm</h1>
+  </div>
+  
+  <div class="body">
+    {% block channel_body %}{% endblock %}
+  </div>
+{% endblock %}

@@ -1,0 +1,29 @@
+{% load avatar format entry presence%}
+{% if not hide_avatar %}
+  {% linked_avatar entry.actor_ref "f" request %}
+{% endif %}
+
+<p class="comment">
+  {% if request %}
+    {{entry|format_comment:request}}
+  {% else %}
+    {{entry|format_comment}}
+  {% endif %}
+</p>
+
+<p class="meta">
+  Ý kiến bình luận của {% actor_link entry.actor_ref request %} trong chủ đề
+  <a href="{% url_for entry request %}"
+     title="{{entry.extra.entry_title}}">
+       {{entry.extra.entry_title|format_metadata}}
+  </a>
+  {% if entry.owner_ref.is_channel %}
+    trong nhóm {% actor_link entry.owner_ref request %}
+  {% endif %}
+  {% if not hide_timesince %}
+    - {{entry.created_at|je_timesince}} trước
+  {% endif %}
+  {% if entry.extra.location %}
+    tại {{ entry.extra.location|location }}
+  {% endif %}
+</p>

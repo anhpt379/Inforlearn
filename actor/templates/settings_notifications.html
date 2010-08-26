@@ -1,0 +1,84 @@
+{% extends 'actor/templates/settings_base.html' %}
+{% load nonce %}
+{% block settings %}
+
+
+{% if not email %}
+&nbsp; <br>
+<div class="notice">
+  {% if SMS_ENABLED %}
+    {% if not mobile %}
+    <p>To get notifications by text message you need to
+    <a href="{{view.url}}/settings/mobile">activate your mobile number</a>.
+    </p>
+    {% endif %}
+  {% endif %}
+  {% if IM_ENABLED %}
+    {% if not im_address %}
+      <p>Để nhận thông báo qua IM, bạn cần
+        <a href="{{view.url}}/settings/im">xác thực địa chỉ IM đang dùng</a>.
+      </p>
+    {% endif %}
+  {% endif %}
+  {% if not email %}
+    <p>Để nhận thông báo qua email, bạn cần
+      <a href="{{view.url}}/settings/email">xác thực địa chỉ email đang dùng</a>.
+    </p>
+  {% endif %}
+</div>
+{% endif %}
+
+<h3>Tin cập nhật</h3>
+
+<form action="" method="post">
+  {% if SMS_ENABLED %}
+  <div class="wide radio">
+    <input type="checkbox" name="sms" id="sms" value="1"
+    {% if sms_notify %}checked="checked"{% endif %}
+    {% if not mobile %}disabled=disabled{% endif %}/>
+    <label for="sms">Text message notifications about new posts{% if mobile %} to {{mobile}}{% endif %}</label>
+    {% if sms_confirm %}
+      <p>Pending confirmation via SMS</p>
+    {% else %}
+      {% if not mobile %}
+      <a href="{{view.url}}/settings/mobile">(Activate your mobile number)</a>
+      {% else %}
+      <a href="{{view.url}}/settings/mobile">(Change number)</a>
+      {% endif %}
+    {% endif %}
+  </div>
+  {% endif %}
+  {% if IM_ENABLED %}
+  <div class="wide radio">
+    <input type="checkbox" name="im" id="im" value="1"
+    {% if im_notify %}checked="checked"{% endif %}
+    {% if not im_address %}disabled=disabled{% endif %}/>
+    <label for="im">Gửi tin nhắn thông báo {% if im_address %} đến {{im_address.base}}{% endif %}</label>
+    {% if not im_address %}
+      <a href="{{view.url}}/settings/im">(Kích hoạt địa chỉ IM)</a>
+    {% else %}
+      <a href="{{view.url}}/settings/im">(Thay đổi)</a>
+    {% endif %}
+  </div>
+  {% endif %}
+  <h3>Người xin kết bạn và các bình luận</h3>
+  <div class="wide radio">
+    <input type="checkbox" name="email" id="email" value="1"
+    {% if email_notify %}checked="checked"{% endif %}
+    {% if not email %}disabled=disabled{% endif %}/>
+    <label for="email">Gửi email thông báo {% if email %} tới {{email}}{% endif %}</label>
+    {% if not email %}
+    <a href="{{view.url}}/settings/email">(Kích hoạt địa chỉ email)</a>
+    {% endif %}
+  </div>
+
+  <div class="buttons">
+    {{request.user|noncefield:"settings_change_notify"}}
+    <input type="hidden" name="nick" value="{{nick}}" />
+    <input type="hidden" name="settings_change_notify" />
+    <input type="submit" class="button" value="Thay đổi" />
+  </div>
+</form>
+
+
+{% endblock %}

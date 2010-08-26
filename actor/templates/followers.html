@@ -1,0 +1,36 @@
+{% extends 'actor/templates/people_base.html' %}
+{% load nonce avatar vcard format %}
+{% block title %}{{whose}} followers{% endblock %}
+{% block people %}
+
+<div class="path">
+  <h1>
+    <a href="{% url_for view request %}/contacts">Bạn bè</a> / Những người theo dõi {{whose}}
+  </h1>
+</div>
+
+<div class="body">
+  {% include 'form_error.html' %}
+  <div id="followers" class='contacts'>
+    {% ifequal request.user.nick view.nick %}
+      <h2>
+        Đang chờ bạn đồng ý ({{actor_tiles_count}})
+      </h2>
+      <p class="foot-note">
+        Những người trong danh sách này ngỏ lời muốn làm bạn với bạn. Click "Kết bạn" nếu bạn đồng ý.
+        <br></br>
+      Lưu ý: Khi bạn đồng ý kết bạn với một người thì người đó sẽ được phép theo dõi tất cả các trao đổi của bạn trên site, kể cả những trao đổi mang tính cá nhân.
+      
+      </p>
+    {% endifequal %}
+
+    {% if actor_tiles %}
+      {% include 'common/templates/actor_tiles.html' %}
+    {% else %}
+      <p>Hiện tại chưa có ai, nhưng chắc sẽ có sớm thôi :)</p>
+    {% endif %}
+
+  </div>
+</div>
+
+{% endblock %}

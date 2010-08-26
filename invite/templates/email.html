@@ -1,0 +1,11 @@
+{% extends 'invite/templates/invite_base.html' %}
+{% load nonce %}
+
+{% block content %}
+  {% include 'common/templates/form_invite_accept.html' %}
+
+  <h2>Hoạt động gần đây của {{view.display_nick}}</h2>
+  <div id="stream">
+    {% include 'common/templates/stream.html' %}
+  </div>
+{% endblock %}

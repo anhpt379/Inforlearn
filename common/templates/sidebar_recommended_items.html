@@ -1,0 +1,15 @@
+{% if items and not user_is_admin %}
+  {% load vcard %}
+  <div id="recommended_items" class='contacts'>
+    <h2>Các nhóm tương tự...</h2>
+    <ul>
+    {% for item in items %}
+      <li>
+        {% with item as actor %}
+          {% include 'common/templates/vcard_tile_rel.html' %}
+        {% endwith %}
+      </li>
+    {% endfor %}
+    </ul>
+  </div>
+{% endif %}

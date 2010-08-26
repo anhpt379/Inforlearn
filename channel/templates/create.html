@@ -1,0 +1,37 @@
+{% extends 'common/templates/base_sidebar.html' %}
+{% load avatar nonce %}
+{% block title %}Tạo nhóm mới{% endblock %}
+
+{% block content %}
+<div class="path">
+ 
+  <h1>Tạo nhóm mới</h1>
+</div> 
+  {% include 'form_error.html' %}
+  <form action="" method="post">
+    {{request.user|noncefield:"channel_create"}}
+    <input type="hidden" name="nick" value="{{request.user.nick}}" />
+    <input type="hidden" name="channel_create" value="" />
+    <div   style="display: inline;">
+      <label for="channel">Chọn một ID cho nhóm</label>
+      <input type="text" name="channel" id="channel" class="text" 
+          value="{{channel}}"/>
+    </div>
+    <div class="buttons" style="display: inline; padding-left: 0px;">
+      <input type="submit" class="button" value=" Đồng ý "/>
+    </div>
+    <div>
+      <p style="text-align: right;">Vui lòng chỉ sử dụng các ký tự từ A-Z, a-z, 0-9 <br>
+        Tên tiếng Việt có dấu 
+        hoặc các mô tả dành cho nhóm có thể được bổ sung sau khi tạo.
+      </p>
+      <p>Khi bạn tạo một nhóm mới, bạn sẽ có quyền thay đổi ảnh nền, ảnh đại diện và phần mô tả của nhóm.</p>
+    </div>
+  </form>
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'common/templates/sidebar_search.html' %}
+  {% include 'common/templates/sidebar_info.html' %} <!-- Thông tin nhóm phát triển -->
+  {% include 'common/templates/sidebar_tips.html' %}
+{% endblock %}

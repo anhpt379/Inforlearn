@@ -1,0 +1,14 @@
+{% if users|length %}
+<div id="contacts" class='contacts'>
+  <h2>Cá nhân nổi bật</h2>
+  <ul>
+    {% for user in users %}
+      <li>
+        {% with user as actor %}
+          {% include 'common/templates/vcard_tile_rel.html' %}
+        {% endwith %}
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

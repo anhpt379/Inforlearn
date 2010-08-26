@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% block body %}
+<p>
+Cảm ơn bạn đã tham gia Inforlearn!<br/>
+Bạn cần phải xác thực địa chỉ email để sử dụng được chức năng nhận thông báo khi 
+có bình luận mới hoặc có một người mới theo đuôi bạn. Chỉ cần nhấn vào link dưới 
+đây, mọi việc còn lại chúng tôi sẽ làm hộ bạn :)
+</p>
+<p><a href="{{email_link}}">Xác nhận</a> (<a href="{{email_mobile_link}}">di động</a>)</p>
+<p>{% include "common/templates/email/signature.txt" %}</p>
+{% endblock %}

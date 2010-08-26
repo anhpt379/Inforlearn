@@ -1,0 +1,31 @@
+{% extends 'actor/templates/people_base.html' %}
+{% block title %}Bạn của {{whose}}{% endblock %}
+{% load nonce avatar vcard format %}
+
+{% block people %}
+  <div class="path">
+    <h1>
+      <a href="{% url_for view request %}/contacts">Bạn bè</a> / Bạn của {{whose}}
+    </h1>
+  </div>
+
+  <div class="body">
+  {% include 'form_error.html' %}
+    <div id="contacts" class='contacts'>
+      {% ifequal request.user.nick view.nick %}
+        <h2>
+          Bạn bè ({{actor_tiles_count}})
+        </h2>
+        <p class="foot-note">
+          Những người có nền màu xanh là những người chưa chấp nhận yêu cầu kết bạn của bạn.
+        </p>
+      {% endifequal %}
+      
+      {% if actor_tiles %}
+        {% include 'common/templates/actor_tiles.html' %}
+      {% else %}
+        <p>Hiện tại chưa có ai, nhưng bạn sẽ tìm được bạn nhanh thôi :)</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

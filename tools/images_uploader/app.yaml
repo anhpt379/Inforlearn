@@ -1,0 +1,30 @@
+application: images-uploader
+version: 1
+runtime: python
+api_version: 1
+
+default_expiration: "365d"
+
+handlers:
+- url: /_zipme
+  script: zipme.py
+
+- url: /source-v2.zip
+  static_files: static/source.zip
+  upload: static/source.zip 
+
+- url: /favicon.ico
+  static_files: static/favicon.ico
+  upload: static/favicon.ico
+
+- url: /js
+  static_dir: static/js
+  
+- url: /css
+  static_dir: static/css
+  
+- url: /images
+  static_dir: static/images
+
+- url: .*
+  script: main.py

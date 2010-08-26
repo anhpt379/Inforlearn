@@ -1,0 +1,86 @@
+{% extends 'common/templates/base_wide.html' %}
+{% load format %}
+{% block title %}Thiết lập {{full_page|yesno:"|,"}} {{full_page}}{% endblock %}
+
+{% block content %}
+  <div class="path">
+    <h1>
+      {% block path %}
+        <a href="{% url_for view request %}">{{view.display_nick}}</a> /
+        {% ifnotequal page "index" %}
+          <a href="{% url_for view request %}/settings">Thiết lập</a>
+        {% endifnotequal %}
+        
+        {% if full_page %}
+           / {{full_page}}
+        {% endif %}
+      {% endblock %}
+    </h1>
+  </div>
+
+  <div id="side-nav">
+  {% block sidenav %}
+    <h3>Tài khoản</h3>
+    <ul>
+      <li{% ifequal page "profile" %} class="current"{% endifequal %}>
+        <a href="{{view.url}}/settings/profile">Thông tin cá nhân</a>
+      </li>
+      <li{% ifequal page "email" %} class="current"{% endifequal %}>
+        <a href="{{view.url}}/settings/email">Email</a>
+      </li>
+      {% if SMS_ENABLED %}
+        <li{% ifequal page "mobile" %} class="current"{% endifequal %}>
+          <a href="{{view.url}}/settings/mobile">Số điện thoại di động</a>
+        </li>
+      {% endif %}
+      {% if IM_ENABLED %}
+        <li{% ifequal page "im" %} class="current"{% endifequal %}>
+          <a href="{{view.url}}/settings/im">IM</a>
+        </li>
+      {% endif %}
+      <li{% ifequal page "password" %} class="current"{% endifequal %}>
+        <a href="{{view.url}}/settings/password">Mật khẩu</a>
+      </li>
+      <li{% ifequal page "photo" %} class="current"{% endifequal %}>
+        <a href="{{view.url}}/settings/photo">Ảnh đại diện</a>
+      </li>
+      <li{% ifequal page "privacy" %} class="current"{% endifequal %}>
+        <a href="{{view.url}}/settings/privacy">Chế độ riêng tư</a>
+      </li>
+      {% if FEEDS_ENABLED %}
+        <li{% ifequal page "feeds" %} class="current"{% endifequal %}>
+          <a href="{{view.url}}/settings/feeds">Your web feeds</a>
+        </li>
+      {% endif %}
+      <!-- I'm not ready yet
+      <li{% ifequal page "api" %} class="current"{% endifequal %}>
+        <a href="{{view.url}}/settings/api">API access</a>
+      -->
+    </ul>
+  
+    <h3>Tùy chọn</h3>
+    <ul>
+      <li{% ifequal page "notifications" %} class="current"{% endifequal %}>
+        <a href="{{view.url}}/settings/notifications">Thông báo</a>
+      </li>
+    </ul>
+    {% if not request.mobile %}
+      <h3>Hiển thị</h3>
+      <ul>
+        <li{% ifequal page "design" %} class="current"{% endifequal %}>
+          <a href="{{view.url}}/settings/design">Ảnh nền</a>
+        </li>
+        {% if BADGES_ENABLED %}
+          <li{% ifequal page "badge" %} class="current"{% endifequal %}>
+            <a href="{{view.url}}/settings/badge">Badges</a>
+          </li>
+        {% endif %}
+      </ul>
+    {% endif %}
+  {% endblock %}
+  </div>
+  <div class="body">
+    {% block settings %}
+    {% endblock %}
+  </div>
+{% endblock %}

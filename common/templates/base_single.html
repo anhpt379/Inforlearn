@@ -1,0 +1,23 @@
+{% extends 'common/templates/base_navbar.html' %}
+{% load format %}
+{% block bodytag %}class="single"{% endblock %}
+
+  
+{% block logo %}
+  {% ifnotequal area 'welcome' %}
+    <a href="{% url_for DOMAIN request %}" id="logo">
+      <img src="/themes/{{DEFAULT_THEME|urlencode}}/logo-big.png" height="73" width="89" alt="{{SITE_NAME}}" />
+    </a>
+  {% endifnotequal %}
+{% endblock %}
+
+{% block mainnav %}
+{%endblock%}
+
+{% block container %}
+<div id="content"><div class="top b"><div class="bottom">
+{% block content %}{% endblock %}
+
+{% include 'common/templates/footnav.html' %}
+</div></div></div>
+{% endblock %}

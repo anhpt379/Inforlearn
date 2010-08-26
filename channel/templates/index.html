@@ -1,0 +1,54 @@
+{% extends 'channel/templates/channel_base.html' %}
+{% load nonce avatar vcard %}
+
+{% block channel_body %} 
+  <div id="group-intro" style="margin-top: -10px;">
+    <p class="centered">
+      <a href="/channel/create">Tạo nhóm mới</a>
+    </p>
+  
+  {% if not owned_channels|length and not followed_channels|length %}
+    <p class="description">
+      Nhóm là nơi nhiều người có thể cùng tham gia đưa các kinh nghiệm, kiến thức của mình lên đó.
+    </p>
+    <p>
+      Để có thể gửi một tin vào một nhóm, bạn cần vào trang của nhóm đó, 
+      nhấn vào &quot;Gia nhập&quot; và gõ nội dung vào ô gửi tin.
+    </p>
+    <p>
+      Nhóm cho phép bạn tạo ra các dòng trao đổi tách biệt về một chủ đề chung 
+      nào đó.
+    </p>
+  {% endif %}
+  </div>
+
+  <h2>Nhóm bạn quản lý</h2>
+  {% if owned_channels|length %}
+    <div class="groups">
+      {% with owned_channels as channel_tiles %}
+        {% include 'channel/templates/channel_tiles.html' %}
+      {% endwith %}
+    </div>
+  {% else %}
+    <p>
+      Chưa có nhóm nào - <a href="/channel/create">Tạo nhóm</a> đầu tiên!
+    </p>
+  {% endif %}
+
+  <h2>Nhóm bạn tham gia</h2>
+  {% if followed_channels|length %}
+    <div class="groups">
+      {% with followed_channels as channel_tiles %}
+        {% include 'channel/templates/channel_tiles.html' %}
+      {% endwith %}
+    </div>
+  {% else %}
+    <p>
+    Gia nhập một nhóm tạo bởi người khác có thể sẽ rất hữu ích. 
+    Chúng tôi đề nghị bạn bắt đầu bằng việc tham gia nhóm 
+    <a href="/channel/{{SUPPORT_CHANNEL}}">#{{SUPPORT_CHANNEL}}</a> 
+    để nhận được sự hỗ trợ và chia sẻ các ý tưởng về việc tăng cường 
+    chất lượng cho {{SITE_NAME}}.
+    </p>
+  {% endif %}
+{% endblock %}

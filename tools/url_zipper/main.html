@@ -1,0 +1,61 @@
+{% comment %}
+// Variables for this template:
+// urly - this is an urly instance to show (we use code and href properties)
+// error_404 - an error message to show the user
+// default_href - default href to dump into text area. Why do we have this?
+// error_href - set when we have an improperly formatted href
+{% endcomment %}
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+  <title>Rút gọn link</title>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta property="og:title" content="ur.ly" />
+  <meta property="og:url" content="http://ur.ly/" />
+  <meta property="og:type" content="website" />
+  <meta property="fb:admins" content="534232326" />
+  <script type="text/javascript" src="static/urly.js"></script>
+</head>
+<body style="font-family: verdana, arial; font-size: 80%; text-align: center">
+<div style="margin: 0 auto; width: 600px; padding: 20px; text-align: left;">
+
+<h1 href="/">Rút gọn link</h1>
+
+{% if error_404 or urly or error_href %}
+<div style="margin-top: 5px; margin-bottom: 15px;">
+  {% if error_404 %}Oops - liên kết này không tồn tại.{% endif %}
+  {% if error_href %}Oops - liên kết này có vẻ không đúng... chúng tôi không thể làm gì hơn.{% endif %}
+  {% if urly %}
+  {{ urly.href }}
+  <input id="href" name="href" type="text" style="margin-top: 5px; padding: 3px; width: 600px; border: 1px solid #cccccc;" value="http://rut-gon-link.appspot.com/{{ urly.code }}" />
+  <script type="text/javascript" language="javascript">window.onload = copy("http://ur.ly/{{ urly.code }}");</script>
+  <script type="text/javascript" language="javascript">window.onload = focus("href");</script>
+
+  {% endif %}
+</div>
+{% endif %}
+
+{% if not urly %}
+<div style="padding-bottom: 3px;">Nhập liên kết bạn muốn thu gọn:</div>
+<form action="new.html" method="get" accept-charset="utf-8">
+<textarea style="margin-bottom: 5px; width: 100%; border: 1px solid #cccccc;" name="href" id="href" rows="4">{{ default_href }}</textarea>
+<input type="submit" value="Rút gọn" />
+</form>
+{% endif %}
+
+<div></div><br/>Kéo liên kết <a href="javascript:location.href='http://rut-gon-link.appspot.com/new.html?href='+encodeURIComponent(location.href)+'&amp;title='+encodeURIComponent(document.title)">rút gọn link</a> này lên thanh bookmark/favourite của trình duyệt, và bạn có thể bấm vào nó bất cứ lúc nào, nó sẽ thu gọn link trang bạn đang xem ngay lập tức&nbsp;</div>
+<!-- 
+<div align="center" style="margin-top: 10px; padding-top: 5px; border-top: 1px solid #f1f1f1;"><span style="float: right"><a href="http://github.com/AloneRoad/urly"><br/>Mã nguồn</a> | <a href="http://wiki.github.com/ajstiles/urly">API</a></span>
+</div>
+ -->
+
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-81531-8");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body></html>

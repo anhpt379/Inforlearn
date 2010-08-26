@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>NoPix</title>
+<link rel="stylesheet" type="text/css" href="css/style.css" media="screen" />
+	<link rel="stylesheet" href="css/lightbox.css" type="text/css" media="screen" />
+	<script type="text/javascript" src="js/prototype.js"></script>
+	<script type="text/javascript" src="js/scriptaculous.js?load=effects,builder"></script>
+	<script type="text/javascript" src="js/lightbox.js"></script>
+	<script type="text/javascript"><!--//--><![CDATA[//><!--
+	function selectText(field)
+	{
+	  field.focus();
+	  field.select();
+	}
+	//--><!]]></script>
+</head>
+<body>
+<div id="header">
+	<div id="logo">
+		<h1><a href="/">NoPix</a></h1>
+		<p>Host your own pix sharing service</p>
+	</div>
+	<!-- end #logo -->
+	<div id="menu">
+		<ul>
+			<li><a href="/">Home</a></li>
+			{% if user_is_admin and setting %}<li><a href="settings">Settings</a></li>{% endif %}
+			{% if user_name %}<li><a href="history?size=small&num={{ size.small.2 }}">{{ user_name }}</a></li>{% endif %}
+			<li><a href="{{ sign_url }}">{{ sign }}</a></li>
+		</ul>
+	</div>
+	<!-- end #menu -->
+</div>
+<!-- end #header -->
+<div id="page">
+	<div id="content">
+		{% block content %}{% endblock %}
+		{% if error %}
+		<div class="post">
+			<h1 class="title">Error</h1>
+			<p class="byline"><small>Message</small></p>
+			<div class="entry">
+				<p>{{ error }}</p>
+			</div>
+		</div>
+		{% endif %}
+	</div>
+	<!-- end #content -->
+</div>
+<!-- end #page -->
+<div id="footer">
+	<p>&copy; 2008. All Rights Reserved. Design by <a href="http://www.freecsstemplates.org/">Free CSS Templates</a>.</p>
+</div>
+<!-- end #footer -->
+<script type="text/javascript">
+var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+</script>
+<script type="text/javascript">
+try {
+var pageTracker = _gat._getTracker("UA-4155622-7");
+pageTracker._trackPageview();
+} catch(err) {}</script>
+</body>
+</html>

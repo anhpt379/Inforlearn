@@ -1,0 +1,24 @@
+{% extends 'common/templates/base_single.html' %}
+{% load format %}
+{% block title %}
+  Khôi phục mật khẩu
+{% endblock %}
+
+{% block content %}
+  {% include 'form_error.html' %}
+  <h1>Khôi phục mật khẩu</h1>
+  
+  {% if new_password %}
+    <div class='new-password'>
+      Mật khẩu mới của bạn là: <b>{{new_password}}</b> <br>
+      Hãy sử dụng nó để đăng nhập và đổi lại nếu thấy cần thiết (vào Thiết lập > Mật khẩu) <br /><br> 
+    </div>
+  {% endif %}
+  
+  <p style="text-align: right; margin-right: 200px;">
+    <a href="{% url_for DOMAIN request %}/login">Quay lại trang đăng nhập</a>
+  </p>
+  <p style="text-align: right; margin-right: 200px;">
+    hoặc <a href="{% url_for DOMAIN request %}/">trở về trang chủ</a>
+  </p>
+{% endblock %}

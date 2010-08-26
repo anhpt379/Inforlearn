@@ -1,0 +1,2 @@
+#!/bin/sh
+../.google_appengine/appcfg.py update images_uploader

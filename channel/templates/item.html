@@ -1,0 +1,28 @@
+{% extends 'common/templates/base_sidebar.html' %}
+{% load nonce avatar format entry %}
+{% block title %}
+  {{view.display_nick}}: {{ entry.title }}
+{% endblock %}
+
+{% block content %}
+  <div class="main">
+    <h1>
+      {% ifnotequal entry.owner entry.actor %}
+        {% actor_link entry.actor_ref request %} viết:
+      {% else %}
+        {% actor_link entry.owner_ref request %} viết:
+      {% endifnotequal %}
+    </h1>
+    
+    <h3 style="margin-top: -20px; text-align:right;">{% go_back entry.owner_ref request %}</h3>
+    {% include 'common/templates/item_post.html' %}
+  </div>
+  {% include 'common/templates/item_comments.html' %}
+{% endblock %}
+
+{% block sidebar %}
+  {% include 'channel/templates/sidebar_profile.html' %}
+  {% include 'common/templates/sidebar_search.html' %}
+  {% include 'common/templates/sidebar_info.html' %}
+  {% include 'common/templates/sidebar_tips.html' %}
+{% endblock %}

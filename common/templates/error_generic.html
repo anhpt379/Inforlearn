@@ -1,0 +1,19 @@
+{% extends 'common/templates/base_single.html' %}
+
+
+{% block content %}
+  <style>
+    body.single div#header {
+      display: none;
+    }
+  </style>
+  
+  <div class="path">
+    <h1>&#187;  Error</h1>
+  </div>
+  <div id="error" class="error">
+    <p>{{message}}</p>
+  </div>
+  
+  <p><a href="/">« Quay về trang chủ</a></p>
+{% endblock %}

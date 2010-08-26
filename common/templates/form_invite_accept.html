@@ -1,0 +1,37 @@
+{% load nonce %}
+<h1>Xác nhận lời mời từ {{view.display_nick}}?</h1>
+{% if request.user %}
+  <p>
+  Việc đồng ý sẽ thêm {{view.display_nick}} vào danh sách bạn bè của bạn và cho phép {{view.display_nick}} đọc và bình luận các tin bạn gửi lên.
+  </p>
+  <div class="highlight">
+    <p>
+    <form action="" method="post">
+      {{request.user|noncefield:"invite_accept"}}
+      <input type="hidden" name="nick" value="{{request.user.nick}}" />
+      <input type="hidden" name="code" value="{{code}}" />
+      <input type="hidden" name="invite_accept" value="" />
+      <input type="submit" value=" Chấp nhận lời mời " />
+    </form>
+    <form action="" method="post">
+      {{request.user|noncefield:"invite_reject"}}
+      <input type="hidden" name="nick" value="{{request.user.nick}}" />
+      <input type="hidden" name="code" value="{{code}}" />
+      <input type="hidden" name="invite_reject" value="" />
+      <input type="submit" value=" Từ chối " />
+    </form>
+    <br/>
+    <br/>
+    </p>
+  </div>
+{% else %}
+  <p>
+  Để chấp nhận lời mời từ {{view.display_nick}},
+  bạn cần phải có một tài khoản và đang đăng nhập.
+  </p>
+
+  <a href="/login?redirect_to={{request.path|urlencode}}"> Đăng nhập</a>
+  | 
+  <a href="/join?redirect_to={{request.path|urlencode}}"> Đăng ký</a>
+
+{% endif %}

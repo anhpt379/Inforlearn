@@ -1,0 +1,1 @@
+dumbo start recs.py -input input/channel_members.txt -output output/channel_similarity.txt

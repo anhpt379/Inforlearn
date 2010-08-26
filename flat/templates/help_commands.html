@@ -1,0 +1,64 @@
+{% extends 'flat/templates/help_base.html' %}
+
+{% block help %}
+<h2>Gửi tin và bình luận</h2>
+
+<dl style="margin-left: 20px;">
+    <dt><strong>Viết lên tường nhà bạn</strong></dt>
+    <dd>
+        <p>
+            Gõ nội dung tin nhắn và nhấn Enter :)
+        </p>
+    <dd>
+    <dt><strong>Gửi tin vào một nhóm</strong></dt>
+    <dd>
+        <p>
+            Bắt đầu tin nhắn với <code>#group_id</code>
+        </p>
+        <p>
+            Ví dụ: <code>#inforlearn Hello everyone!</code>
+        </p>
+    </dd>
+    <dt><strong>Bình luận</strong></dt>
+    <dd>
+        <p>
+            Sử dụng <code>@username</code> để bình luận tin vừa gửi bởi người đó. 
+        </p>
+        <p>
+            Ví dụ: <code>@AloneRoad Thanks!</code>
+        </p>
+    </dd>
+</dl>
+
+
+<h2 style="display: inline;">Các lệnh hỗ trợ </h2> (Không phân biệt HOA/thường)
+
+<dl style="margin-left: 20px; margin-top: 10px;">
+    <dt><strong>sign in &lt;username&gt; &lt;password&gt;</strong></dt>
+    <dd><p>Đăng nhập tài khoản {{SITE_NAME}} để bắt đầu nhận và gửi tin</p></dd>
+    <dt><strong>start | on | wake</strong></dt>
+    <dd><p>Kích hoạt chế độ nhận thông báo qua IM</p></dd>
+    <dt><strong>stop | end | quit | off | unsubscribe | pause</strong></dt>
+    <dd><p>Vô hiệu hóa chế độ nhận tin thông báo qua IM</p></dd>
+    <dt><strong>help</strong></dt>
+    <dd><p>Trả về nội dung hướng dẫn</p></dd>
+    <dt><strong>follow username / #group_id | add | join | F</strong></dt>
+    <dd><p>Adds the {{SITE_NAME}} member or channel to your contacts</p></dd>
+    <dt><strong>leave username / #group_id | remove | L</strong></dt>
+    <dd><p>Loại bỏ một người dùng khỏi danh sách bạn bè hoặc rời khỏi một nhóm</p></dd>
+    <dt><strong>sign out</strong></dt>
+    <dd><p>Đăng xuất khỏi tài khoản hiện tại</p></dd>
+    <dt><strong>delete me</strong></dt>
+    <dd><p>Xóa vĩnh viễn tài khoản của bạn tại {{SITE_NAME}}</p></dd>
+</dl>
+
+<ul>
+    <li>
+        <a href="/settings/im">Kích hoạt địa chỉ IM</a>
+    </li>
+    <li>
+        <a href="/settings/notifications">Thay đổi các tùy chọn thông báo</a>
+    </li>
+</li>
+
+{% endblock %}

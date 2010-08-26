@@ -1,0 +1,17 @@
+**post** (api_user, _task_ref, \*\*kw)
+
+
+ Post a new entry
+  
+  This will attempt to infer if you are attempting to post to a
+  channel (prefixing the message with #channel)
+
+  PARAMS:
+    * message - the title of your entry
+    * location - free form location for this entry
+    * icon - the web icon for this icon
+    * nick - the actor posting this entry
+    * uuid - a unique identifier for this entry
+  
+  RETURNS: entry_ref  
+  

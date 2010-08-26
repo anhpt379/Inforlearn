@@ -1,0 +1,38 @@
+{% extends 'common/templates/base_single.html' %}
+{% load nonce %}
+
+{% block title %}Ứng dụng {{oauth_consumer_ref.app_name}} muốn truy cập vào tài khoản của bạn{% endblock %}
+
+{% block content %}
+<h2>Một ứng dụng muốn truy cập vào tài khoản của bạn</h2>
+
+<p><strong>{{oauth_consumer_ref.app_name}}</strong> muốn được phép <strong>{{perms_pretty}}</strong> . 
+Nếu đồng ý, {{oauth_consumer_ref.app_name}} sẽ được phép truy cập và gửi tin dưới danh nghĩa của bạn.</p> 
+
+<form id="authorizeform" action="/api/authorize" method="post">
+  {% if oauth_callback %}
+  <input type="hidden" name="oauth_callback" value="{{oauth_callback}}" />
+  {% endif %}
+ 
+  {% if oauth_token %}
+  <input type="hidden" name="oauth_token" value="{{oauth_token}}" />
+  {% else %}
+  
+  {% endif %}
+  <input type="hidden" name="perms" value="{{perms}}" />
+  <input type="hidden" name="authorize" value="1" />
+
+
+  <div class="buttons">
+    {{request.user|noncefield:"authorize_token"}}
+    <input type="submit" class="button" value="Chấp nhận"/>
+  </div>
+</form>
+
+<br />
+<p class="centered">
+<a href="http://{{DOMAIN}}">Trở về trang chủ</a>
+</p>
+
+{% endblock %}
+

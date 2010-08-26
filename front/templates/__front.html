@@ -1,0 +1,76 @@
+{% extends 'common/templates/base_single.html' %}
+
+{% block bodytag %}{{block.super}} {% endblock %}
+
+{% block title %}Giới thiệu{% endblock %}
+
+{% block logo %}
+<div id="logo">
+<a href="/" id="logo">
+  <img src="/themes/{{DEFAULT_THEME|urlencode}}/logo.png" width="89" height="73" alt="{{SITE_NAME}}" />
+</a>
+
+  <h1>{{SITE_NAME}} </h1>
+  <h3>Rediscovering the natural pathways that inspire innovation and performance</h3> 
+</div>
+{% endblock %}
+
+
+{% block content %}
+<!--    <h2><a id="login_link" href="/login">&#8250; Đăng nhập</a></h2>-->
+    <div id="intro">
+      <ul>
+<!--        <li>-->
+<!--          <h3>Giới thiệu</h3>-->
+<!--        -->
+<!--        </li>-->
+<!--        <li>Microlearning là gì?</li>-->
+<!--        <li>Tại sao tôi cần Inforlearn?</li>-->
+<!--          <li id="ninedot">-->
+<!--              <h3>&nbsp;&nbsp;&nbsp;Sự đơn giản...</h3>-->
+<!--              <p>&nbsp;&nbsp;&nbsp;&nbsp;Hãy thử giải bài toán sau: Cho 9 điểm -->
+<!--              như hình vẽ bên trái, hãy nối tất cả chúng bằng một đường liền nét, -->
+<!--              sao cho tổng số đoạn thẳng phải sử dụng là ít nhất... </p>-->
+<!--              <p>&nbsp;&nbsp;&nbsp;&nbsp;...bạn có thể nối 9 điểm đó với 3 đoạn -->
+<!--              thẳng liên tiếp nhau không? Đôi khi, chúng ta suy nghĩ mọi chuyện -->
+<!--              theo những lối mòn và đóng khung suy nghĩ trong một cái hộp vô hình...</p>-->
+<!--          </li>-->
+          <li id="create">
+              <h3>&nbsp;&nbsp;&nbsp;Chia sẻ kiến thức và kinh nghiệm</h3>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;Inforlearn ra đời nhằm cung cấp một nền tảng
+              học tập mới dựa trên micro-content, những đơn vị kiến thức nhỏ, dễ tiếp thu. 
+              Quyền tạo ra kiến thức được chuyển về cho người dùng, nghĩa là từng 
+              người dùng của hệ thống được phép tạo ra các kiến thức, và thông qua cộng 
+              đồng (bình luận/nhận xét,...) sẽ quyết định độ tin cậy/chính xác của những
+              kiến thức đó.
+              </p>
+          </li>
+          <li id="follow">
+              <h3>&nbsp;&nbsp;&nbsp;Kết bạn, giao lưu, trao đổi và mở rộng kiến thức</h3>
+              <p>&nbsp;&nbsp;&nbsp;&nbsp;Cùng với việc chia sẻ, bạn cũng sẽ nhận
+              về các kiến thức đã được tổng hợp, đúc kết từ người khác trong những
+              vấn đề/lĩnh vực quan tâm, gửi bình luận, nhận xét, thảo luận, 
+              tiếp thu kiến thức một cách nhanh chóng và hiệu quả nhất.</p>
+          </li>
+<!--          <li>-->
+<!--            <h3>Lịch sử Inforlearn</h3>-->
+<!--          </li>-->
+<!--          <li>-->
+<!--            <h3>Về cái tên Inforlearn</h3>-->
+<!--          </li>-->
+<!--          <li>-->
+<!--            <h3>Chìa khóa thành công</h3>-->
+<!--          </li>-->
+<!--          <li>-->
+<!--            <h3>Vì sao lại là 256 ký tự?</h3>-->
+<!--          </li>-->
+<!--          <li id="more">-->
+<!--              <h3><a href="/tour">&#8250; Các câu hỏi thường gặp</a></h3>-->
+<!--          </li>-->
+<!--          <h1><a href="/login"> Đăng nhập </a></h1>-->
+<!--          <h2><a href="/join"> Đăng ký </a></h2>-->
+      </ul>
+    </div>
+
+{% endblock %}
+

@@ -1,0 +1,54 @@
+{% load avatar format entry %}
+<ul class="stream">
+  {% for entry in entries %}
+    {% ifchanged %}
+      <li class="date"><h3>{{entry.created_at|date:"l"}}, ngày {{entry.created_at|date:"j"}} tháng {{entry.created_at|date:"n"}} năm {{entry.created_at|date:"Y"}}</h3></li>
+    {% endifchanged %}
+  
+    {% if entry.entry %}
+      <li class="comment" id="stream-comment-{{entry.uuid}}">
+        <div class="top">
+          <div class="bottom">
+            {% include "common/templates/stream_comment.html" %}
+          </div>
+        </div>
+      </li>
+    {% endif %}
+  
+    {% ifequal entry.stream_ref.type 'presence' %}
+      <li class="presence" id="stream-{{entry.uuid}}">
+        <div class="top">
+          <div class="bottom s-{{entry.stream}}">
+            {% include "common/templates/stream_entry.html" %}
+          </div>
+        </div>
+      </li>
+    {% endifequal %}
+  {% endfor %}
+  
+  {% if not entries|length %}
+    {% block no_posts %}
+      {% ifequal view.nick request.user.nick %}
+        <br>
+        <div class="highlight">Hãy viết một điều gì đó ^^ <br>
+        <!--
+          <p>Hãy bắt đầu ^^<br/>
+          - <span style="font-size: 14px;">Chia sẻ cho mọi người một liên kết hay một bài viết hay<br/>
+          - <span style="color:#2f2f2f">Một câu hỏi bạn chưa giải đáp được và cần mọi người giúp đỡ</span> <br/>
+          - <span style="color:#2f2f2f">FIXME...</span> <br/>
+          </p>
+          -->
+        </div>
+      {% else %}
+        <br>
+        <p>
+        {% ifequal privacy "public" %}
+          Nội dung này không được {{view.display_nick}} công khai.
+        {% else %}
+          {{view.display_nick}} chưa viết gì cả.
+        {% endifequal %}
+        </p>
+      {% endifequal %}
+    {% endblock %}
+  {% endif %}
+</ul>

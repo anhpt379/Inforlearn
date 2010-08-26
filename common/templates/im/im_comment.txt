@@ -1,0 +1,4 @@
+{% load format i18n %}
+
+{{entry.extra.content}} 
+(gửi từ {{entry.actor_ref.display_nick}} trong chủ đề {{entry.extra.entry_title|truncate:entry_title_max_length}}{% if entry.owner_ref.is_channel %} thuộc nhóm {{entry.owner_ref.display_nick}}{% endif %})

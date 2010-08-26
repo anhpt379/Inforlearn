@@ -1,0 +1,22 @@
+{% extends 'actor/templates/settings_base.html' %}
+{% load nonce %}
+{% block settings %}
+
+<h2>Xóa tài khoản</h2>
+
+{% include 'form_error.html' %}
+<div id="account-form">
+  <p>
+    Tất cả mọi dữ liệu được lưu trữ trên Inforlearn thuộc về tài khoản này sẽ bị 
+    xóa bỏ. Sau khi xóa, bạn sẽ không có bất cứ cách nào khôi phục dữ liệu.
+  </p>
+  <form action="" method="post">
+    {{request.user|noncefield:"actor_remove"}}
+    <input type="hidden" name="actor_remove" />
+    <input type="hidden" name="nick" value="{{request.user.nick}}" />
+    <div class="buttons">
+      <input type="submit" class="button" value="Xóa tài khoản của tôi" />
+    </div>
+  </form>
+</div>
+{% endblock %}

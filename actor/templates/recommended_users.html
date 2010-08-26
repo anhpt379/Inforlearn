@@ -1,0 +1,30 @@
+{% extends 'actor/templates/people_base.html' %}
+{% block title %}Gợi ý kết bạn{% endblock %}
+{% load nonce avatar vcard format %}
+
+{% block people %}
+  <div class="path">
+    <h1>
+      <a href="{% url_for view request %}/contacts">Bạn bè</a> / Gợi ý kết bạn
+    </h1>
+  </div>
+  
+  <div class="body">
+  {% include 'form_error.html' %}
+    <div id="contacts" class='contacts'>  
+    
+      <h2>
+        Bạn có thể sẽ muốn theo dõi tin từ những người dưới đây:
+      </h2>   
+      {% if users %}
+        {% with users as actor_tiles %}
+          {% include 'common/templates/actor_tiles.html' %}
+        {% endwith %}
+      {% else %}
+        <br>
+        <p>Hiện tại chưa có gợi ý nào. <br><br>
+        Bạn có thể gửi thư mời đến bạn bè của mình <a href="{% url_for view request %}/invite">tại đây</a></p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

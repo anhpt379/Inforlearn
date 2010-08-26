@@ -1,0 +1,22 @@
+{% extends 'channel/templates/channel_base.html' %}
+{% block title %}Giới thiệu{% endblock %}
+{% block content %}
+  <ul id="sub-nav" class="b">
+    <li class="first {% ifequal page "create" %} current{% endifequal %}">
+      <a href="/tour/1">Kết nối và chia sẻ</a>
+    </li>
+    <li {% ifequal page "contacts" %}class="current"{% endifequal %} >
+      <a href="/tour/2">Trao đổi - Thảo luận</a>
+    </li>
+    <li {% ifequal page "faqs" %}class="current"{% endifequal %} >
+      <a href="/tour/3">Cập nhật - Tổng hợp</a>
+    </li>
+  </ul>
+
+  <div class="tour" id="tour-{{page_num}}">
+    {% block tour %}
+    {% endblock %}
+  </div>
+
+
+{% endblock %}

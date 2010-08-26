@@ -1,0 +1,38 @@
+{% load avatar nonce %}
+
+<h2>{% block title %}Ảnh đại diện{% endblock %}</h2>
+<p>
+  {% block blurb %} Ảnh này sẽ xuất hiện bên cạnh mỗi tin nhắn hoặc bình luận bạn gửi lên.{% endblock %}
+</p>
+{% include 'form_error.html' %}
+<form action="" id="form-avatar" method="POST" enctype="multipart/form-data">
+  <div class="tabs">
+    <div style="padding: 0em 0px;">
+      {{request.user|noncefield:"change_photo"}}
+      {{view|noncached_avatar:"f,current"}}
+      {% if view.extra.icon %}
+        <a href="?delete=1&amp;{{request.user|nonceparam:"delete_photo"}}" 
+        class="confirm-delete" title="Gỡ bỏ ảnh hiện tại và sử dụng ảnh mặc định">&#8250; Phục hồi lại <br/> ảnh mặc định</a>
+      {% endif %}
+    </div>
+
+    <ul id="tab-list">
+      <li class="current">
+        <a href="#new">Tải lên</a>
+      </li>
+      <li>
+        <a href="#defaults">Thư viện {{SITE_NAME}}</a>
+      </li>
+    </ul>
+    {% include 'common/templates/form_photo_upload.html' %}
+    {% include 'common/templates/form_photo_set.html' %}
+  </div>
+  <div class="buttons">
+    {% if redirect_to %}
+      <input type="hidden" name="redirect_to" value="{{redirect_to}}" />
+    {% endif %}
+    {% block buttons %}
+      <input type="submit" class="button" value="Lưu" />
+    {% endblock %}
+  </div>
+</form>

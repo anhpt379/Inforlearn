@@ -1,0 +1,600 @@
+div#header-container {
+background:transparent url(bg-header.png) repeat-x 0 100%;
+}
+
+div#content {
+background:transparent url(bg-content-bottom.png) no-repeat 0 100%;
+}
+
+div#content div.top.b {
+background:transparent url(bg-content-top-g.png) no-repeat;
+}
+
+div#content div.main {
+background:#96c63f url(bg-main.gif) repeat-x 0 0;
+}
+
+div.wide div#content {
+background-image:url(bg-content-w-bottom.png);
+}
+
+div.wide div#content div.top {
+background-image:url(bg-content-w-top.png);
+}
+
+div.wide div#content div.top.b {
+background-image:url(bg-content-w-top-g.png);
+}
+
+div.wide div#content div.bottom {
+background-image:url(bg-content-w.png);
+}
+
+div#content div#current-stream div.top {
+background:transparent url(bg-stream-current-bottom.gif) no-repeat 0 100%;
+}
+
+div#content div#current-stream div.bottom {
+background:transparent url(bg-stream-current-top.gif) no-repeat;
+}
+
+div#sidebar {
+background:transparent url(bg-sidebar-bottom.png) no-repeat 0 100%;
+}
+
+div#sidebar div.top {
+background:transparent url(bg-sidebar-top.png) no-repeat;
+}
+
+div#sidebar div.top.b {
+background-image:url(bg-sidebar-top-g.png);
+}
+
+div#sidebar div.bottom {
+background:transparent url(bg-sidebar.png) repeat-y;
+}
+
+div#sidebar h2,div#side-nav h2,div#leave-comment h2 {
+background:#a8d94f;
+}
+
+ul#main-nav li.current {
+background:#9c0;
+}
+
+ul#sub-nav {
+background:#96c73f;
+}
+
+ul#sub-nav.b {
+background:#adde53;
+}
+
+ul#sub-nav li {
+border-bottom:1px solid #96c73f;
+background:#e1f0c5;
+}
+
+ul#sub-nav li a {
+color:#96c73f;
+}
+
+div#side-nav ul li.current a {
+background-color:#fff;
+color:#86bd33;
+}
+
+div#intro h1 {
+color:#94bf1b;
+}
+
+div#intro ul li#create {
+background:transparent url(icons/jaiku-bubble.gif) no-repeat 0 20%;
+}
+
+div#intro ul li#follow {
+background:transparent url(icons/jaiku-couple.gif) no-repeat 0 20%;
+}
+
+div#intro ul li#ninedot {
+background:transparent url(/themes/default/9.jpg) no-repeat 0 20%;
+}
+
+div#intro ul li#client {
+background:transparent url(icons/jaiku-message.gif) no-repeat 0 20%;
+}
+
+div#map {
+background:transparent url(bg-map.gif) no-repeat;
+}
+
+div#tour-3 div.note {
+background:#a2e7f2;
+}
+
+div.tour div.body h3 {
+color:#73ca02;
+}
+
+p.notice {
+background:#fffdcf;
+}
+
+div.error {
+background:#fdd;
+}
+
+p.error,span.error {
+color:#c33;
+}
+
+p.success {
+color:#3c3;
+}
+
+ul.steps {
+background:transparent url(bg-steps-line.gif) repeat-x 0 50%;
+list-style-type:none;
+overflow:hidden;
+font-size:1.1em;
+margin:.5em 20px 0;
+padding:0;
+}
+
+ul.steps li {
+line-height:1.2em;
+float:left;
+width:82px;
+margin:0;
+padding:0;
+}
+
+ul.steps li a,ul.steps li strong {
+text-align:center;
+display:block;
+height:100%;
+color:#999;
+padding:.5em 0 135px;
+}
+
+ul.steps li a:hover {
+background:transparent url(bg-step-2.gif) no-repeat 50% 100%;
+color:#99cc01;
+}
+
+ul.steps li.current a {
+color:#99cc01;
+}
+
+ul.steps li#step-2 {
+margin:0 115px;
+}
+
+ul.steps li#step-1 a,ul.steps li#step-1 a:hover {
+background:transparent url(bg-step-1.gif) no-repeat 50% 100%;
+}
+
+ul.steps li#step-1.current a {
+background:transparent url(bg-step-1-sel.gif) no-repeat 50% 100%;
+}
+
+ul.steps li#step-1.done a {
+background:transparent url(bg-step-1-done.gif) no-repeat 50% 100%;
+}
+
+ul.steps li#step-2 a,ul.steps li#step-2 a:hover {
+background:transparent url(bg-step-2.gif) no-repeat 50% 100%;
+}
+
+ul.steps li#step-2.current a {
+background:transparent url(bg-step-2-sel.gif) no-repeat 50% 100%;
+}
+
+ul.steps li#step-2.done a {
+background:transparent url(bg-step-2-done.gif) no-repeat 50% 100%;
+}
+
+ul.steps li#step-3 a,ul.steps li#step-3 a:hover {
+background:transparent url(bg-step-3.gif) no-repeat 50% 100%;
+}
+
+ul.steps li#step-3.current a {
+background:transparent url(bg-step-3-sel.gif) no-repeat 50% 100%;
+}
+
+ul.steps li#step-3.done a {
+background:transparent url(bg-step-3-done.gif) no-repeat 50% 100%;
+}
+
+#contacts div.body {
+margin-left:0;
+}
+
+div#welcome-start {
+font-size:1.2em;
+}
+
+div#welcome-start img {
+margin:0 auto 1em;
+}
+
+div#welcome-start p,div#welcome-start h1 {
+margin:inherit auto;
+}
+
+div#welcome-start ul {
+list-style-type:none;
+margin:1em auto;
+padding:0;
+}
+
+div#welcome-start ul li {
+color:#666;
+margin:0;
+padding:.5em 0 .4em 20px;
+}
+
+div#welcome-start ul li#step-1 {
+background:transparent url(bg-step-1-small.png) no-repeat 0 50%;
+}
+
+div#welcome-start ul li#step-2 {
+background:transparent url(bg-step-2-small.png) no-repeat 0 50%;
+}
+
+div#welcome-start ul li#step-3 {
+background:transparent url(bg-step-3-small.png) no-repeat 0 50%;
+}
+
+div#welcome-done {
+background:transparent url(welcome-done.png) no-repeat 12% 50%;
+padding:60px 0 100px 220px;
+}
+
+div#find-friends div#contacts ul {
+border:2px solid #fff;
+background:#fff;
+overflow:auto;
+height:300px;
+margin:1em 0;
+}
+
+div#find-friends div#contacts div.buttons {
+text-align:right;
+padding:0;
+}
+
+div#find-friends div#contacts div.buttons span {
+float:left;
+}
+
+div#find-friends div#contacts ul li {
+border-top:1px solid #eee;
+overflow:hidden;
+clear:both;
+padding:.4em 0;
+}
+
+div#find-friends div#contacts ul li.alternate {
+background:#e9e9e9;
+}
+
+div#find-friends div#contacts ul li img.photo {
+height:20px;
+width:20px;
+margin:0 5px;
+}
+
+div#find-friends div#contacts ul li h3 {
+margin-top:.1em;
+float:left;
+padding:0;
+}
+
+div#find-friends div#contacts ul li p {
+line-height:1em;
+float:left;
+margin:.2em 0 0;
+padding:0;
+}
+
+div#find-friends div#contacts ul li p.foot {
+width:200px;
+float:right;
+padding:0;
+}
+
+div#find-friends div#contacts ul li input {
+margin-top:.2em;
+float:left;
+}
+
+div#find-friends div#contacts ul li span.checked {
+background:transparent url(checked.gif) no-repeat 0 50%;
+margin-top:5px;
+display:block;
+height:16px;
+width:16px;
+float:left;
+}
+
+#welcome div.buttons {
+text-align:right;
+}
+
+div.buttons button {
+background:transparent;
+white-space:nowrap;
+line-height:1em;
+font-size:.9em;
+display:block;
+border:none;
+float:right;
+margin:0;
+padding:0;
+}
+
+div.buttons big,div#welcome-start big {
+background:transparent url(bg-foot-step-dis.gif) no-repeat 0 0;
+text-align:center;
+overflow:hidden;
+display:block;
+height:32px;
+float:right;
+margin:0;
+padding:0;
+}
+
+div#welcome-start big {
+width:140px;
+float:none;
+margin:0 auto 1em;
+}
+
+div.buttons big.active,div#welcome-start big {
+background-image:url(bg-foot-step.gif);
+background-position:0 -32px;
+}
+
+div.buttons button:hover big.active,div.buttons big.active:hover,div#welcome-start big:hover {
+background-position:0 0px;
+}
+
+div.buttons big a,div.buttons big span,div.buttons big.active a,div#welcome-start big a {
+background:transparent url(bg-foot-step-dis-r.gif) no-repeat 100% 0;
+display:block;
+height:14px;
+color:#fff;
+margin:0;
+padding:8px 30px 10px;
+}
+
+div.buttons big.active span,div.buttons big.active a,div#welcome-start big a {
+background-image:url(bg-foot-step-r.gif);
+}
+
+div.buttons button:hover big.active span,div.buttons big.active:hover a,div#welcome-start big:hover a {
+background-position:100% -32px;
+}
+
+p.foot-note {
+font-size:.86em;
+color:#666;
+}
+
+a:link,a:visited {
+-webkit-transition-duration:.3s;
+-webkit-transition-property:color, background;
+color:#009bc7;
+}
+
+a:hover,a:link:hover,a:visited:hover {
+background:#009bc7;
+color:#fff;
+}
+
+#self .vcard p.phone {
+color:#ae3695;
+}
+
+div.main a img.photo,div.main img.photo {
+border:solid 1px #9ac64a;
+}
+
+#settings div.body dd {
+background:transparent url(bg-settings-profile.gif) no-repeat 95% 90%;
+}
+
+#settings div.body dd#design {
+background:transparent url(bg-settings-design.gif) no-repeat 95% 90%;
+}
+
+#settings div.body dd#notifications {
+background:transparent url(bg-settings-notifications.gif) no-repeat 95% 90%;
+}
+
+#settings div.body dd#feeds {
+background:transparent url(bg-settings-feeds.gif) no-repeat 95% 90%;
+}
+
+div#form-message p {
+color:#e7fdbd;
+}
+
+#content ul.stream li.presence div.top,#content ul.stream li.comment div.top {
+background:transparent url(bg-stream-bottom.gif) no-repeat 0 100%;
+}
+
+#sidebar ul.stream li.presence div.top {
+background:transparent url(bg-stream-small-bottom.gif) no-repeat 0 100%;
+}
+
+#content ul.stream li.presence div.bottom,#content ul.stream li.comment div.bottom {
+background:transparent url(bg-stream-top.gif) no-repeat;
+}
+
+#sidebar ul.stream li.presence div.bottom {
+background:transparent url(bg-stream-small-top.gif) no-repeat;
+}
+
+ul.stream li img.ext {
+background:transparent url(bg-photo.gif) no-repeat top right;
+}
+
+ul.stream li img.multiple {
+background:transparent url(bg-photo-multiple.gif) no-repeat;
+}
+
+ul.stream li a.comments,ul.stream li a.comments:hover {
+color:#81b920;
+}
+
+div#stream a.rss:hover {
+background-color:#009bc7;
+}
+
+div.paging a:hover {
+text-decoration:underline;
+background:transparent;
+}
+
+div#stream div.controls a.comment {
+background:transparent url(comment.png) no-repeat 0 50%;
+}
+
+form#activation div.box {
+background:#e7e7e7 url(sms-code.gif) no-repeat 98% 50%;
+}
+
+form#change-number div.box,form#activate-number div.box {
+background:#e7e7e7 url(sms-get.gif) no-repeat 98% 35%;
+}
+
+h1 span.beta {
+vertical-align:super;
+font-style:italic;
+font-size:.6em;
+}
+
+a img.photo,a:visited img.photo {
+border:solid 1px #e5e5e5;
+}
+
+#mobile div#s60 {
+background:transparent url(mobile-s60.jpg) no-repeat 15% 35%;
+border:solid 10px #96c63f;
+position:relative;
+width:540px;
+padding:120px 10px 0;
+}
+
+#mobile div#s60 h2 {
+background:#96c63f;
+position:absolute;
+color:#fff;
+left:0;
+top:0;
+margin:0;
+padding:.1em .3em .1em 0;
+}
+
+#mobile div.download {
+background:transparent url(bg-arrow.png) no-repeat 50% 2%;
+width:200px;
+float:left;
+margin:0 -10px 4em;
+padding:27px 30px 30px 50px;
+}
+
+#mobile div.details {
+margin:-90px 10px 0 260px;
+}
+
+#mobile div.body h3 {
+font:bold 1.3em "Trebuchet MS", Arial, Helvetica, sans-serif;
+margin-bottom:0;
+color:#333;
+}
+
+#mobile div.body p {
+margin-bottom:1em;
+color:#333;
+}
+
+#mobile div.body div.download p {
+margin-bottom:0;
+color:#666;
+}
+
+div#sidebar div.download {
+background:transparent url(bg-mobile-small.gif) no-repeat 50% 0;
+font-size:1.1em;
+min-height:85px;
+float:none;
+width:auto;
+color:#666;
+margin:0 -8px 1em;
+padding:29px 56px 0 19px;
+}
+
+div#sidebar div#mobile div.download p {
+margin:0;
+}
+
+#frontpage div#mobile {
+padding-top:1em;
+}
+
+div#content div.top,body.single div#header-container {
+background:transparent url(bg-content-top.png) no-repeat;
+}
+
+div#content div.bottom,body.single div#header {
+background:transparent url(bg-content.png) repeat-y;
+}
+
+div#current-stream a.confirm-delete:hover,div#intro ul li#more h3 a,div.contacts ul.float li h3 a,div#contacts ul.float li h3 a,div#followers ul.float li h3 a,div.contacts ul.float li p.foot a.remove:hover,div.contacts ul.float li p.foot a.add:hover,ul.stream li a.comments:hover,ul.stream li a.add-comment:hover,ul.stream li a.confirm-delete:hover,div#comments ul li a.confirm-delete:hover,ul.stream li a.confirm-subscribe:hover,div#comments ul li a.confirm-subscribe:hover {
+color:#009bc7;
+}
+
+div.tip,#mobile div.download a:hover {
+background:#96c63f;
+color:#fff;
+}
+
+div.groups ul p.members,#mobile div.download a {
+color:#96c63f;
+}
+
+div.path h1 a,div.path h1 a:hover {
+color:#86bd33;
+}
+
+div.highlight,div#contacts ul.float li.follower,div#followers ul.float li.contact,div.avatars li label:hover,div.backgrounds li label:hover,div#form-icons label.selected {
+background:#dbeaff;
+}
+
+div.notice,div.reminder {
+border:solid 1px #f1cb2f;
+background:#fffdcf;
+}
+
+.vcard a:hover img.photo,div#sidebar div#channels ul li a:hover img.photo,a:hover img.photo {
+border:solid 1px #009bc7;
+}
+
+#sidebar .vcard a:hover img.photo,div.contacts ul.float li a:hover img.photo,ul.stream li a:hover img.photo {
+border-color:#009bc7;
+}
+
+div.avatars li.selected label,div.backgrounds li.selected label,div#form-icons label:hover {
+background:#009bc7;
+}
+
+#content ul.stream li.comment div.top,div#comments ul li div.top {
+background:transparent url(bg-comment-bottom.gif) no-repeat 0 100%;
+}
+
+#content ul.stream li.comment div.bottom,div#comments ul li div.bottom {
+background:transparent url(bg-comment-top.gif) no-repeat;
+}

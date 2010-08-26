@@ -1,0 +1,6 @@
+Admin@inforlearn.appspot.com	AloneRoad@inforlearn.appspot.com
+Admin@inforlearn.appspot.com	root@inforlearn.appspot.com
+AloneRoad@inforlearn.appspot.com	Admin@inforlearn.appspot.com
+AloneRoad@inforlearn.appspot.com	administrator@inforlearn.appspot.com
+AloneRoad@inforlearn.appspot.com	root@inforlearn.appspot.com
+root@inforlearn.appspot.com	root@inforlearn.appspot.com

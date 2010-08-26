@@ -1,0 +1,51 @@
+{% extends 'actor/templates/settings_base.html' %}
+{% load nonce %}
+{% block settings %}
+
+{% if email %}{# already active #}
+  <h2>Địa chỉ email bạn đang dùng là {{email}}</h2>
+
+  <div class="highlight">
+    <p>Bạn đang {{email_notify|yesno:",không"}} nhận thông báo qua email 
+    <a href="{{view.url}}/settings/notifications">(Thay đổi)</a>
+    </p>
+  </div>
+  <h2>Sử dụng một địa chỉ email khác</h2>
+{% else %}
+  {% if unconfirmed_email %}
+    <h2>Đang chờ xác nhận địa chỉ email {{unconfirmed_email}}</h2>
+    <div class="highlight">
+      <p>Một email xác nhận đã được gửi tới {{unconfirmed_email}}, hãy 
+      bấm vào liên kết ở trong email đó để hoàn tất.
+      </p>
+      <p>Nếu không nhận được email, bạn có thể yêu cầu lại bằng form dưới đây.
+      </p>
+    </div>
+    <h2>Sử dụng một email khác</h2>
+  {% else %}
+    <h2>Thêm email</h2>
+  {% endif %}
+{% endif %}
+
+<div> 
+  {% include 'form_error.html' %}
+  <form action="" method="post">
+    <div>
+      <label for="email">Địa chỉ email</label>
+      {% if email %}
+      <input type="text" name="email" id="email" value="{{email}}" />
+      {% else %}
+      <input type="text" name="email" id="email" value="{{unconfirmed_email}}" />
+      {% endif %}
+      <p class="help">Một thư xác nhận sẽ được gửi tới email này.</p>
+    </div>
+    <div class="buttons">
+      {{request.user|noncefield:"activation_request_email"}}
+      <input type="hidden" name="nick" value="{{view.nick}}" />
+      <input type="hidden" name="activation_request_email" value="" />
+      <input type="submit" class="button" value="Gửi thư xác nhận"/>
+    </div>
+  </form>
+</div>
+
+{% endblock %}

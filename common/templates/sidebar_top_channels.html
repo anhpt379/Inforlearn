@@ -1,0 +1,14 @@
+{% if channels|length %}
+<div id="contacts" class='contacts'>
+  <h2>Nhóm nổi bật</h2>
+  <ul>
+    {% for channel in channels %}
+      <li>
+        {% with channel as actor %}
+          {% include 'common/templates/vcard_tile_rel.html' %}
+        {% endwith %}
+      </li>
+    {% endfor %}
+  </ul>
+</div>
+{% endif %}

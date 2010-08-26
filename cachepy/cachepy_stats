@@ -1,0 +1,10 @@
+#!/bin/bash
+APP_DOMAIN="<YOUR_APP_DOMAIN>"
+DEFAULT_NUMBER_OF_ITERATIONS=30
+ITERATIONS=${1:-$DEFAULT_NUMBER_OF_ITERATIONS}
+URL="http://$APP_DOMAIN/cachepy_stats"
+
+for i in `seq $ITERATIONS`
+do
+	curl -s $URL 
+done | sort -rn | uniq -c --check-chars=18 | sort -r -k1

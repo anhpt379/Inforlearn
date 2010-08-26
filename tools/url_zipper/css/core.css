@@ -1,0 +1,2894 @@
+body {
+font:75%/1.4em Arial, Helvetica, sans-serif;
+text-align:center;
+color:#333;
+background-attachment:fixed;
+opacity:0.99px;
+}
+
+/* --- Container --------------------------------------- */
+div#container {
+position:relative;
+text-align:left;
+width:856px;
+margin:0 auto;
+padding:0;
+}
+
+body.single div#container {
+position:relative;
+border-top:none;
+width:606px;
+margin:0 auto;
+}
+
+/* --- Header ------------------------------------------ */
+div#header-container {
+margin-bottom:40px;
+color:#666;
+padding:0;
+}
+
+div#header {
+position:relative;
+padding-bottom:8px;
+z-index:100;
+width:840px;
+margin:0 auto;
+}
+
+#frontpage div#header-container {
+margin-bottom:40px;
+}
+
+div#header div#helper-nav {
+font-size:0.96em;
+float:right;
+margin:0.6em 100px 0.6em 0;
+}
+
+body.single div#header div#helper-nav {
+margin-right:25px;
+}
+
+div#header p#login {
+text-align:left;
+margin:0;
+}
+
+div#header a#logo {
+position:absolute;
+display:block;
+top:0.5em;
+right:0;
+}
+
+body#welcome div#header a#logo {
+position:absolute;
+display:block;
+top:-45px;
+right:30px;
+}
+
+body.single div#header-container {
+width:606px;
+margin:2em auto 0;
+padding:15px 0 0;
+}
+
+body#welcome div#header-container {
+margin-top:25px;
+}
+
+body.single div#header {
+overflow:hidden;
+width:auto;
+margin:0;
+padding:25px 25px 0;
+}
+
+body#welcome div#header {
+overflow:visible;
+}
+
+body.single div#header a#logo {
+margin-left:25px;
+position:static;
+float:left;
+}
+
+body#welcome div#header h1 {
+font-size:1.8em;
+position:absolute;
+display:block;
+left:25px;
+top:-50px;
+}
+
+/* --- Main Navigation ----------------------------------------- */
+ul#main-nav {
+font-family:"Trebuchet MS", Arial, Helvetica, sans-serif;
+list-style-type:none;
+overflow:hidden;
+font-size:1.2em;
+margin:0;
+padding:0;
+}
+
+ul#main-nav li {
+text-align:center;
+float:left;
+margin:0 10px 0 0;
+padding:0;
+}
+
+ul#main-nav li a {
+text-decoration:none;
+display:block;
+color:#666;
+padding:0.5em 0.75em;
+}
+
+ul#main-nav li a:hover {
+background-color:transparent;
+}
+
+ul#main-nav li:hover,ul#main-nav li.hover {
+background:#ebebeb;
+}
+
+/* --- Sub Navigation ----------------------------------------- */
+ul#sub-nav {
+list-style-type:none;
+overflow:hidden;
+clear:left;
+margin:0 -15px 1em;
+padding:0 15px;
+}
+
+ul#sub-nav li {
+font-size:0.95em;
+line-height:1.5em;
+float:left;
+color:#aaa;
+margin:0.5em 2px 0 0;
+padding:0;
+}
+
+ul#sub-nav.b li {
+margin-top:0.2em;
+}
+
+ul#sub-nav li a {
+text-decoration:none;
+font:1.2em "Trebuchet MS", Arial, Helvetica, sans-serif;
+line-height:1.8em;
+padding:0.6em 0.8em 0.2em;
+}
+
+ul#sub-nav li.current {
+border-bottom:1px solid #fff;
+background:#fff;
+}
+
+ul#sub-nav li.current a {
+font-weight:700;
+color:#666;
+}
+
+/* --- Sub Navigation ----------------------------------------- */
+#mobile div.path {
+border-bottom:none;
+}
+
+div#side-nav {
+border-left:solid 1px #ededed;
+background:#fff;
+width:200px;
+float:right;
+padding:10px;
+}
+
+#settings div#side-nav {
+border-left:solid 1px #ededed;
+background:#ededed;
+float:left;
+}
+
+div#side-nav h3 {
+margin-bottom:0.5em;
+color:#000;
+}
+
+div#side-nav ul {
+list-style-type:none;
+padding:0;
+}
+
+div#side-nav ul li {
+border:1px solid #fff;
+margin:0;
+padding:0;
+}
+
+#settings div#side-nav ul li {
+border:1px solid #ededed;
+}
+
+div#side-nav ul a {
+background:url(../images/bg_side_nav.gif) no-repeat 0 0.4em;
+text-decoration:none;
+display:block;
+color:#666;
+padding:0.1em 0 0.1em 10px;
+}
+
+div#side-nav ul a:hover {
+background-color:#fff;
+text-decoration:underline;
+}
+
+ul#foot-nav {
+border-top:1px solid #f1f1f1;
+list-style-type:none;
+font-size:0.96em;
+overflow:hidden;
+margin:2em 0 0;
+padding:0;
+}
+
+ul#foot-nav li {
+font-size:0.95em;
+line-height:1.5em;
+width:25%;
+float:left;
+margin:1em 0 0;
+padding:0;
+}
+
+ul#foot-nav li h3 {
+margin:0 0 0.1em;
+}
+
+ul#foot-nav ul li {
+width:auto;
+float:none;
+margin:0 0 0 1.5em;
+}
+
+/* --- Content ----------------------------------------- */
+div#content {
+padding-bottom:15px;
+margin-bottom:2em;
+margin-right:4px;
+width:606px;
+clear:left;
+float:left;
+}
+
+div#content div.bottom {
+overflow:hidden;
+padding:0 23px 0.5em;
+}
+
+body#welcome div#content div.bottom {
+min-height:565px;
+}
+
+div.wide div#content {
+margin-right:0;
+overflow:hidden;
+width:auto;
+float:none;
+}
+
+div.cols div#content {
+width:606px;
+}
+
+div#content div.main {
+color:#fff;
+margin:0 -15px;
+padding:7px 15px 15px;
+}
+
+div#content div.main h1 {
+font-size:2em;
+margin:0 0 0.2em;
+padding:0;
+}
+
+div#content div.main p {
+font-size:1em;
+color:#fff;
+}
+
+div#content div.main a:hover {
+background-color:transparent;
+text-decoration:underline;
+}
+
+div#content div.main ul.float {
+float:right;
+margin:0 0 0.5em;
+}
+
+div#content div.main ul.float li {
+margin:0 1em 0 0;
+}
+
+div.split {
+padding-right:20px;
+width:260px;
+float:left;
+}
+
+div.body {
+padding-top:1em;
+width:580px;
+float:left;
+}
+
+#channel div.body {
+width:530px;
+}
+
+#settings div.body {
+padding-top:0;
+margin-left:20px;
+width:560px;
+}
+
+body.single div.body {
+width:auto;
+float:none;
+margin:0;
+}
+
+/* --- Sidebar ----------------------------------------- */
+div#sidebar {
+padding-bottom:15px;
+width:246px;
+float:left;
+}
+
+div#content div#sidebar {
+background-image:none;
+float:right;
+width:260px;
+}
+
+div#sidebar div.bottom {
+padding:0 18px 1.5em;
+}
+
+#frontpage div#sidebar div.bottom {
+min-height:500px;
+}
+
+body.single div#sidebar {
+position:absolute;
+width:150px;
+right:120px;
+top:180px;
+}
+
+div#sidebar iframe {
+margin-top:0.5em;
+}
+
+div#sidebar a.ad {
+display:block;
+padding:1em 0;
+}
+
+div#sidebar a.ad.first {
+padding-top:0.4em;
+}
+
+div#sidebar a.ad img {
+margin:0 auto;
+}
+
+div#side-search {
+margin-top:3em;
+}
+
+div#sidebar div#mobile h3 {
+background:transparent url(../images/red.png) no-repeat 0 50%;
+margin:0;
+padding:0.5em 0 0.3em 30px;
+}
+
+div#sidebar div#mobile p {
+word-wrap:break-word;
+overflow:hidden;
+margin-left:30px;
+}
+
+div#sidebar div#mobile h3.location {
+background-image:url(../images/location.gif);
+border-top:solid 1px #f1f1f1;
+}
+
+div#sidebar div#mobile h3.near-by {
+background-image:url(../images/near-by.gif);
+border-top:solid 1px #f1f1f1;
+}
+
+div#sidebar div#mobile h3.calendar {
+background-image:url(../images/calendar.gif);
+border-top:solid 1px #f1f1f1;
+}
+
+div#sidebar div#mobile h3.availability-green {
+background-image:url(../images/green.png);
+}
+
+div#sidebar div#mobile h3.availability-orange {
+background-image:url(../images/orange.png);
+}
+
+div#sidebar div#mobile h3.availability-red {
+background-image:url(../images/red.png);
+}
+
+div#sidebar div#mobile h3.availability-gray {
+background-image:url(../images/gray.png);
+}
+
+div#sidebar div#channels a.edit,div#sidebar div#streams a.edit,div#sidebar div#contacts a.edit,div#sidebar div#members a.edit,div#sidebar div#admins a.edit,div#sidebar div.first a.edit {
+margin-top:-2.2em;
+float:right;
+}
+
+div#streams ul li {
+clear:left;
+margin:0 0 0.5em;
+padding:0;
+}
+
+div#streams img.icon {
+float:left;
+height:16px;
+width:16px;
+margin:0 7px;
+}
+
+div#streams ul li h4 {
+font-weight:400;
+margin:0;
+}
+
+div#streams ul li a.unsubscribe,div#streams ul li a.subscribe {
+margin-left:30px;
+font-size:0.85em;
+width:100%;
+color:#333;
+}
+
+/* --- For frontpage --------------------------------------- */
+div#logo h1 {
+font-size:3.2em;
+float:none;
+text-align:left;
+width:350px;
+color:#94BF1B;
+text-shadow:0 1px 0 #ccc;
+margin:0;
+padding:0;
+}
+
+div#logo h3 {
+text-align:left;
+width:350px;
+text-shadow:0 1px 0 #ccc;
+}
+
+strong {
+text-shadow:0 1px 1px #fff;
+}
+
+div#helper-nav h2 {
+font-size:1.8em;
+}
+
+div#intro {
+position:relative;
+padding-top:1em;
+z-index:2;
+color:#666;
+margin:0;
+}
+
+#frontpage div#content div#intro h2 {
+font-weight:400;
+font-size:1.2em;
+background:transparent;
+color:#ccc;
+margin:0 0 0.2em;
+padding:0;
+}
+
+div#intro h1 {
+font-size:2.8em;
+float:none;
+margin:0;
+padding:0;
+}
+
+div#intro p {
+margin-bottom:1.5em;
+line-height:1.4em;
+}
+
+#frontpage div#sidebar p.more,div#sidebar p.more {
+margin-right:10px;
+text-align:right;
+}
+
+div#intro p.more {
+margin-right:25px;
+text-align:right;
+}
+
+div#intro ul {
+list-style-type:none;
+margin:0.5em 0 0;
+padding:0;
+}
+
+div#intro ul li {
+margin:0;
+padding:0.6em 0 1em 45px;
+}
+
+div#intro ul li h3 {
+font:normal 1.4em "Trebuchet MS", Arial, Helvetica, sans-serif;
+margin:0;
+}
+
+div#intro h3 a:hover {
+text-decoration:underline;
+background:none;
+color:#333;
+}
+
+div#map {
+position:relative;
+height:354px;
+z-index:0;
+margin:0 -15px;
+}
+
+/* --- Take Tour -------------------------------------------- */
+div#tour-3 img {
+margin-top:60px;
+}
+
+#tour h1 {
+margin:0.5em 0 0 10px;
+}
+
+div#tour-3 div.note {
+position:absolute;
+width:170px;
+right:-415px;
+bottom:300px;
+padding:1em 1em 0;
+}
+
+div.tour {
+overflow:hidden;
+margin:0 10px;
+}
+
+div.tour div.body {
+position:relative;
+min-height:420px;
+width:auto;
+float:none;
+margin:0 430px 0 0;
+padding:2em 0;
+}
+
+div.tour div.body h2 {
+font-family:Arial, Helvetica, sans-serif;
+font-weight:700;
+color:#000;
+}
+
+div.tour div.body ul li,#join #sidebar ul li {
+background:transparent url(../images/dot.gif) no-repeat 0 0.3em;
+padding-left:20px;
+font-size:1.2em;
+color:#8f8f8f;
+margin:0.5em 0;
+}
+
+div.tour ul#more li {
+background-image:none;
+padding-left:0;
+margin:1em 0;
+}
+
+div.tour ul#more li#learn-more {
+text-align:left;
+width:auto;
+}
+
+/* --- Sign Up & More Links --------------------------------------- */
+ul#more {
+list-style-type:none;
+overflow:hidden;
+margin:0;
+padding:0;
+}
+
+#frontpage ul#more {
+position:absolute;
+z-index:2;
+width:170px;
+top:80px;
+right:25px !important;
+}
+
+div#sign-up,li#sign-up {
+text-align:center;
+color:#a70086;
+margin:0 0 1em;
+}
+
+div#sign-up a,li#sign-up a {
+display:block;
+height:78px;
+}
+
+div#sign-up a:hover {
+background-position:50% -78px;
+}
+
+li#learn-more {
+text-align:right;
+display:block;
+margin:2em 0 0;
+padding:0.45em 0;
+}
+
+div#sidebar li#learn-more {
+text-align:left;
+}
+
+li#learn-more a {
+font-family:"trebuchet ms";
+font-size:1.3em;
+}
+
+#user ul#more {
+margin:2em auto 2em 5em;
+}
+
+#user ul#more li {
+float:left;
+margin:1em;
+}
+
+/* --- Footer ------------------------------------------ */
+div#footer {
+padding-top:2em;
+line-height:1.4em;
+font-size:0.86em;
+clear:both;
+}
+
+/* --- Reminder ------------------------------------------- */
+div.highlight {
+margin-bottom:1em;
+padding:1em 1em 0.1em;
+}
+
+form div.highlight {
+padding-right:0;
+padding-left:0;
+}
+
+div.notice {
+position:relative;
+margin:-35px 120px 0 8px;
+padding:0.7em 0.7em 0.1em;
+}
+
+div.notice p {
+margin-bottom:0.7em;
+}
+
+p.notice {
+margin:0 0 0.5em;
+padding:0.5em;
+}
+
+div#content div.notice,body.single div#content div.notice {
+position:static;
+width:auto;
+margin:0 0 1em;
+}
+
+body.single div.notice {
+position:absolute;
+width:380px;
+right:25px;
+top:-70px;
+margin:0;
+}
+
+div.message {
+background:#d6d6d6;
+margin-bottom:1em;
+padding:1em 1em 0.1em;
+}
+
+div.reminder {
+margin:-60px 250px 1em 0;
+padding:0.5em 1em 0;
+}
+
+div.notice h3 {
+margin:0.2em 0;
+}
+
+div.error {
+margin-bottom:1em;
+color:#000;
+padding:1em 1em 0.1em;
+}
+
+div#contacts p.error {
+padding:1em 1em 0.1em;
+}
+
+div#client,div#texting {
+float:left;
+width:50%;
+}
+
+/* --- Welcome ------------------------------------------- */
+ul.steps {
+list-style-type:none;
+overflow:hidden;
+font-size:1.1em;
+margin:0.5em 20px 0;
+padding:0;
+}
+
+ul.steps li {
+line-height:1.2em;
+float:left;
+width:82px;
+margin:0;
+padding:0;
+}
+
+ul.steps li a,ul.steps li strong {
+text-align:center;
+display:block;
+height:100%;
+color:#999;
+padding:0.5em 0 135px;
+}
+
+ul.steps li#step-2 {
+margin:0 115px;
+}
+
+div#welcome-start img {
+margin:0 auto 1em;
+}
+
+div#welcome-start p,div#welcome-start h1 {
+margin:inherit auto;
+}
+
+div#welcome-start ul {
+list-style-type:none;
+width:500px;
+margin:1em auto;
+padding:0;
+}
+
+div#welcome-start ul li {
+color:#666;
+margin:0;
+padding:0.5em 0 0.4em 20px;
+}
+
+div#welcome-done {
+padding:60px 0 100px 220px;
+}
+
+div#find-friends div#contacts ul {
+border:2px solid #fff;
+background:#fff;
+overflow:auto;
+height:300px;
+margin:1em 0;
+}
+
+div#find-friends div#contacts div.buttons {
+text-align:right;
+padding:0;
+}
+
+div#find-friends div#contacts ul li {
+border-top:1px solid #eee;
+overflow:hidden;
+clear:both;
+padding:0.4em 0;
+}
+
+div#find-friends div#contacts ul li.alternate {
+background:#e9e9e9;
+}
+
+div#find-friends div#contacts ul li img.photo {
+height:20px;
+width:20px;
+margin:0 5px;
+}
+
+div#find-friends div#contacts ul li h3 {
+margin-top:0.1em;
+float:left;
+padding:0;
+}
+
+div#find-friends div#contacts ul li p {
+line-height:1em;
+float:left;
+margin:0.2em 0 0;
+padding:0;
+}
+
+div#find-friends div#contacts ul li p.foot {
+width:200px;
+float:right;
+padding:0;
+}
+
+div#find-friends div#contacts ul li input {
+margin-top:0.2em;
+float:left;
+}
+
+div#find-friends div#contacts ul li span.checked {
+background:transparent url(../images/checked.gif) no-repeat 0 50%;
+margin-top:5px;
+display:block;
+height:16px;
+width:16px;
+float:left;
+}
+
+#welcome div.buttons {
+text-align:right;
+padding-top:0;
+}
+
+div.buttons button {
+background:transparent;
+white-space:nowrap;
+line-height:1em;
+font-size:0.9em;
+display:block;
+border:none;
+float:right;
+margin:0;
+padding:0;
+}
+
+div.buttons big,div#welcome-start big {
+text-align:center;
+overflow:hidden;
+display:block;
+height:32px;
+float:right;
+margin:0;
+padding:0;
+}
+
+div#welcome-start big {
+width:140px;
+float:none;
+margin:0 auto 1em;
+}
+
+div.buttons button:hover big.active,div.buttons big.active:hover,div#welcome-start big:hover {
+background-position:0 -32px;
+}
+
+div.buttons big a,div.buttons big span,div.buttons big.active a,div#welcome-start big a {
+display:block;
+height:14px;
+color:#fff;
+margin:0;
+padding:8px 30px 10px;
+}
+
+div.buttons button:hover big.active span,div.buttons big.active:hover a,div#welcome-start big:hover a {
+background-position:100% -32px;
+}
+
+p.foot-note {
+font-size:0.86em;
+color:#666;
+}
+
+/* --- Search ------------------------------------------- */
+div#side-nav div#search h2 {
+margin-bottom:0.5em;
+}
+
+div#search form {
+overflow:hidden;
+display:block;
+}
+
+div#search p.buttons input,div.wide div#search p.buttons input,div#side-nav div#search p.buttons input {
+width:70px;
+}
+
+div#search input {
+width:130px;
+}
+
+div.wide div#search input {
+width:160px;
+}
+
+a img,a:link img,a:visited img {
+border:0;
+}
+
+/* --- Lists ------------------------------------------- */
+ul {
+list-style-type:square;
+margin:0;
+padding:0;
+}
+
+li,dd,blockquote {
+margin-left:2em;
+}
+
+ul.float {
+list-style-type:none;
+}
+
+ul.float li {
+margin-right:1em;
+float:left;
+}
+
+#sidebar ul.float li {
+overflow:hidden;
+float:left;
+margin:1px;
+}
+
+#sidebar ul.float li img.photo {
+height:30px;
+width:30px;
+}
+
+ul.phone-models li {
+text-align:center;
+margin-bottom:1em;
+margin-left:0;
+}
+
+ul.phone-models {
+margin-bottom:2em;
+overflow:hidden;
+}
+
+.vcard {
+border-top:solid 1px #d6d6d6;
+position:relative;
+overflow:hidden;
+clear:left;
+color:#000;
+padding:0 10px;
+}
+
+div#sidebar .vcard {
+border-top:none;
+font-size:0.85em;
+padding:0;
+}
+
+div#actor .vcard {
+border-top:solid 1px #d6d6d6;
+font-size:1em;
+padding:0;
+}
+
+div#self .vcard {
+border:solid 1px #d6d6d6;
+padding-right:5px;
+}
+
+div#sidebar .vcard p {
+color:#7a7a7a;
+}
+
+.vcard.hover {
+background:#d6d6d6;
+}
+
+#current-card {
+border:solid 5px #d6d6d6;
+margin-bottom:1em;
+}
+
+.vcard img.photo {
+border:solid 1px #fff;
+float:left;
+margin:9px 9px 9px 0;
+}
+
+#ssidebar .vcard img.photo {
+width:30px;
+margin:10px 10px 0 0;
+}
+
+#sidebar .vcard img.photo {
+border:solid 2px #fff;
+width:30px;
+margin:0;
+padding:0;
+}
+
+#sidebar #self .vcard img.photo {
+width:40px;
+margin:10px 5px;
+}
+
+.vcard span.status {
+position:absolute;
+text-align:right;
+width:auto;
+right:0;
+top:0;
+margin:10px 8px;
+}
+
+.vcard p {
+margin-bottom:0.5em;
+color:#666;
+}
+
+#sidebar .vcard p,#sidebar .vcard h3 {
+margin-left:42px;
+}
+
+#sidebar #self .vcard p,#sidebar #self .vcard h3 {
+margin-left:62px;
+}
+
+#actor .vcard p,#actor .vcard h3 {
+margin-left:10px;
+}
+
+.vcard p.message {
+margin:0 0 0 50px;
+}
+
+#sidebar .vcard p.message {
+line-height:1.4em;
+font-size:1em;
+}
+
+.vcard h3 {
+font-family:Arial, Helvetica, sans-serif;
+font-weight:400;
+font-size:1.2em;
+color:#000;
+margin:0;
+padding:0.5em 0 0.1em;
+}
+
+.vcard .nickname,.vcard a.nickname {
+font-size:0.9em;
+color:#888;
+margin:0.75em 0 0.25em;
+}
+
+.vcard h3 .fn {
+margin:0.5em 0 0;
+}
+
+.vcard .url,.vcard .url:visited {
+text-decoration:none;
+background:transparent;
+color:#000;
+}
+
+.vcard .url:hover {
+text-decoration:underline;
+background:transparent;
+color:#000;
+}
+
+.vcard p span {
+display:block;
+}
+
+#sidebar div.contacts ul,#sidebar div#actors ul,#sidebar div#self .vcard {
+overflow:hidden;
+padding:0.5em 0 1em;
+}
+
+div.contacts ul li,div#actors ul li {
+word-wrap:break-word;
+margin:0;
+padding:0;
+}
+
+div.contacts ul.float li {
+border:none;
+clear:none;
+width:185px;
+margin:0 5px 0.5em 0;
+padding:0.25em 0;
+}
+
+div.contacts ul.float li.more {
+font-size:1.2em;
+padding:0.5em 0;
+}
+
+div.contacts ul.float li span.status {
+margin-top:5px;
+}
+
+div.contacts ul.float li h3 {
+font-size:1.25em;
+letter-spacing:-1px;
+line-height:1em;
+margin:0 0 0 45px;
+padding:0;
+}
+
+div.contacts ul.float li img.photo {
+border:solid 1px #e5e5e5;
+margin:0 0 0 3px;
+padding:2px;
+}
+
+div.contacts ul.float li p {
+font-size:0.86em;
+line-height:1.3em;
+margin:0 0 0 45px;
+}
+
+div.contacts ul.float li p.foot a.remove,div.contacts ul.float li p.foot a.add {
+float:none;
+color:#333;
+margin:0;
+}
+
+div.contacts ul.float li p.foot a.add {
+background:transparent url(../images/add.gif) no-repeat 0 50%;
+padding-left:12px;
+}
+
+/* --- USER PROFILE ---------------------------------- */
+div#content div#profile {
+border:none;
+padding:0;
+}
+
+div.main a img.photo,div.main img.photo {
+background:#fff;
+width:60px;
+float:left;
+margin:0 5px 0 0;
+padding:4px;
+}
+
+div#profile p {
+border-top:dashed 1px #fff;
+padding-top:0.5em;
+margin:0 0 0.5em 85px;
+}
+
+div#profile p.message {
+padding-top:0;
+border:none;
+}
+
+#profile h3 {
+padding-top:0.5em;
+margin-right:25px;
+font-weight:700;
+font-size:1.5em;
+background:red;
+}
+
+div#content div#profile h1,div#content div.main h1 {
+font-size:1.4em;
+line-height:1.2em;
+color:#fff;
+float:none;
+clear:none;
+}
+
+div#profile h1 span.nickname,div#content div.main h1 span.nickname {
+font-size:1.5em;
+color:#fff;
+}
+
+div#sidebar div.contacts ul li {
+width:34px;
+float:left;
+}
+
+#frontpage div#sidebar div#contacts ul {
+margin:0 8px;
+}
+
+#frontpage div#sidebar div#contacts ul li {
+width:64px;
+clear:left;
+margin:0;
+}
+
+#frontpage div#sidebar div#contacts ul li img.photo {
+margin:2px;
+padding:4px;
+}
+
+div#sidebar div#channels ul {
+list-style-type:none;
+overflow:hidden;
+}
+
+#frontpage div#sidebar div#channels ul li {
+border-bottom:none;
+clear:none;
+float:left;
+width:64px;
+margin:0;
+}
+
+#frontpage div#sidebar div#channels ul li img.photo {
+border:solid 1px #e5e5e5;
+margin:2px;
+padding:4px;
+}
+
+// changes to get the padding back
+div#sidebar div#channels ul li img.photo {
+float:left;
+padding:4px;
+}
+
+div#sidebar div#channels ul li img.photo {
+border:solid 1px #fff;
+}
+
+div#sidebar div#channels ul li {
+border-bottom:solid 1px #f1f1f1;
+overflow:hidden;
+padding:0.2em 0;
+}
+
+// end changes
+#welcome div.avatars {
+overflow:hidden;
+width:440px;
+margin:0 1em 0 -90px;
+padding:0;
+}
+
+#settings div.avatars {
+width:390px;
+margin:0 1em 0 0;
+padding:0;
+}
+
+div.avatars ul,div.backgrounds ul,div.tabs div.avatars ul,#settings div.tabs div.avatars ul {
+list-style-type:none;
+overflow:hidden;
+margin:6px 0 1em 6px;
+padding:0;
+}
+
+div.avatars li,div.backgrounds li,div.tabs div.avatars ul li,div.backgrounds ul li {
+background:transparent;
+width:auto;
+float:left;
+margin:4px;
+padding:0;
+}
+
+div.avatars li label,div.backgrounds li label,#welcome div.tabs div.tab div.avatars label,#settings div.avatars li label,#settings div.backgrounds li label {
+cursor:pointer;
+display:block;
+width:75px;
+margin:0;
+padding:2px;
+}
+
+#settings div.body dd {
+padding-left:20px;
+min-height:200px;
+margin:0 0 0 -20px;
+}
+
+div#list-select ul {
+list-style-type:none;
+clear:left;
+margin:0;
+padding:0;
+}
+
+div#list-select ul h3,div#list-select ul p {
+margin-left:30px;
+}
+
+div#list-select div.buttons {
+padding-left:30px;
+}
+
+/* --- Groups listing -------------------------------------- */
+div#group-intro {
+background:#f0f0f0;
+padding:15px 15px 1px;
+}
+
+div#group-intro p {
+line-height:1.4em;
+font-size:1.1em;
+color:#333;
+}
+
+div.tip {
+font-size:0.9em;
+margin-left:15px;
+float:right;
+width:245px;
+padding:10px;
+}
+
+div#sidebar div.tip {
+float:none;
+width:auto;
+margin:1em 0;
+}
+
+div#group-intro p.description {
+font:bold 1.2em/1.2em "Trebuchet MS", Arial, Helvetica, sans-serif;
+}
+
+div.groups ul {
+border-top:solid 1px #f1f1f1;
+list-style-type:none;
+padding-top:1em;
+overflow:hidden;
+margin:0;
+}
+
+#sidebar div.groups ul {
+border-top:none;
+padding-top:0;
+}
+
+div.groups ul li {
+overflow:hidden;
+width:245px;
+margin:0;
+padding:0 15px 0.5em 0;
+}
+
+#sidebar div.groups ul li {
+border-bottom:solid 1px #f1f1f1;
+width:auto;
+padding:0.5em 0;
+}
+
+div.groups ul li img {
+margin-right:10px;
+float:left;
+}
+
+div.groups ul li h3 {
+font-size:1.25em;
+letter-spacing:-1px;
+width:175px;
+margin:0 0 0 65px;
+}
+
+div.groups ul li p {
+font-size:0.86em;
+color:#666;
+margin:0 0 0 65px;
+}
+
+div.groups ul p a:hover {
+text-decoration:underline;
+background:transparent;
+color:#333;
+}
+
+div#content div#current-stream div.top {
+padding-top:0;
+color:#999;
+margin:0 0 0 75px;
+}
+
+div#content div#current-stream div.bottom {
+overflow:visible;
+min-height:70px;
+width:474px;
+padding:0 10px 0 0;
+}
+
+div#content div#current-stream a:hover {
+color:#009BC7;
+text-decoration:none;
+}
+
+div#current-stream img.icon {
+float:left;
+margin:8px 5px 0 15px;
+}
+
+div#current-stream h2 {
+margin-bottom:0.2em;
+color:#333;
+font-size:1.3em;
+padding:0.2em 0 0;
+}
+
+div#content div#current-stream p {
+font-size:0.9em;
+color:#333;
+margin:0;
+padding:0 0 0.5em 15px;
+}
+
+div#current-stream a.confirm-delete {
+background:transparent url(../images/delete.gif) no-repeat 0 50%;
+padding-left:12px;
+}
+
+/* --- Set presence line form --------------------------------------- */
+div#content div#form-message {
+position:relative;
+padding-bottom:0;
+z-index:3;
+}
+
+div#form-message form {
+zoom:1px;
+}
+
+div#form-message .icon {
+height:36px;
+width:36px;
+float:left;
+}
+
+div#form-message p#icons {
+line-height:1.8em;
+clear:left;
+float:none;
+margin:0 0 0 85px;
+}
+
+div#form-message p#counter {
+text-align:right;
+line-height:1.8em;
+float:right;
+margin:0 75px 0 0;
+}
+
+p#message-container {
+background:transparent url(../images/bg-form-bubble.gif) no-repeat 0 50%;
+text-align:center;
+line-height:1em;
+width:389px;
+height:60px;
+padding:5px 5px 5px 14px;
+}
+
+p#message-container img {
+padding:10px 2px 10px 0;
+}
+
+div#form-message textarea#message {
+border:solid 1px #c3c3c3;
+border-top:solid 1px #7c7c7c;
+border-bottom:solid 1px #ddd;
+background:#fff;
+font-size:1.2em;
+height:58px;
+width:387px;
+color:#ccc;
+margin:0;
+padding:0;
+}
+
+.popup {
+position:absolute;
+display:none;
+}
+
+div#send-button {
+display:inline;
+line-height:1em;
+margin:0 0 0 7px;
+}
+
+div#send-button a {
+font-size:2.5em;
+font-weight:400;
+text-decoration:none;
+cursor:pointer;
+color:#fff;
+margin:25px 0 0;
+}
+
+div#send-button a:hover {
+text-decoration:none;
+text-shadow:0 1px 2px #FFF;
+}
+
+div#form-message input#location {
+display:none;
+width:150px;
+}
+
+div#form-message p.buttons {
+margin:2em 0 0 10px;
+}
+
+div#form-message p.buttons input {
+font-size:1.5em;
+margin:0;
+}
+
+img#current-icon {
+background:transparent url(../images/bg_select.gif) no-repeat 100% 100%;
+border:solid 1px #d6d6d6;
+cursor:pointer;
+float:left;
+padding:5px;
+}
+
+img#current-icon:hover {
+border-color:#9e9e9e;
+}
+
+div#form-icons {
+border:solid 5px #9e9e9e;
+background:#fff;
+position:absolute;
+overflow:hidden;
+z-index:3;
+display:none;
+width:390px;
+left:100px;
+top:8.1em;
+padding:0;
+}
+
+div#form-icons label {
+border-bottom:solid 1px #d9d9d9;
+border-right:solid 1px #d9d9d9;
+overflow:hidden;
+cursor:pointer;
+height:36px;
+width:36px;
+margin:0;
+padding:1px;
+}
+
+div#form-icons label img {
+float:left;
+background:#fff;
+margin:0;
+}
+
+div#form-icons label h4 {
+text-align:left;
+margin-left:50px;
+width:175px;
+}
+
+/* --- Streams --------------------------------------- */
+ul.stream img.photo {
+margin:7px 7px 0;
+}
+
+div.cols div#stream {
+margin-left:20px;
+float:left;
+width:388px;
+}
+
+div#stream div.controls {
+z-index:2;
+position:relative;
+text-align:right;
+font-size:0.9em;
+margin:0 5px -12px 0;
+}
+
+div#stream div.controls a:hover {
+text-decoration:underline;
+background:transparent;
+color:#666;
+}
+
+div#stream div.controls a.comment {
+padding-left:17px;
+}
+
+ul.stream li {
+word-wrap:break-word;
+overflow:hidden;
+clear:left;
+border-top:solid 1px #f1f1f1;
+margin:0;
+padding:0;
+}
+
+#sidebar ul.stream li {
+border-top:solid 1px #ddd;
+padding:3px 0 0;
+}
+
+#sidebar ul.stream {
+border-bottom:solid 1px #ddd;
+}
+
+ul.stream li.inline {
+margin-left:50px;
+}
+
+#content ul.stream li.presence div.top,#content ul.stream li.comment div.top {
+margin:0 0 5px 37px;
+}
+
+#sidebar ul.stream li.presence div.top {
+margin:0 0 5px;
+}
+
+#content ul.stream li.presence div.bottom,#content ul.stream li.comment div.bottom {
+position:relative;
+overflow:visible;
+min-height:40px;
+padding:0 7px 0 13px;
+}
+
+#sidebar ul.stream li.presence div.bottom {
+position:relative;
+overflow:visible;
+min-height:40px;
+padding:0 7px;
+}
+
+ul.stream li.presence img.photo,ul.stream li.comment img.photo {
+position:relative;
+margin:5px 10px 5px -50px;
+}
+
+#content ul.stream li.presence h3 {
+font-size:1.1em;
+}
+
+ul.stream li img.photo {
+border:solid 1px #e5e5e5;
+float:left;
+height:30px;
+width:30px;
+margin:5px 10px 5px 0;
+padding:2px;
+}
+
+#content ul.stream li div.bottom {
+background:transparent;
+border:none;
+padding:0;
+}
+
+ul.stream li h3 {
+font:0.96em/1.4em Arial, Helvetica, sans-serif;
+margin-bottom:0;
+color:#888;
+padding:0.5em 0 0 5px;
+}
+
+ul.stream li p {
+line-height:1.4em;
+font-size:0.96em;
+margin:0;
+padding:0 0 0 5px;
+}
+
+ul.stream li img.icon {
+height:16px;
+width:16px;
+float:left;
+margin:5px 3px 0 0;
+}
+
+#sidebar ul.stream li img.icon {
+margin-top:0.2em;
+margin-left:0;
+}
+
+#sidebar ul.stream li.presence img.icon {
+height:36px;
+width:36px;
+}
+
+ul.stream li img.ext {
+height:60px;
+width:60px;
+float:left;
+margin:4px 5px 4px -6px;
+padding:5px 5px 11px 12px;
+}
+
+ul.stream li.presence img.icon {
+height:36px;
+width:36px;
+float:left;
+margin:5px 0 5px 5px;
+}
+
+#sidebar ul.stream li h3 {
+padding-top:0.2em;
+}
+
+ul.stream li a:hover {
+background:transparent;
+color:#009BC7;
+}
+
+ul.stream li a.comments,ul.stream li a.add-comment,ul.stream li a.confirm-delete,div#comments ul li a.confirm-delete,ul.stream li a.confirm-subscribe,div#comments ul li a.confirm-subscribe {
+background:transparent url(../images/comment.gif) no-repeat scroll 0 50%;
+white-space:nowrap;
+padding-left:15px;
+}
+
+ul.stream li a.confirm-delete,div#comments ul li a.confirm-delete {
+background:transparent url(../images/delete.gif) no-repeat scroll 0 50%;
+}
+
+ul.stream li a.confirm-subscribe,div#comments ul li a.confirm-subscribe {
+background-image:url(../images/remove.gif);
+}
+
+ul.stream li.comment img.photo {
+margin-top:2px;
+}
+
+ul.stream li p.comment,ul.stream li div.comment-all p {
+font-size:0.96em;
+line-height:1.3em;
+padding-top:0.7em;
+color:#333;
+}
+
+ul.stream li p.meta {
+padding-bottom:0.8em;
+font-size:0.8em;
+color:#999;
+}
+
+ul.stream li a.more {
+color:#999;
+}
+
+ul.stream li a.more:hover {
+background:#999;
+color:#fff;
+}
+
+ul.stream li.date {
+border-top:none;
+margin:0.3em 0;
+}
+
+ul.stream li.date h3 {
+font:bold 0.9em "Trebuchet MS", Arial, Helvetica, sans-serif;
+text-transform:uppercase;
+color:#666;
+margin:0;
+padding:0;
+}
+
+#account-form ul.stream li h3,#account-form ul.stream li p {
+padding-left:50px;
+}
+
+div#stream a.feed {
+background:transparent url(../images/feed-icon.png) no-repeat 0 50%;
+padding-left:16px;
+padding-top:2px;
+margin-top:1em;
+margin-right:3em;
+}
+
+div#stream a.feed:hover {
+text-decoration:underline;
+color:#009bc7;
+}
+
+div#stream p.tools {
+padding-top:0.4em;
+clear:left;
+}
+
+div#stream {
+min-height:300px;
+}
+
+div.paging {
+text-align:center;
+clear:both;
+float:right;
+margin:0.5em 0;
+}
+
+div.paging a {
+margin:0 0.1em;
+padding:0.1em 0.3em;
+}
+
+/* --- Comments --------------------------------------- */
+div#comments {
+line-height:1.4em;
+font-size:0.96em;
+margin:0 0 1em;
+}
+
+div#comments ul {
+border-top:none;
+list-style-type:none;
+margin:0;
+padding:0;
+}
+
+div#comments ul li {
+min-height:50px;
+clear:left;
+height:1%;
+margin:0 0 5px;
+padding:0;
+}
+
+div#comments ul li.spam {
+min-height:1em;
+color:#666;
+margin:0 0 5px;
+}
+
+div#comments ul li.spam p {
+background:#f5f5f5;
+margin-left:45px;
+font-size:0.9em;
+padding:5px 7px;
+}
+
+div#comments ul li div.top {
+padding-left:0;
+margin:0 0 5px 37px;
+}
+
+div#comments ul li div.bottom {
+overflow:visible;
+padding-left:10px;
+min-height:40px;
+height:1%;
+}
+
+div#comments ul li img.photo {
+border:solid 1px #e5e5e5;
+position:relative;
+height:30px;
+width:30px;
+float:left;
+margin:3px 10px 5px -37px;
+padding:2px;
+}
+
+div#comments ul li pre {
+font-size:1.1em;
+overflow:hidden;
+}
+
+div#comments ul li a {
+text-decoration:none;
+color:#444;
+}
+
+div#comments ul li p.meta a,div#comments ul li p.meta a.confirm-delete {
+text-decoration:none;
+color:#000;
+}
+
+div#comments ul li a:hover,div#comments ul li a.confirm-delete:hover {
+-webkit-transition-duration:0.3s;
+-webkit-transition-property:color, background;
+text-decoration:none;
+background-color:transparent;
+color:#009BC7;
+}
+
+div#comments ul li p code {
+font-size:1.1em;
+display:inline;
+padding:0.2em;
+}
+
+div#comments ul li p,div#comments ul li blockquote,div#comments ul li pre,div#comments ul li ul {
+margin:0 5px;
+padding: 0.3em 0px 0px 1em;
+}
+
+div#comments ul li ul {
+list-style-type:square;
+margin-left:1.8em;
+}
+
+div#comments ul li ol {
+margin-left:1.8em;
+}
+
+div#comments ul li ul ul {
+margin-left:1.4em;
+}
+
+div#comments ul li ul li,div#comments ul li ol li {
+min-height:0;
+clear:none;
+margin:0;
+padding:0;
+}
+
+div#comments ul li p.meta {
+font-size:0.9em;
+color:#666;
+padding: 0.3em 0px 5px 1em;
+}
+
+div#leave-comment label {
+float:none;
+padding:0;
+}
+
+div#leave-comment textarea {
+width:550px;
+}
+
+p#participant-nicks {
+display:none;
+margin:0;
+}
+
+p#participant-nicks img.photo {
+width:15px;
+height:15px;
+display:inline;
+float:none;
+vertical-align:middle;
+margin:-4px 1px 0 2px;
+}
+
+p#participant-nicks span {
+color:#888;
+font-size:90%;
+}
+
+/* --- Bubble --------------------------------------- */
+div#status-bubble {
+visibility:hidden;
+position:absolute;
+text-align:center;
+font-size:0.8em;
+z-index:10;
+width:180px;
+left:500px;
+top:-100px;
+}
+
+div#status-bubble span.status {
+position:absolute;
+text-align:right;
+width:auto;
+right:0;
+top:0;
+margin:0.5em;
+}
+
+div#status-bubble div {
+opacity:0.8px;
+text-align:left;
+color:#fff;
+text-shadow:0 0 2px #000;
+border:1px solid rgba(255,255,255,0.25);
+background-color:rgba(25,25,25,0.92);
+background-image:0 to(#000));
+border-radius:5px;
+-webkit-border-radius:5px;
+-moz-border-radius:5px;
+margin:0 0 20px;
+padding:0.5em 20px 0.5em 0.5em;
+}
+
+/* --- Tabs --------------------------------------- */
+div.tabs {
+background:#e7e7e7;
+margin:0 0 1em;
+padding:5px 15px 15px;
+}
+
+div.box {
+margin:0 0 1em;
+padding:15px;
+}
+
+div.tabs ul li {
+background:#ddd;
+float:left;
+margin:0.5em 0 0;
+padding:0;
+}
+
+div.tabs ul li a {
+text-decoration:none;
+line-height:1.5em;
+font-size:1.2em;
+display:block;
+color:#999;
+padding:0.2em 1.5em;
+}
+
+div.tabs ul li a:hover {
+background:#e5e5e5;
+color:#333;
+}
+
+div.tabs div.tab {
+display:none;
+margin:0;
+padding:15px;
+}
+
+#welcome div.tabs div.tab {
+overflow:auto;
+height:180px;
+width:365px;
+}
+
+#settings div.tabs div.tab {
+overflow:auto;
+height:220px;
+width:410px;
+}
+
+div.tabs div.tab.current {
+background:#fff;
+display:block;
+clear:left;
+}
+
+div.tabs div.tab p {
+line-height:1.4em;
+}
+
+#welcome div.tabs,#settings div.tabs {
+position:relative;
+overflow:hidden;
+}
+
+#welcome div.tabs ul,#welcome div.tabs div.tab,#settings div.tabs ul,#settings div.tabs div.tab {
+margin-left:90px;
+}
+
+#welcome a.confirm-delete,#settings a.confirm-delete {
+margin-top:1em;
+position:absolute;
+line-height:1em;
+left:15px;
+top:90px;
+}
+
+#settings div#stream a.confirm-delete {
+position:static;
+margin:0;
+}
+
+#welcome img#current,#settings img#current {
+border:solid 1px #ccc;
+position:absolute;
+background:#fff;
+display:block;
+width:75px;
+height:75px;
+right:0;
+left:0;
+margin:5px 10px;
+padding:4px;
+}
+
+div#new div label {
+text-align:left;
+display:block;
+width:300px;
+}
+
+/* --- Tabs --------------------------------------- */
+div.accordion {
+background:#e7e7e7;
+overflow:hidden;
+margin:0 0 1em;
+padding:15px;
+}
+
+div.accordion ul {
+list-style-type:none;
+background:#e7e7e7;
+height:230px;
+width:110px;
+float:left;
+margin:0;
+padding:0;
+}
+
+div.accordion ul li {
+background:#ddd;
+margin:0;
+padding:0;
+}
+
+div.accordion ul li a {
+text-decoration:none;
+text-align:center;
+line-height:1.5em;
+font-size:1.2em;
+display:block;
+height:1.5em;
+color:#999;
+padding:0.5em;
+}
+
+div.accordion ul li a:hover {
+background-color:#f5f5f5;
+color:#333;
+}
+
+div.accordion ul li.current,div.accordion ul li.current a:hover {
+background-color:#fff;
+display:block;
+}
+
+div.accordion div.tab {
+display:none;
+padding:15px;
+}
+
+#welcome div.accordion div.tab {
+overflow:auto;
+height:210px;
+}
+
+#contacts div.accordion div.tab {
+overflow:auto;
+height:230px;
+}
+
+div.accordion div.tab.current {
+background:#fff;
+display:block;
+}
+
+/* --- Headings ---------------------------------------- */
+h1,h2,h3,h4,h5,h6,p,pre,blockquote,ul,ol,dl,address,code {
+margin:0 0 1em;
+padding:0;
+}
+
+h1 {
+font:normal 2.2em "Trebuchet MS", Arial, Helvetica, sans-serif;
+padding-top:0.2em;
+margin:0 0 0.5em;
+}
+
+h1 span.beta {
+vertical-align:super;
+font-style:italic;
+font-size:0.6em;
+}
+
+h2 {
+font:normal 1.5em "Trebuchet MS", Arial, Helvetica, sans-serif;
+color:#333;
+margin:0.5em 0;
+}
+
+div#sidebar h2,div#side-nav h2,div#leave-comment h2 {
+font-size:1.2em;
+color:#FAFAFA;
+margin:0 -10px 0.5em;
+padding:0.2em 10px;
+}
+
+div#content div#sidebar h2 {
+margin:0 0 0.5em;
+}
+
+#frontpage div#sidebar h2 {
+font:normal 1.5em "Trebuchet MS", Arial, Helvetica, sans-serif;
+background:transparent;
+color:#333;
+margin:0.5em 0;
+}
+
+div#sidebar div#mobile h2,div#sidebar div.first h2 {
+line-height:1em;
+padding-top:0;
+}
+
+#frontpage div#content h2 {
+margin:0 0 0.5em;
+padding:0 0 0.2em;
+}
+
+h3 {
+font:normal 1.2em Arial, Helvetica, sans-serif;
+color:#666;
+}
+
+/* --- Tables ------------------------------------------- */
+table {
+border-collapse:collapse;
+width:100%;
+}
+
+td,th {
+vertical-align:top;
+text-align:left;
+}
+
+th big {
+display:block;
+margin:0 0 0.5em -1em;
+}
+
+table.sharing tbody th,table.sharing tbody td {
+vertical-align:middle;
+}
+
+table.sharing thead th {
+white-space:nowrap;
+padding:0 0.3em;
+}
+
+table.sharing tbody th {
+padding-left:1em;
+}
+
+/* --- Lists ------------------------------------------- */
+dd img {
+float:left;
+margin:0 0 0 -40px;
+}
+
+dd {
+margin-left:40px;
+}
+
+/* --- Images ------------------------------------------- */
+img {
+display:block;
+max-height:500px;
+max-width:500px;
+}
+
+div#current-stream div.bottom img {
+max-height:460px;
+max-width:460px;
+}
+
+a img.photo,a:visited img.photo {
+padding:2px;
+}
+
+input,select,textarea {
+font:1.2em Arial, Geneva, sans-serif;
+}
+
+fieldset {
+margin:0;
+padding:0;
+}
+
+form div {
+line-height:2em;
+clear:left;
+padding:0.5em 0;
+}
+
+label,div.wide div.highlight label {
+text-align:right;
+float:left;
+width:180px;
+padding:0 10px 0 0;
+}
+
+#settings div.wide div.box label {
+width:180px;
+}
+
+div.accordion div.tab label {
+width:100px;
+}
+
+#sidebar ul li label {
+padding-left:0;
+display:inline;
+float:none;
+}
+
+#sidebar label {
+text-align:left;
+margin-top:0.2em;
+display:block;
+float:none;
+width:auto;
+padding:0 5px;
+}
+
+#signup label {
+margin-top:0.3em;
+}
+
+div.wide label,div.tabs div.tab div.wide label,div.accordion div.tab div.wide label {
+padding-left:0;
+display:block;
+width:auto;
+}
+
+form big {
+vertical-align:bottom;
+line-height:2em;
+color:#666;
+}
+
+form div.wide.radio {
+padding-left:10px;
+}
+
+form div.radio label {
+display:inline;
+width:auto;
+float:none;
+}
+
+form div.radio p {
+margin:1em 0 0;
+}
+
+form div p.help {
+font-weight:400;
+margin-left:190px;
+font-size:0.85em;
+display:block;
+color:#666;
+padding:0.2em;
+}
+
+#settings div.wide div.box p.help {
+margin-left:190px;
+}
+
+div.accordion div.tab p.help {
+margin-left:110px;
+}
+
+form div.highlight p.help {
+line-height:1.5em;
+color:#000;
+}
+
+form div p.label-help {
+font-weight:400;
+font-size:0.85em;
+text-align:right;
+line-height:1.4em;
+display:block;
+width:180px;
+color:#666;
+padding:0.2em;
+}
+
+form table p.help {
+text-align:left;
+font-size:0.9em;
+color:#666;
+margin:0 0 0 1em;
+padding:0;
+}
+
+form div p.help img {
+border:solid 1px #ccc;
+float:left;
+margin:10px 10px 0 0;
+}
+
+input#imgfile {
+width:auto;
+}
+
+#content input.text {
+width:240px;
+}
+
+textarea.wide,div.wide textarea,div.wide select {
+width:478px;
+}
+
+#settings form div textarea,#api form div textarea,#settings form div input[type='text'] {
+width:300px;
+}
+
+div.accordion div.wide textarea {
+width:320px;
+}
+
+textarea {
+overflow:visible !important;
+}
+
+input.smaller,select.smaller {
+width:125px;
+}
+
+div.buttons {
+padding-left:190px;
+overflow:hidden;
+}
+
+#welcome div.buttons p {
+padding-top:0.5em;
+clear:both;
+margin:0 0 0.5em;
+}
+
+div.tabs div.tab div.buttons {
+padding-left:160px;
+}
+
+div.accordion div.tab div.buttons {
+padding-left:110px;
+}
+
+#settings div.buttons {
+padding:1em 0 1em 160px;
+}
+
+#sidebar div.buttons {
+text-align:right;
+padding-left:0;
+margin-right:10px;
+}
+
+div.buttons span.loader,p.buttons span.loader {
+background:transparent url(../images/throbber.gif) no-repeat 50% 50%;
+font-size:1em;
+width:16px;
+display:none;
+float:left;
+margin:0 0.2em 0 0;
+}
+
+div.main p.buttons span.loader {
+background:transparent;
+height:41px;
+width:41px;
+}
+
+div.buttons input {
+font-weight:700;
+font-size:1.2em;
+}
+
+#settings ul#badges div {
+text-align:center;
+background:#ccc;
+margin-right:20px;
+width:250px;
+float:left;
+padding:20px 0;
+}
+
+#settings ul#badges h2,#settings ul#badges h4 {
+margin:0 0 0 270px;
+}
+
+#settings ul#badges h4 {
+padding:1em 0 0;
+}
+
+#settings ul#badges p {
+margin:0.5em 0 0 270px;
+}
+
+#settings ul#badges div.settings {
+background:#f1f1f1;
+margin:0.5em 0;
+padding:0 10px;
+}
+
+#settings ul#badges p.settings {
+background:#f1f1f1;
+text-align:left;
+margin:0.2em 0 0 270px;
+padding:10px;
+}
+
+#settings ul#badges p.settings a {
+font-size:0.86em;
+}
+
+#settings ul#badges select {
+margin-bottom:0.2em;
+width:260px;
+}
+
+#settings ul#badges textarea.badge-code {
+font-size:0.8em;
+white-space:nowrap;
+overflow:hidden;
+width:260px;
+}
+
+#settings ul#badges li {
+overflow:hidden;
+clear:both;
+margin:0 0 1em;
+}
+
+#badge-config {
+background:#f1f1f1;
+display:none;
+}
+
+#badges #badge-config {
+margin-left:270px;
+display:block;
+padding:0 10px;
+}
+
+#badge-config table {
+width:260px;
+}
+
+#settings ul#badges #badge-config table p {
+white-space:nowrap;
+margin-left:130px;
+}
+
+#badge-config tr td {
+width:60px;
+padding:0.5em 0;
+}
+
+#badge-config tbody tr th {
+vertical-align:middle;
+font-weight:400;
+width:140px;
+}
+
+#badge-config label {
+display:block;
+width:auto;
+}
+
+#badge-config input.badge-color {
+font-size:0.9em;
+width:55px;
+}
+
+/* --- Search results --------------------------------- */
+ul.search-list {
+border-top:solid 1px #d6d6d6;
+list-style-type:none;
+clear:left;
+margin:0;
+padding:0;
+}
+
+ul.search-list li {
+border-bottom:solid 1px #d6d6d6;
+overflow:hidden;
+clear:left;
+margin:0;
+padding:0.5em 0;
+}
+
+ul.search-list li img.photo {
+float:left;
+margin:0 10px 0 0;
+}
+
+ul.search-list li h3 {
+font-weight:700;
+margin:0.1em 0 0.2em 60px;
+}
+
+ul.search-list li p {
+margin:0 0 0 60px;
+}
+
+/* --- Misc -------------------------------------------- */
+.clear {
+clear:both;
+}
+
+code {
+font:1.0em courier new, monospace;
+overflow:auto;
+padding:0.5em;
+}
+
+div#comments code,div#stream code {
+background:transparent;
+padding:0.2em;
+}
+
+div#a {
+border:solid 1px #ccc;
+line-height:1.4em;
+padding:10px 15px 0;
+}
+
+div#a img {
+margin:0 5px;
+}
+
+div#pwstatus {
+background:#fff url(../images/pwstatus.gif) repeat-x 0 0;
+position:absolute;
+margin-top:-2em;
+right:25px;
+width:100px;
+height:20px;
+padding:0;
+}
+
+html,body,ul#foot-nav ul,div#sidebar div.highlight {
+margin:0;
+padding:0;
+}
+
+div#header p#beta,div#find-friends div#contacts div.buttons span,div#list-select ul input,div#current-stream img.photo {
+float:left;
+}
+
+div#header a#logo:hover,ul#sub-nav li a:hover,div#sidebar div.location form div.buttons,.vcard a.remove:hover,ul.stream li h3 a:hover {
+background:transparent;
+}
+
+ul#main-nav li.current a,div#content div.main h1 a,div#profile p.message a,div#group-intro div.tip p,div#form-message p#icons a {
+color:#fff;
+}
+
+ul#sub-nav a:hover,div.contacts ul.float li p.foot a.remove:hover,div.contacts ul.float li p.foot a.add:hover,div#current-stream a.confirm-delete:hover,ul.stream li a.comments:hover,ul.stream li a.add-comment:hover,ul.stream li a.confirm-delete:hover,div#comments ul li a.confirm-delete:hover,ul.stream li a.confirm-subscribe:hover,div#comments ul li a.confirm-subscribe:hover {
+text-decoration:underline;
+}
+
+div.path h1 a:hover,ul#foot-nav ul li a:hover,.vcard p.message a:hover,ul.stream li h3 a.url:hover {
+text-decoration:underline;
+background:transparent;
+}
+
+ul#foot-nav ul li a,.vcard p.message a,div#stream div.controls a,div#comments ul li blockquote {
+color:#666;
+}
+
+ul#foot-nav ul li.current a,div#current-stream h2 strong,div#leave-comment h2,div.tabs ul li.current a,div.accordion ul li.current a {
+color:#000;
+}
+
+div#content div.top,div#sidebar div.top {
+padding-top:15px;
+}
+
+body.single div#content div.top,#sidebar ul.stream li div.bottom,#sidebar ul.stream li div.top,#content ul.stream li div.top {
+background:transparent;
+padding:0;
+}
+
+div#content p.lead,p.error,span.error,p.success,form div.required {
+font-weight:700;
+}
+
+div.cols div#sidebar,div#side-nav div#search input {
+width:120px;
+}
+
+div#sidebar a.ad:hover,div.box form,div.tabs ul li.current,div.tabs ul li.current a:hover {
+background:#fff;
+}
+
+div#streams ul,div.tour div.body ul,#join #sidebar ul,div.contacts ul,div#actors ul,ul.stream,div.tabs ul,#settings div.tabs ul,#settings ul#badges {
+list-style-type:none;
+margin:0;
+padding:0;
+}
+
+div#streams ul li a.unsubscribe:hover,div#streams ul li a.subscribe:hover,div.paging a:hover {
+text-decoration:underline;
+background:transparent;
+color:#009bc7;
+}
+
+div#sidebar div.location p,div#sidebar div.location form div {
+background:transparent url(../images/location.png) no-repeat 0 50%;
+padding:0.5em 0 0.3em 30px;
+}
+
+div#sidebar div.location form,div#sign-up a strong,li#sign-up a strong,div#sidebar div.contacts ul li div.bubble,div#form-message p#icons select,div#form-message p label,ul.stream li div.comment-all,form#change-number,form div.radio span.former-field-error,div#loginform-msg,.hidden,div#form-help {
+display:none;
+}
+
+div#sidebar div.location input#loc,#welcome div.contacts ul.float li {
+width:165px;
+}
+
+#frontpage p.more,div#footer p,div#side-nav div#search form,div#leave-comment div p.help,div#new div p.help,div#side-nav h2 {
+margin:0;
+}
+
+div#intro ul li p,div.reminder p,div#sidebar div#channels ul li h3,form h3 {
+margin-bottom:0;
+}
+
+div#intro h3 a:link,div#intro h3 a:visited,div.groups ul p a,div#content div#current-stream a,ul.stream li h3 a.url {
+color:#333;
+}
+
+div#start-mobile,div#current-stream div.bottom h2,div#current-stream div.bottom p {
+overflow:hidden;
+}
+
+#contacts div.body,#presence div#stream img.icon,#user div#stream img.icon,#sidebar div.stream img.icon {
+margin-left:0;
+}
+
+div#welcome-start,input[type='text'],textarea,form div.required input.text,form div.required textarea {
+font-size:1.2em;
+}
+
+div.wide div#search form,div#actor .vcard img.photo {
+margin:0 10px;
+}
+
+div#search p,div#form-message p {
+float:left;
+margin:0;
+}
+
+div#search p.buttons,img.float-right {
+float:right;
+}
+
+a:link,a:visited,a:hover,a:link:hover,a:visited:hover,ul.stream li p.comment a:hover {
+text-decoration:none;
+}
+
+ul.float li img,#settings div#stream {
+margin-bottom:1em;
+}
+
+div#self,#settings div.tabs div.avatars ul {
+margin:0 0 1em;
+}
+
+.vcard .details,#account-form ul.stream li {
+position:relative;
+}
+
+#profile .vcard span.status,#sidebar .vcard span.status {
+margin:5px 0;
+}
+
+.vcard p span.tel span.value,.vcard p span.email,form,form div.radio input {
+display:inline;
+}
+
+div.contacts ul.float li.clear,div.contacts h2,div.groups ul li.odd,div#current-stream {
+clear:left;
+}
+
+div.contacts ul.float li p.foot a.remove,div#current-stream a.confirm-spam,div#comments ul li a.confirm-spam {
+background:transparent url(../images/remove.gif) no-repeat 0 50%;
+padding-left:12px;
+}
+
+div#sidebar div#channels ul li h3,div#sidebar div#channels ul li p,#sidebar div.groups ul li h3,#sidebar div.groups ul li p {
+margin-left:45px;
+}
+
+div.avatars li label input,div.backgrounds li label input,div#form-icons label input {
+position:absolute;
+left:-100px;
+top:-100px;
+}
+
+div.avatars li label img,div.backgrounds li label img {
+display:block;
+height:75px;
+width:75px;
+margin:0;
+}
+
+p.avatar-nav,thead th,.centered {
+text-align:center;
+}
+
+div#content div#form-message p,h4,#signup div.radio label {
+font-size:1em;
+}
+
+div#form-message p#counter.overlimit,ul.stream li a,ul.stream li a:visited {
+color:#444;
+}
+
+#sidebar ul.stream li.presence,ul.stream li.presence,ul.stream li.comment {
+border-top:none;
+}
+
+ul.stream li.vcard,div#comments ul li div.top,div#comments ul li div.bottom,div#comments ul li pre code,div#new div.buttons {
+padding:0;
+}
+
+ul.stream li.presence div.bottom,ul.stream li.comment div.bottom {
+min-height:40px;
+}
+
+ul.stream li div,#sidebar ul.stream li h3,#sidebar ul.stream li p,div#leave-comment div.buttons {
+padding-left:0;
+}
+
+div#status-bubble div h3,div#status-bubble div h3 span {
+margin-bottom:0;
+color:#f1f1f1;
+}
+
+div.accordion ul li.msn a,div.accordion ul li.gtalk a {
+text-indent:-1000em;
+}
+
+#settings div.wide div.box div.buttons,form div.radio {
+padding-left:190px;
+}
+
+div.tabs div.tab label,#settings label,#api label {
+width:150px;
+}
+
+div.tabs div.tab p.help,#settings form div p.help {
+margin-left:160px;
+}
+
+div.highlight code,dl dd code {
+padding:0.1em;
+}
+

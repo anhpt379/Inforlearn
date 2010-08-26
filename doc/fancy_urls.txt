@@ -1,0 +1,38 @@
+========================
+Các địa chỉ URL đặc biệt
+========================
+
+
+  Trong hầu hết các trường hợp, bạn chỉ cần thêm **/json** hoặc **/atom** để nhận về nội dung tương ứng ở định dạng đó.
+  Các địa chỉ này sẽ không yêu cầu phải xác thực nếu như người dùng sở hữu những nội dung tương ứng thiết lập nó ở chế độ công khai tới tất cả mọi người. 
+
+Các tin ở trang `Khám phá`
+==========================
+
+::
+  
+  /explore/(json|rss|atom)
+
+
+Các tin từ trang người dùng
+===========================
+
+::
+  
+  /user/$username/(json|rss|atom)
+
+  
+Danh sách liên lạc
+==================
+
+::
+
+  /user/$username/contacts/(json)
+
+
+Gửi tin nhắn
+============
+
+::
+
+  /user/$username/entry/$id/(json)

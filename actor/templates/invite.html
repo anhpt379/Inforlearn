@@ -1,0 +1,33 @@
+{% extends 'actor/templates/people_base.html' %}
+{% load nonce avatar vcard format %}
+{% block title %}Mời bạn bè cùng tham gia{% endblock %}
+{% block people %}
+  <div class="path">
+    <h1><a href="{% url_for view request %}/contacts">Bạn bè</a> / Mời bạn tham gia</h1>
+  </div>
+    
+  <div class="body">
+      <h2 style="margin-top: -15px;">
+        Mời bạn của bạn cùng tham gia ^^
+      </h2>
+    <div class="box">
+      {% include 'form_error.html' %}
+        <form action="" method="post">
+          <h3>Nhập địa chỉ email của người bạn muốn mời</h3>
+          <div>
+            <label for="field-invitees">Email:</label>
+            <input type="text" name="email" id="field-invitees" class="text"/>
+            {% if EMAIL_LIMIT_DOMAIN %}
+              <p class='help'>Địa chỉ email phải thuộc danh sách <strong>{{EMAIL_LIMIT_DOMAIN}}</strong></p>
+            {% endif %}
+          </div>
+        <div class="buttons">
+          {{request.user|noncefield:"invite_request_email"}}
+          <input type="hidden" name="invite_request_email" />
+          <input type="hidden" name="nick" value="{{request.user.nick}}" />
+          <input type="submit" class="button" value="Gửi thư mời"/>
+        </div>
+      </form>
+    </div>
+  </div>
+{% endblock %}

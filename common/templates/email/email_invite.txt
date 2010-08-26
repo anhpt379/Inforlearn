@@ -1,0 +1,8 @@
+{{full_name}}có lời mời bạn tham gia vào phiên bản thử nghiệm của {{SITE_NAME}}.
+
+{{SITE_NAME}} tạo ra một nền tảng cho phép bạn kết nối và chia sẻ kiến thức ở bất cứ lĩnh vực nào bạn quan tâm.
+
+Nhấn vào liên kết dưới đây để xác nhận: 
+    {{accept_url}}
+
+Hẹn gặp lại bạn tại {{SITE_NAME}} :)

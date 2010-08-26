@@ -1,0 +1,18 @@
+{% if my_entry %}
+  {{from_name}} đã gửi một ý kiến trong "{{entry_title}}":
+{% else %}
+  {{from_name}} đã gửi một ý kiến trong "{{entry_title}}" ({{entry_actor_name}}):
+{% endif %}
+
+{{comment_pretty}}
+
+
+Bạn có thể trả lời ý kiến này bằng cách nhấn vào liên kết sau: {{entry_url}}
+
+Nếu có vấn đề gì, hãy gửi thư về support@inforlearn.com, chúng tôi sẽ cố gắng làm những điều tốt nhất để giúp bạn.
+
+
+{% include 'common/templates/email/signature.txt' %}
+(Nội dung của email này được sinh tự động, vui lòng không trả lời lại)
+
+

@@ -1,0 +1,6 @@
+{{nick}} vừa đăng ký nhận các tin bạn gửi tại {{SITE_NAME}}. 
+
+Nhấn vào liên kết sau để xem trang của {{nick}}: {{profile_url}}
+
+
+{% include "common/templates/email/signature.txt" %}

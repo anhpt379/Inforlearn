@@ -1,0 +1,33 @@
+{% load avatar format entry %}
+{% for entry in entries %}
+  <item>
+    <title>{{entry.title}}</title>
+    {% if entry.entry %}
+      <description>        
+        <![CDATA[
+        {% include "common/templates/stream_comment.html" %}
+         ]]>
+       </description>
+       <link>{{entry.url}}</link>
+       <guid>{{entry.url}}</guid>
+       <pubDate>{{entry.created_at|date:"r"}}</pubDate>
+       <inforlearn:user nick="{{entry.actor_ref.display_nick}}" full_name="{{entry.actor_ref.extra.full_name}}" avatar='{{entry.actor_ref|avatar_url:"t"}}' url="{{entry.actor_ref.url}}" />
+       <inforlearn:timesince>{{entry.created_at|je_timesince}} trước.</inforlearn:timesince>
+    {% endif %}
+
+    {% ifequal entry.stream_ref.type 'presence' %}     
+      <description>
+        <![CDATA[
+        {% include "common/templates/stream_entry.html" %}
+         ]]>      
+      </description>
+      <link>{{entry.url}}</link>
+      <guid>{{entry.url}}</guid>
+      <pubDate>{{entry.created_at|date:"r"}}</pubDate>
+      <inforlearn:user nick="{{entry.actor_ref.display_nick}}" full_name="{{entry.actor_ref.extra.full_name}}" avatar='{{entry.actor_ref|avatar_url:"t"}}' url="{{entry.actor_ref.url}}" />
+      <inforlearn:timesince>{{entry.created_at|je_timesince}} trước.</inforlearn:timesince>
+      <inforlearn:comment count="{{entry.extra.comment_count}}" />
+    {% endifequal %}
+  </item>
+{% endfor %}
+         

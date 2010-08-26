@@ -1,0 +1,5 @@
+{% load i18n %}
+
+{{entry.title}} 
+(gửi bởi {{entry.actor_ref.display_nick}}{% if entry.owner_ref.is_channel %} trong nhóm {{entry.owner_ref.display_nick}}{% endif %})
+

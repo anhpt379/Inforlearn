@@ -1,0 +1,26 @@
+**entry_get_actor_overview_since** (api_user, nick, limit, since_time)
+
+
+Returns stream entries for a user's overview on or after a certain time.
+
+  This is a useful call if you are trying to periodically poll to keep
+  up to date as it is more efficient for you to only get the updates after the
+  last polling time.
+
+  PARAMS:
+    * nick - the actor for whom to fetch the overview
+    * limit - optional parameter; specifies how many entries to fetch
+
+      * defaults to 30
+      * max is 1000
+    * since_time - optional parameter; specifies the datetime on or after which
+      to retrieve entries
+
+      * defaults to the beginning of time
+      * see `request timestamp`_ for format
+
+  RETURNS: a list of `stream_entry_ref`_
+
+  .. _request timestamp: /api/docs/request_timestamp
+  .. _stream_entry_ref: /api/docs/model_stream_entry_ref
+  

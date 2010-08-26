@@ -1,0 +1,15 @@
+{% extends 'common/templates/form_mobile.html' %}
+
+{% block buttons %}
+  <form action="{{next}}" method="GET">
+  <input type="hidden" name="redirect_to" value="{{redirect_to}}" />
+  <button type="submit">
+    <big class="active"><span>&#8250; Tiếp tục</span></big>
+  </button>
+    <br/>
+    <br/>
+  <p style="float: right;">
+    hoặc <a href="/welcome/3?redirect_to={{redirect_to|urlencode}}">bỏ qua bước này</a>
+  </p>
+  </form>
+{% endblock %}
