@@ -11,11 +11,11 @@ ENTRIES_PER_PAGE = 20
 
 def explore_recent(request, format="html"):
   if request.META.get("QUERY_STRING").startswith("offset"):
-    key_name = "html:" + str(request.COOKIES.get('user')) + ":" \
-             + request.META.get("PATH_INFO") + "?"  \
+    key_name = "html:" + str(request.COOKIES.get('username')) \
+             + request.META.get("PATH_INFO")  \
              + request.META.get("QUERY_STRING")
   else:
-    key_name = "html:" + str(request.COOKIES.get('user')) + ":" \
+    key_name = "html:" + str(request.COOKIES.get('username')) \
              + request.META.get("PATH_INFO")
   green_top = True
   handled = handle_view_action(request, {'entry_remove': request.path,
@@ -26,16 +26,16 @@ def explore_recent(request, format="html"):
                                          'post': request.path,})
   if handled:
     cache.delete(key_name)
-    user = request.COOKIES.get('user')
+    user = request.COOKIES.get('username')
     if user:
-      s = str(request.COOKIES.get('user')) + ":"      \
-        + "/user/%s" % user.split("@")[0]  \
+      s = str(request.COOKIES.get('username'))      \
+        + "%s.inforlearn.com" % user.split("@")[0]  \
         + "/overview"
       key_name = "html:%s" % s.strip()
       cache.delete(key_name)
       
-      s = str(request.COOKIES.get('user')) + ":"      \
-        + "/user/%s" % user.split("@")[0]
+      s = str(request.COOKIES.get('username'))     \
+        + "%s.inforlearn.com" % user.split("@")[0]
       key_name = "html:%s" % s.strip()
       cache.delete(key_name)
       

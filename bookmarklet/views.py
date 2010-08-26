@@ -41,10 +41,16 @@ def get_text(begin_str, end_str, document):
 
 @alternate_nick
 def actor_post(request, format='html'):
-  s = str(request.COOKIES.get('user'))       \
-    + str(request.META.get("HTTP_REFERER"))  \
-    + str(request.META.get("PATH_INFO"))
-  key_name = "html:%s" % md5(s).hexdigest()
+  if request.META.get("QUERY_STRING").startswith("offset"):
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")        \
+      + request.META.get("QUERY_STRING")
+  else:
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")
+  key_name = "html:%s" % s.strip()
     
   nick = request.COOKIES.get("user")
   if nick is None:
@@ -75,10 +81,10 @@ def actor_post(request, format='html'):
   )
   if handled:
     cache.delete(key_name)
-    s = str(request.COOKIES.get('user'))       \
-      + str(request.META.get("HTTP_REFERER"))  \
+    s = str(request.COOKIES.get('username'))   \
+      + str(request.subdomain)                 \
       + str(request.META.get("PATH_INFO")).replace("/overview", "")
-    key_name = "html:%s" % md5(s).hexdigest()
+    key_name = "html:%s" % s
     cache.delete(key_name)
     return handled
   

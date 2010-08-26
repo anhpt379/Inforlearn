@@ -37,7 +37,7 @@ def channel_create(request, format='html'):
   if handled:
     cache.delete(key_name)
     
-    s = str(request.COOKIES.get('user')) + ":" + "/channel"
+    s = str(request.COOKIES.get('username')) + "/channel"
     key_name = "html:%s" % s
     cache.delete(key_name)
     return handled
@@ -72,11 +72,13 @@ def channel_index(request, format='html'):
     return channel_index_signedout(request, format='html')
 
   if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('user')) + ":"      \
-      + request.META.get("PATH_INFO") + "?"  \
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")        \
       + request.META.get("QUERY_STRING")
   else:
-    s = str(request.COOKIES.get('user')) + ":"      \
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
       + request.META.get("PATH_INFO")
   key_name = "html:%s" % s.strip()
   
@@ -179,11 +181,13 @@ def channel_recommendation_list(request, format="html"):
 def channel_index_signedout(request, format='html'):
   # for the Our Picks section of the sidebar
   if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('user')) + ":"      \
-      + request.META.get("PATH_INFO") + "?"  \
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")        \
       + request.META.get("QUERY_STRING")
   else:
-    s = str(request.COOKIES.get('user')) + ":"      \
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
       + request.META.get("PATH_INFO")
   key_name = "html:%s" % s.strip()
   
@@ -228,11 +232,13 @@ def channel_history(request, nick, format='html'):
     return http.HttpResponseRedirect('/channel/create?channel=%s' % nick)
 
   if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('user')) + ":"      \
-      + request.META.get("PATH_INFO") + "?"  \
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")        \
       + request.META.get("QUERY_STRING")
   else:
-    s = str(request.COOKIES.get('user')) + ":"      \
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
       + request.META.get("PATH_INFO")
   key_name = "html:%s" % s.strip()
 
@@ -253,12 +259,12 @@ def channel_history(request, nick, format='html'):
       )
   if handled:
     cache.delete(key_name)    
-    s = str(None) + ":"      \
+    s = str(None)      \
       + "/explore"
     key_name = "html:%s" % s
     cache.delete(key_name)
     
-    s = str(request.COOKIES.get('user')) + ":"      \
+    s = str(request.COOKIES.get('username'))      \
       + "/explore"
     key_name = "html:%s" % s
     cache.delete(key_name)
@@ -403,10 +409,14 @@ def channel_item(request, nick, item=None, format='html'):
     raise http.Http404()
 
   if request.META.get("QUERY_STRING").startswith("offset"):
-    s = request.META.get("PATH_INFO") + "?"  \
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")        \
       + request.META.get("QUERY_STRING")
   else:
-    s = request.META.get("PATH_INFO")
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")
   key_name = "html:%s" % s.strip()
 
   

@@ -4,7 +4,7 @@ SITE_NAME = 'Inforlearn'
 
 COOKIE_DOMAIN = 'www.inforlearn.com'
 
-COOKIELESS_DOMAIN = 'static.inforlearn.com'
+COOKIELESS_DOMAIN = 'www.inforlearn.com'
 
 NS_DOMAIN = 'inforlearn.appspot.com'
 

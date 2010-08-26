@@ -170,7 +170,8 @@ SUBDOMAINS_ENABLED = True
 # These are defined as { subdomain : url_conf, ...}
 INSTALLED_SUBDOMAINS = {
     'api': 'api.urls', # api-only urlconf
-    'm': 'urls', # default urlconf, but allow the subdomain
+    'm': 'urls', # default urlconf, but allow the subdomain,
+    'static': 'urls'
     }
 
 # Enable SSL support for login and join, if using HOSTED_DOMAIN_ENABLED
@@ -191,9 +192,9 @@ DEFAULT_THEME = 'default'
 #
 
 # Cookie settings, pretty self explanatory, you shouldn't need to touch these.
-USER_COOKIE = 'user'
+USER_COOKIE = 'username'
 PASSWORD_COOKIE = 'password'
-COOKIE_DOMAIN = '.%s' % DOMAIN
+COOKIE_DOMAIN = '%s' % DOMAIN
 COOKIE_PATH = '/'
 
 #

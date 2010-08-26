@@ -39,11 +39,13 @@ def alternate_nick(f):
 @alternate_nick
 def actor_history(request, nick=None, format='html'):
   if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('user')) + ":"      \
-      + request.META.get("PATH_INFO") + "?"  \
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")        \
       + request.META.get("QUERY_STRING")
   else:
-    s = str(request.COOKIES.get('user')) + ":"      \
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
       + request.META.get("PATH_INFO")
   key_name = "html:%s" % s.strip()
 #  return http.HttpResponse(key_name)
@@ -78,27 +80,29 @@ def actor_history(request, nick=None, format='html'):
   if handled:
     cache.delete(key_name)    
     
-    s = str(None) + ":"      \
+    s = str(None)   \
       + "/explore"
     key_name = "html:%s" % s
     cache.delete(key_name)
     
-    s = str(request.COOKIES.get('user')) + ":"      \
+    s = str(request.COOKIES.get('username')) \
       + "/explore"
     key_name = "html:%s" % s
     cache.delete(key_name)
     
-    s = str(request.COOKIES.get('user')) + ":"      \
-      + str(request.META.get("PATH_INFO"))  \
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + str(request.META.get("PATH_INFO"))   \
       + "/overview"
     key_name = "html:%s" % s.strip()
     cache.delete(key_name)
     
-    s = str(request.COOKIES.get('user')) + ":" + "/channel"
+    s = str(request.COOKIES.get('username')) + "/channel"
     key_name = "html:%s" % s
     cache.delete(key_name)
        
-    s = str(None) + ":"      \
+    s = str(None)               \
+      + str(request.subdomain)  \
       + str(request.META.get("PATH_INFO")).replace("/overview", "")
     key_name = "html:%s" % s.strip()
     cache.delete(key_name)
@@ -239,11 +243,13 @@ def actor_invite(request, nick, format='html'):
 @alternate_nick
 def actor_overview(request, nick, format='html'):
   if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('user')) + ":"      \
-      + request.META.get("PATH_INFO") + "?"  \
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")        \
       + request.META.get("QUERY_STRING")
   else:
-    s = str(request.COOKIES.get('user')) + ":"      \
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
       + request.META.get("PATH_INFO")
   key_name = "html:%s" % s.strip()
     
@@ -272,22 +278,24 @@ def actor_overview(request, nick, format='html'):
   if handled:
     cache.delete(key_name)
     
-    s = str(request.COOKIES.get('user')) + ":"      \
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
       + str(request.META.get("PATH_INFO")).replace("/overview", "")
     key_name = "html:%s" % s.strip()
     cache.delete(key_name)
     
-    s = str(None) + ":"      \
+    s = str(None)              \
+      + str(request.subdomain) \
       + str(request.META.get("PATH_INFO")).replace("/overview", "")
     key_name = "html:%s" % s.strip()
     cache.delete(key_name)
     
-    s = str(None) + ":"      \
+    s = str(None)      \
       + "/explore"
     key_name = "html:%s" % s
     cache.delete(key_name)
     
-    s = str(request.COOKIES.get('user')) + ":"      \
+    s = str(request.COOKIES.get('username'))      \
       + "/explore"
     key_name = "html:%s" % s
     cache.delete(key_name)
@@ -401,10 +409,14 @@ def actor_item(request, nick=None, item=None, format='html'):
     raise exception.UserDoesNotExistError(nick, request.user)
 
   if request.META.get("QUERY_STRING").startswith("offset"):
-    s = request.META.get("PATH_INFO") + "?"  \
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")        \
       + request.META.get("QUERY_STRING")
   else:
-    s = request.META.get("PATH_INFO")
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")
   key_name = "html:%s" % s.strip()
   
 #  print str(request)
@@ -537,11 +549,11 @@ def actor_item(request, nick=None, item=None, format='html'):
 @alternate_nick
 def actor_contacts(request, nick=None, format='html'):
   if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('user')) + ":"      \
-      + request.META.get("PATH_INFO") + "?"  \
+    s = str(request.COOKIES.get('username'))      \
+      + request.META.get("PATH_INFO")  \
       + request.META.get("QUERY_STRING")
   else:
-    s = str(request.COOKIES.get('user')) + ":"      \
+    s = str(request.COOKIES.get('username'))      \
       + request.META.get("PATH_INFO")
   key_name = "html:%s" % s.strip()
   
@@ -558,7 +570,7 @@ def actor_contacts(request, nick=None, format='html'):
         'actor_remove_contact': request.path, })
   if handled:
     cache.delete(key_name)
-    s = str(request.COOKIES.get('user')) + ":" + "/channel"
+    s = str(request.COOKIES.get('username')) + "/channel"
     key_name = "html:%s" % s
     cache.delete(key_name)
     return handled
@@ -639,11 +651,13 @@ def actor_followers(request, nick=None, format='html'):
     raise exception.UserDoesNotExistError(nick, request.user)
 
   if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('user')) + ":"      \
-      + request.META.get("PATH_INFO") + "?"  \
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
+      + request.META.get("PATH_INFO")        \
       + request.META.get("QUERY_STRING")
   else:
-    s = str(request.COOKIES.get('user')) + ":"      \
+    s = str(request.COOKIES.get('username')) \
+      + str(request.subdomain)               \
       + request.META.get("PATH_INFO")
   key_name = "html:%s" % s.strip()
   
@@ -653,7 +667,7 @@ def actor_followers(request, nick=None, format='html'):
         'actor_remove_contact': request.path, })
   if handled:
     cache.delete(key_name)
-    s = str(request.COOKIES.get('user')) + ":" + "/channel"
+    s = str(request.COOKIES.get('username')) + "/channel"
     key_name = "html:%s" % s
     cache.delete(key_name)
     return handled
