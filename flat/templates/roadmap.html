@@ -1,22 +1,30 @@
-{% extends 'channel/templates/channel_base.html' %}
-{% block title %}Roadmap{% endblock %}
+{% extends 'common/templates/base_wide.html' %}
+{% block title %}Inforlearn | Roadmap{% endblock %}
+
 {% block content %}
-<h1>Roadmap</h1>
-
-<p>Current version: 0.9 (beta)</p>
-
-<p>version 1.0</p>
-<li>Chọn icon cho loại đối tượng (câu hỏi, sáng kiến, kinh nghiệm, ghi chú, thảo luận...)</li>
-
-<p>version 1.5</p>
-<li>Hỗ trợ xuống dòng và hiển thị (+xem trước) theo reStructureText trong tin nhắn và bình luận</li>
-<li>Nâng cấp công cụ tìm kiếm (Tên người dùng/bài post)</li>
-<li>Thêm tính năng Favourite cho tin gửi và vote up/down cho bình luận</li>
-<li>Nhiều admin quản lý một nhóm</li>
-
-
-<p>version 2.0</p>
-<li>Tính năng gợi ý nhóm phù hợp cho người sử dụng</li>
-<li>Phiên bản di động cho các dòng điện thoại</li>
-<li>Giao diện mới</li>
+  <div class="path">
+    <h1>Roadmap</h1>
+  </div>
+  
+  <div class="body">
+   
+    <h3>Các tính năng sẽ phát triển:</h3>
+    <ul style="margin-bottom: 10px; margin-top: -10px;">
+      <li>Triển khai Browser Push (Comet) để cập nhật tin nhắn theo thời gian thực</li>
+      <li>Tìm kiếm/mời bạn bè ở Facebook, Twitter, Yahoo tham gia</li>
+      <li>Sử dụng SSL cho trang đăng nhập</li>
+      <li>Giao diện mobile</li>
+      <li>Firefox Addon</li>
+    </ul>
+    
+    <h3>Các tính năng đã triển khai:</h3>
+    <ul style="margin-bottom: 10px; margin-top: -10px;">
+      <li>Gợi ý nhóm nên tham gia</li>
+      <li>Gợi ý người nên kết bạn</li>
+      <li>Danh sách "Nhóm tương tự"</li>
+      <li>Hỗ trợ cú pháp Markdown trong tin và bình luận gửi lên</li> 
+      <li>Gửi và nhận thông báo qua IM hỗ trợ XMPP</li>
+      <li>Bookmarklet và Chrome Extension</li>
+    </ul>
+  </div>
 {% endblock %}

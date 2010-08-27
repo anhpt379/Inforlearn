@@ -59,12 +59,12 @@ def actor_post(request, format='html'):
   
   if request.META.get("QUERY_STRING").startswith("offset"):
     s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
+      + str(request.COOKIES.get('username').split("@")[0] + '.inforlearn.com') \
       + request.META.get("PATH_INFO")        \
       + request.META.get("QUERY_STRING")
   else:
     s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
+      + str(request.COOKIES.get('username').split("@")[0] + '.inforlearn.com') \
       + request.META.get("PATH_INFO")
   key_name = "html:%s" % s.strip()
 
@@ -82,7 +82,7 @@ def actor_post(request, format='html'):
   if handled:
     cache.delete(key_name)
     s = str(request.COOKIES.get('username'))   \
-      + str(request.subdomain)                 \
+      + str(request.COOKIES.get('username').split("@")[0] + '.inforlearn.com') \
       + str(request.META.get("PATH_INFO")).replace("/overview", "")
     key_name = "html:%s" % s
     cache.delete(key_name)

@@ -136,7 +136,7 @@ class UserDoesNotExistError(Error):
 
   @property
   def message(self):
-    return "User %s not exist" % self.nick
+    return u"Tài khoản %s không tồn tại." % self.nick.split("@")[0]
 
 class DisabledFeatureError(UserVisibleError):
   # TODO(teemu): we should probably add an extra field 

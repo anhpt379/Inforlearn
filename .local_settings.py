@@ -2,9 +2,9 @@ DOMAIN = 'www.inforlearn.com'
 
 SITE_NAME = 'Inforlearn'
 
-COOKIE_DOMAIN = 'www.inforlearn.com'
+COOKIE_DOMAIN = 'inforlearn.com'
 
-COOKIELESS_DOMAIN = 'static.inforlearn.com'
+COOKIELESS_DOMAIN = 'inforlearn.appspot.com'
 
 NS_DOMAIN = 'inforlearn.appspot.com'
 

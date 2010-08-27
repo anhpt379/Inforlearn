@@ -775,8 +775,7 @@ def actor_settings(request, nick, page='index'):
   view = api.actor_lookup_nick(api.ROOT, nick)
   if not api.actor_owns_actor(request.user, view):
     raise exception.ApiOwnerRequired(
-        'Operation not allowed: %s does not own %s'
-        % (request.user and request.user.nick or '(nobody)', view.nick))
+        u'Bạn không phải là chủ sở hữu của tài khoản %s' % (view.shortnick()))
 
   handled = common_views.handle_view_action(
       request,

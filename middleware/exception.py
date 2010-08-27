@@ -1,3 +1,4 @@
+#! coding: utf-8
 import logging
 import traceback
 
@@ -15,7 +16,7 @@ class ExceptionMiddleware(object):
       return HttpResponseRedirect(url)
     if isinstance(exc, exception.Error):
       logging.warning("RedirectError: %s", traceback.format_exc())
-      return util.RedirectError(exc.message)
+      return util.RedirectError(exc.message.encode('utf-8'))
     if not isinstance(exc, Http404):
       logging.error("5xx: %s", traceback.format_exc())
     if settings.DEBUG and not isinstance(exc, Http404):
