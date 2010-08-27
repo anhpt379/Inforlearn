@@ -40,6 +40,12 @@ skip_files: |
 default_expiration: "30d"
 
 handlers:
+- url: /console/static
+  static_dir: console/app/view/static
+
+- url: /console.*
+  script: console/app/console.py
+
 - url: /images/backgrounds
   static_dir: images/backgrounds
   expiration: "365d"
