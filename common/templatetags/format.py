@@ -125,6 +125,11 @@ emoticons = [
 ['[..]', "<img src='http://l.yimg.com/a/i/us/msg/emoticons/transformer.gif'>"]
 ]
 
+def substring(begin_str, end_str, document):
+  """ Trả về các ký tự nằm giữa 2 chuỗi """
+  s = begin_str + '(.*?)' + end_str
+  return re.compile(s, re.DOTALL |  re.IGNORECASE).findall(document)
+
 @register.filter(name="format_metadata")
 @safe
 def format_metadata(value, arg=None):
@@ -158,8 +163,10 @@ def random_tips(value, arg=None):
 @register.filter(name="format_emoticons")
 @safe
 def format_emoticons(value, arg=None):
+  value = " %s" % value # add a space at first of line - simple hack for emoticon bugs &xxx;) -> ;)
+  return value
   for e in emoticons:
-    value = value.replace(e[0], e[1].replace("img src", "img %s src" % emoticons_style))
+    value = value.replace(" " + e[0], " " + e[1].replace("img src", "img %s src" % emoticons_style))
   return value
 
 @register.filter(name="auto_background")
@@ -195,6 +202,11 @@ def format_links(value, arg=None):
 @safe
 def format_autolinks(value, arg=None):
   value = autolink_regex.sub(r'\1<a href="\2" target="_new">\2</a>', value)
+  display_links = substring('target="_new">', '</a>', value)
+  escape_chars = ['_']
+  for i in display_links:
+    for char in escape_chars:
+      value = value.replace(i, i.replace(char, '\%s' % char))
   return value
 
 # TODO(tyler): Combine these with validate
@@ -297,9 +309,8 @@ def linked_entry_title(value, request=None):
   request   a HttpRequest (optional).
   """
   content = escape(value.extra.get('title'))
-#  content = format_fancy(content)
-  content = format_markdown(content)
   content = format_autolinks(content)
+  content = format_markdown(content)
   content = format_actor_links(content, request)
   content = format_emoticons(content)
   return content
@@ -486,6 +497,7 @@ def go_back(parser, token):
     raise template.TemplateSyntaxError, \
       "%r tag requires exactly two arguments" % token.contents.split()[0]
   return GoBackLink(actor, request)
+
 @register.filter(name="popup_description")
 @safe
 def popup_description(value, request=None):

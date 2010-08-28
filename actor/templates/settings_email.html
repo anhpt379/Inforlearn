@@ -33,9 +33,9 @@
     <div>
       <label for="email">Địa chỉ email</label>
       {% if email %}
-      <input type="text" name="email" id="email" value="{{email}}" />
+      <input type="text" onclick='AVIMObj.setMethod(-1);defaultLang="en"' name="email" id="email" value="{{email}}" />
       {% else %}
-      <input type="text" name="email" id="email" value="{{unconfirmed_email}}" />
+      <input type="text" onclick='AVIMObj.setMethod(-1);defaultLang="en"' name="email" id="email" value="{{unconfirmed_email}}" />
       {% endif %}
       <p class="help">Một thư xác nhận sẽ được gửi tới email này.</p>
     </div>

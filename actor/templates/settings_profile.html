@@ -31,7 +31,7 @@
     </div>
     <div>
       <label for="full_name">Họ tên: </label>
-      <input type="text" name="full_name" id="full_name" maxlength="60"
+      <input type="text" name="full_name" id="full_name" maxlength="60" onclick='AVIMObj.setMethod(0);'
              class="text" value="{{view.extra.full_name}}"/>
     </div>
   
@@ -99,7 +99,7 @@
    
     <div>
       <label for="homepage">Trang cá nhân: </label>
-      <input type="text" name="homepage" id="homepage"
+      <input type="text" name="homepage" id="homepage" onclick='AVIMObj.setMethod(-1);defaultLang="en";'
              class="text" value="{{view.extra.homepage}}"/>
     </div>
      

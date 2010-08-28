@@ -1,3 +1,33 @@
+/* Position fixed */
+
+/*
+div#header-container {
+  position: fixed;
+  width: 100%;
+  z-index: 9999;
+}
+
+div#content, div#sidebar {
+  margin-top: 60px;
+}
+
+div#content div#form-message {
+  position:fixed;
+  width:560px;
+}
+
+div#sidebar {
+  margin-top: 60px;
+  left:50%;
+  margin-left:180px;
+  position:fixed;
+  z-index:9999;
+}
+*/
+
+
+/* end fixed position */
+
 input[type = "text"], input[type = "password"] {
   background: white url(http://{{COOKIELESS_DOMAIN}}/images/fieldbg.gif) repeat-x 50% 0%;
   border-bottom: 1px solid #DDD;
@@ -1707,7 +1737,6 @@ div#stream div.controls a:hover {
 
 div#stream div.controls a.comment {
   padding-left: 17px;
-  font-size: 1.2em;
 }
 
 ul.stream li {

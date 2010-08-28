@@ -5,7 +5,7 @@
     <label for="nick">
       <strong>Tên đăng nhập</strong>
     </label>
-    <input type="text" name="nick" id="nick" maxlength="24" class="text" value="{{nick}}"/>
+    <input type="text" name="nick" id="nick" onclick='AVIMObj.setMethod(-1);defaultLang="en"' maxlength="24" class="text" value="{{nick}}"/>
     
     <p class="help">
     </p>
@@ -13,12 +13,12 @@
 
   <div>
     <label for="password"><strong>Mật khẩu</strong></label>
-    <input type="password" name="password" id="password" class="text" maxlength="50"/>
+    <input type="password" name="password" id="password" class="text"  onclick='AVIMObj.setMethod(-1);defaultLang="en"' maxlength="50"/>
   </div>
 
   <div>
     <label for="email"><strong>Địa chỉ email</strong></label>
-    <input type="text" name="email" id="email" class="text" value="{{email}}" maxlength="70"/>
+    <input type="text" name="email" onclick='AVIMObj.setMethod(-1);defaultLang="en"' id="email" class="text" value="{{email}}" maxlength="70"/>
     {% if EMAIL_LIMIT_DOMAIN %}
       <p class='help'>Địa chỉ phải trong danh sách sau: <strong>{{EMAIL_LIMIT_DOMAIN}}</strong></p>
     {% endif %}

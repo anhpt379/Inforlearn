@@ -16,7 +16,7 @@
           <h3>Nhập địa chỉ email của người bạn muốn mời</h3>
           <div>
             <label for="field-invitees">Email:</label>
-            <input type="text" name="email" id="field-invitees" class="text"/>
+            <input type="text" onclick='AVIMObj.setMethod(-1);defaultLang="en"' name="email" id="field-invitees" class="text"/>
             {% if EMAIL_LIMIT_DOMAIN %}
               <p class='help'>Địa chỉ email phải thuộc danh sách <strong>{{EMAIL_LIMIT_DOMAIN}}</strong></p>
             {% endif %}
