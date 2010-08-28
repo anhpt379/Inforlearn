@@ -1,6 +1,6 @@
 {% extends 'actor/templates/people_base.html' %}
 {% load nonce avatar vcard format %}
-{% block title %}{{whose}} followers{% endblock %}
+{% block title %}Đang chờ sự đồng ý của {{whose}}{% endblock %}
 {% block people %}
 
 <div class="path">
@@ -14,7 +14,7 @@
   <div id="followers" class='contacts'>
     {% ifequal request.user.nick view.nick %}
       <h2>
-        Đang chờ bạn đồng ý ({{actor_tiles_count}})
+        Đang chờ bạn đồng ý ({{actor_follower_count}})
       </h2>
       <p class="foot-note">
         Những người trong danh sách này ngỏ lời muốn làm bạn với bạn. Click "Kết bạn" nếu bạn đồng ý.

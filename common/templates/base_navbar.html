@@ -17,7 +17,17 @@
                   {% actor_link request.user request %} | 
                   <a href="{{request.user.url}}/settings">Thiết lập</a> | 
                   <a href="http://{{DOMAIN}}/logout">Đăng xuất</a>
-                {% else %}
+                {% else %}                  
+                  {% ifequal area "explore"%}
+                    <a href="http://{{DOMAIN}}/login?redirect_to={{request.META.PATH_INFO}}">Đăng nhập</a> | 
+                  {% endifequal %}          
+                  {% ifequal area "tour"%}
+                    <a href="http://{{DOMAIN}}/login?redirect_to={{request.META.PATH_INFO}}">Đăng nhập</a> | 
+                  {% endifequal %}          
+                  {% ifequal area "channel"%}
+                    <a href="http://{{DOMAIN}}/login?redirect_to={{request.META.PATH_INFO}}">Đăng nhập</a> | 
+                  {% endifequal %}
+                  
                   {% ifnotequal request.path "/join" %}
                     Không có tài khoản? <a href="http://{{DOMAIN}}/join?redirect_to={{redirect_to|urlencode}}">Đăng ký</a>
                   {% else %}

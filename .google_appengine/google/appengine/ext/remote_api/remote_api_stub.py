@@ -72,6 +72,7 @@ from google.appengine.api import apiproxy_rpc
 from google.appengine.api import apiproxy_stub_map
 from google.appengine.datastore import datastore_pb
 from google.appengine.ext.remote_api import remote_api_pb
+from google.appengine.ext.remote_api import remote_api_services
 from google.appengine.runtime import apiproxy_errors
 from google.appengine.tools import appengine_rpc
 
@@ -430,17 +431,7 @@ class RemoteDatastoreStub(RemoteStub):
         'The remote datastore does not support index manipulation.')
 
 
-ALL_SERVICES = set([
-    'capability_service',
-    'datastore_v3',
-    'images',
-    'mail',
-    'memcache',
-    'taskqueue',
-    'urlfetch',
-    'xmpp',
-])
-
+ALL_SERVICES = set(remote_api_services.SERVICE_PB_MAP)
 
 def ConfigureRemoteApi(app_id,
                        path,

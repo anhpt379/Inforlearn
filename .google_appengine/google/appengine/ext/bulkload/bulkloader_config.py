@@ -200,22 +200,19 @@ class DictConvertor(object):
       to be uploaded.
     """
     key = None
-    parent = None
     if self._create_key:
       key = self.__dict_to_prop(self._create_key, input_dict, bulkload_state)
-      if isinstance(key, datastore.Key):
-        if not key.name():
-          raise bulkloader_errors.ErrorOnTransform(
-              'Numeric keys are not supported on input at this time.')
+      if isinstance(key, datastore.Key) and not self._transformer_spec.model:
         parent = key.parent()
-        key = key.name()
-
+        if key.name() == None:
+          return datastore.Entity(self._transformer_spec.kind,
+                                  parent=parent, id=key.id())
+        else:
+          return datastore.Entity(self._transformer_spec.kind,
+                                  parent=parent, name=key.name())
     if self._transformer_spec.model:
-      instance = self._transformer_spec.model(key_name=key, parent=parent)
-    else:
-      instance = datastore.Entity(self._transformer_spec.kind,
-                                  parent=parent, name=key)
-    return instance
+      return self._transformer_spec.model(key=key)
+    return datastore.Entity(self._transformer_spec.kind, name=key)
 
   def __run_import_transforms(self, input_dict, instance, bulkload_state):
     """Fill in a single entity or model instance from an input_dict.

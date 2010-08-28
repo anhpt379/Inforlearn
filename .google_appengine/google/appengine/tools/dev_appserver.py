@@ -106,6 +106,7 @@ from google.appengine import dist
 
 from google.appengine.tools import dev_appserver_blobstore
 from google.appengine.tools import dev_appserver_channel
+from google.appengine.tools import dev_appserver_blobimage
 from google.appengine.tools import dev_appserver_index
 from google.appengine.tools import dev_appserver_login
 from google.appengine.tools import dev_appserver_oauth
@@ -2875,7 +2876,9 @@ def CreateResponseRewritersChain():
 
 
 
-def RewriteResponse(response_file, response_rewriters=None):
+def RewriteResponse(response_file,
+                    response_rewriters=None,
+                    request_headers=None):
   """Allows final rewrite of dev_appserver response.
 
   This function receives the unparsed HTTP response from the application
@@ -2892,6 +2895,7 @@ def RewriteResponse(response_file, response_rewriters=None):
       the response code, all headers, and the request body.
     response_rewriters: A list of response rewriters.  If none is provided it
       will create a new chain using CreateResponseRewritersChain.
+    request_headers: Original request headers.
 
   Returns:
     An AppServerResponse instance configured with the rewritten response.
@@ -2901,7 +2905,10 @@ def RewriteResponse(response_file, response_rewriters=None):
 
   response = AppServerResponse(response_file)
   for response_rewriter in response_rewriters:
-    response_rewriter(response)
+    if response_rewriter.func_code.co_argcount == 1:
+      response_rewriter(response)
+    else:
+      response_rewriter(response, request_headers)
 
   return response
 
@@ -3203,7 +3210,7 @@ def CreateRequestHandler(root_path,
         outfile.flush()
         outfile.seek(0)
 
-        response = RewriteResponse(outfile, self.rewriter_chain)
+        response = RewriteResponse(outfile, self.rewriter_chain, self.headers)
 
         if not response.large_response:
           position = response.body.tell()
@@ -3523,6 +3530,9 @@ def SetupStubs(app_id, **config):
     trusted: True if this app can access data belonging to other apps.  This
       behavior is different from the real app server and should be left False
       except for advanced uses of dev_appserver.
+    port: The port that this dev_appserver is bound to. Defaults to 8080
+    address: The host that this dev_appsever is running on. Defaults to
+      localhost.
   """
   root_path = config.get('root_path', None)
   login_url = config['login_url']
@@ -3541,6 +3551,8 @@ def SetupStubs(app_id, **config):
   disable_task_running = config.get('disable_task_running', False)
   task_retry_seconds = config.get('task_retry_seconds', 30)
   trusted = config.get('trusted', False)
+  serve_port = config.get('port', 8080)
+  serve_address = config.get('address', 'localhost')
 
   os.environ['APPLICATION_ID'] = app_id
 
@@ -3616,9 +3628,10 @@ def SetupStubs(app_id, **config):
 
   try:
     from google.appengine.api.images import images_stub
+    host_prefix = 'http://%s:%d' % (serve_address, serve_port)
     apiproxy_stub_map.apiproxy.RegisterStub(
         'images',
-        images_stub.ImagesServiceStub())
+        images_stub.ImagesServiceStub(host_prefix=host_prefix))
   except ImportError, e:
     logging.warning('Could not initialize images API; you are likely missing '
                     'the Python "PIL" module. ImportError: %s', e)
@@ -3684,6 +3697,15 @@ def CreateImplicitMatcher(
 
   url_matcher.AddURL(dev_appserver_blobstore.UPLOAD_URL_PATTERN,
                      upload_dispatcher,
+                     '',
+                     False,
+                     False,
+                     appinfo.AUTH_FAIL_ACTION_UNAUTHORIZED)
+
+  blobimage_dispatcher = dev_appserver_blobimage.CreateBlobImageDispatcher(
+      apiproxy_stub_map.apiproxy.GetStub('images'))
+  url_matcher.AddURL(dev_appserver_blobimage.BLOBIMAGE_URL_PATTERN,
+                     blobimage_dispatcher,
                      '',
                      False,
                      False,

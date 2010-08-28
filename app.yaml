@@ -115,3 +115,14 @@ inbound_services:
 derived_file_type:
 - python_precompiled
 
+error_handlers:
+  - file: default_error.html
+
+  - error_code: over_quota
+    file: over_quota.html
+    
+  - error_code: dos_api_denial
+    file: dos_api_denial.html
+    
+  - error_code: timeout
+    file: timeout.html

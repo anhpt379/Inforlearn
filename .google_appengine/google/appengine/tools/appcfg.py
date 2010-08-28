@@ -134,8 +134,44 @@ def GetMimeTypeIfStaticFile(config, filename):
   return None
 
 
+def LookupErrorBlob(config, filename):
+  """Looks up the mime type and error_code for 'filename'.
+
+  Uses the error handlers in 'config' to determine if the file should
+  be treated as an error blob.
+
+  Args:
+    config: The app.yaml object to check the filename against.
+    filename: The name of the file.
+
+  Returns:
+
+    A tuple of (mime_type, error_code), or (None, None) if this is not an error
+    blob.  For example, ('text/plain', default) or ('image/gif', timeout) or
+    (None, None).
+  """
+  if not config.error_handlers:
+    return (None, None)
+  for error_handler in config.error_handlers:
+    if error_handler.file == filename:
+      error_code = error_handler.error_code
+      if not error_code:
+        error_code = 'default'
+      if error_handler.mime_type is not None:
+        return (error_handler.mime_type, error_code)
+      else:
+        guess = mimetypes.guess_type(filename)[0]
+        if guess is None:
+          default = 'application/octet-stream'
+          print >>sys.stderr, ('Could not guess mimetype for %s.  Using %s.'
+                               % (filename, default))
+          return (default, error_code)
+        return (guess, error_code)
+  return (None, None)
+
+
 def BuildClonePostBody(file_tuples):
-  """Build the post body for the /api/clone{files,blobs} urls.
+  """Build the post body for the /api/clone{files,blobs,errorblobs} urls.
 
   Args:
     file_tuples: A list of tuples.  Each tuple should contain the entries
@@ -616,6 +652,28 @@ class DosEntryUpload(object):
                      app_id=self.config.application,
                      version=self.config.version,
                      payload=self.dos.ToYAML())
+
+
+class DefaultVersionSet(object):
+  """Provides facilities to set the default (serving) version."""
+
+  def __init__(self, server, config):
+    """Creates a new DefaultVersionSet.
+
+    Args:
+      server: The RPC server to use. Should be an instance of a subclass of
+        AbstractRpcServer.
+      config: The AppInfoExternal object derived from the app.yaml file.
+    """
+    self.server = server
+    self.config = config
+
+  def SetVersion(self):
+    """Sets the default version."""
+    StatusUpdate('Setting default version to %s.' % (self.config.version,))
+    self.server.Send('/api/appversion/setdefault',
+                     app_id=self.config.application,
+                     version=self.config.version)
 
 
 class IndexOperation(object):
@@ -1100,13 +1158,13 @@ class UploadBatcher(object):
     """Constructor.
 
     Args:
-      what: Either 'file' or 'blob' indicating what kind of objects
-        this batcher uploads.  Used in messages and URLs.
+      what: Either 'file' or 'blob' or 'errorblob' indicating what kind of
+        objects this batcher uploads.  Used in messages and URLs.
       app_id: The application ID.
       version: The application version string.
       server: The RPC server.
     """
-    assert what in ('file', 'blob'), repr(what)
+    assert what in ('file', 'blob', 'errorblob'), repr(what)
     self.what = what
     self.app_id = app_id
     self.version = version
@@ -1264,7 +1322,9 @@ class AppVersionUpload(object):
     self.config = config
     self.app_id = self.config.application
     self.version = self.config.version
+
     self.files = {}
+
     self.in_transaction = False
     self.deployed = False
     self.batching = True
@@ -1272,6 +1332,8 @@ class AppVersionUpload(object):
                                       self.server)
     self.blob_batcher = UploadBatcher('blob', self.app_id, self.version,
                                       self.server)
+    self.errorblob_batcher = UploadBatcher('errorblob', self.app_id,
+                                           self.version, self.server)
 
   def AddFile(self, path, file_handle):
     """Adds the provided file to the list to be pushed to the server.
@@ -1312,11 +1374,21 @@ class AppVersionUpload(object):
 
     files_to_clone = []
     blobs_to_clone = []
+    errorblobs = {}
     for path, content_hash in self.files.iteritems():
+      match_found = False
+
       mime_type = GetMimeTypeIfStaticFile(self.config, path)
       if mime_type is not None:
         blobs_to_clone.append((path, content_hash, mime_type))
-      else:
+        match_found = True
+
+      (mime_type, error_code) = LookupErrorBlob(self.config, path)
+      if mime_type is not None:
+        errorblobs[path] = content_hash
+        match_found = True
+
+      if not match_found:
         files_to_clone.append((path, content_hash))
 
     files_to_upload = {}
@@ -1351,6 +1423,8 @@ class AppVersionUpload(object):
 
     logging.debug('Files to upload: %s', files_to_upload)
 
+    for (path, content_hash) in errorblobs.iteritems():
+      files_to_upload[path] = content_hash
     self.files = files_to_upload
     return sorted(files_to_upload.iterkeys())
 
@@ -1373,12 +1447,22 @@ class AppVersionUpload(object):
                      % path)
 
     del self.files[path]
+
+    match_found = False
     mime_type = GetMimeTypeIfStaticFile(self.config, path)
     payload = file_handle.read()
-    if mime_type is None:
-      self.file_batcher.AddToBatch(path, payload, mime_type)
-    else:
+    if mime_type is not None:
       self.blob_batcher.AddToBatch(path, payload, mime_type)
+      match_found = True
+
+    (mime_type, error_code) = LookupErrorBlob(self.config, path)
+    if mime_type is not None:
+      self.errorblob_batcher.AddToBatch(error_code, payload, mime_type)
+      match_found = True
+
+    if not match_found:
+      self.file_batcher.AddToBatch(path, payload, None)
+
 
   def Precompile(self):
     """Handle bytecode precompilation."""
@@ -1553,6 +1637,7 @@ class AppVersionUpload(object):
                          (num_files, len(missing_files)))
         self.file_batcher.Flush()
         self.blob_batcher.Flush()
+        self.errorblob_batcher.Flush()
         StatusUpdate('Uploaded %d files and blobs' % num_files)
 
       if (self.config.derived_file_type and
@@ -2208,6 +2293,17 @@ class AppCfgApp(object):
     appversion.in_transaction = True
     appversion.Rollback()
 
+  def SetDefaultVersion(self):
+    """Sets the default version."""
+    if len(self.args) != 1:
+      self.parser.error('Expected a single <directory> argument.')
+
+    basepath = self.args[0]
+    appyaml = self._ParseAppYaml(basepath)
+
+    version_setter = DefaultVersionSet(self._GetRpcServer(), appyaml)
+    version_setter.SetVersion()
+
   def RequestLogs(self):
     """Write request logs to a file."""
     if len(self.args) != 2:
@@ -2406,9 +2502,8 @@ class AppCfgApp(object):
       self.options.debug = True
 
   def _MakeLoaderArgs(self):
-    return dict([(arg_name, getattr(self.options, arg_name, None)) for
+    args = dict([(arg_name, getattr(self.options, arg_name, None)) for
                  arg_name in (
-                     'app_id',
                      'url',
                      'filename',
                      'batch_size',
@@ -2436,6 +2531,8 @@ class AppCfgApp(object):
                      'namespace',
                      'create_config',
                      )])
+    args['application'] = self.options.app_id
+    return args
 
   def PerformDownload(self, run_fn=None):
     """Performs a datastore download via the bulkloader.
@@ -2546,6 +2643,9 @@ class AppCfgApp(object):
     parser.add_option('--dry_run', action='store_true',
                       dest='dry_run', default=False,
                       help='Do not execute any remote_api calls')
+    parser.add_option('--namespace', type='string', dest='namespace',
+                      action='store', default='',
+                      help='Namespace to use when accessing datastore.')
 
   def _PerformUploadOptions(self, parser):
     """Adds 'upload_data' specific options to the 'parser' passed in.
@@ -2744,6 +2844,15 @@ file as CSV or developer defined format."""),
           long_desc="""
 The 'create_bulkloader_config' command creates a bulkloader.yaml configuration
 template for use with upload_data or download_data."""),
+
+      'set_default_version': Action(
+          function='SetDefaultVersion',
+          usage='%prog [options] set_default_version <directory>',
+          short_desc='Set the default (serving) version.',
+          long_desc="""
+The 'set_default_version' command sets the default (serving) version of the app.
+Defaults to using the version specified in app.yaml; use the --version flag to
+override this."""),
 
 
 

@@ -1,6 +1,6 @@
 {% load nonce avatar vcard actor format %}
 
-{% if actor_tiles_count %}
+{% if actor_contact_count %}
   <ul class="float">
     {% for actor in actor_tiles %}
       <li id="tooltip_{{actor.nick}}" class="vcard{{actor.my_follower|yesno:" follower,"}}{{actor.my_contact|yesno:" contact,"}}{% cycle ' clear' '' ''%}">

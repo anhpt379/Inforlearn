@@ -2,7 +2,7 @@
 <div id="channels" class='contacts'>
   {% ifequal request.user.nick view.nick %}
     <h2>Nhóm ({{ channels_count }})</h2>
-    <a href="{% url channel.views.channel_index %}" class="edit">Quản lý</a>
+    <a href="http://{{DOMAIN}}/channel" class="edit">Quản lý</a>
   {% else %}
     <h2>Nhóm {{view.display_nick}} tham gia ({{channels_count}})</h2>
   {% endifequal %}

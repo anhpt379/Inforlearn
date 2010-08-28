@@ -12,6 +12,7 @@ class DomainMiddleware(object):
 
     host = request.get_host()
     request.mobile = False
+    request.subdomain = ''
 
     check_url = '%s%s (secure: %s)' % (host,
                                        request.get_full_path(),

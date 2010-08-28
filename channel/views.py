@@ -147,24 +147,32 @@ def channel_index(request, format='html'):
 
 
 def channel_recommendation_list(request, format="html"):
-  current_channels = api.actor_get_channels_member(request.user, request.user.nick, limit=1000)
-  users = api.get_recommended_items(request.user.nick, "user:users")  
-  recommended_channels = []
-  for user in users:
-    _channels = api._actor_get_channels(user[1])
-    for channel in _channels:
-      if channel not in current_channels:
-        channel_details = api.get_actor_details(channel)
-        if not channel_details:
-          continue
-        recommended_channels.append({"rank": channel_details.rank, 
-                                     "details": channel_details})
-        
-  # TODO: find other way to sort for more clear and simple
-  # TODO: "Xem thêm" sẽ hiển thị toàn bộ danh sách gợi ý này, còn toàn bộ 
-  recommended_channels.sort(key=itemgetter("rank"), reverse=True)
-  actors = [x["details"] for x in recommended_channels[:20]]
-  
+  if request.user:
+    current_channels = api.actor_get_channels_member(request.user, request.user.nick, limit=1000)
+    users = api.get_recommended_items(request.user.nick, "user:users")  
+    recommended_channels = []
+    for user in users:
+      _channels = api._actor_get_channels(user[1])
+      for channel in _channels:
+        if channel not in current_channels:
+          channel_details = api.get_actor_details(channel)
+          if not channel_details:
+            continue
+          recommended_channels.append({"rank": channel_details.rank, 
+                                       "details": channel_details})
+          
+    # TODO: find other way to sort for more clear and simple
+    # TODO: "Xem thêm" sẽ hiển thị toàn bộ danh sách gợi ý này, còn toàn bộ 
+    recommended_channels.sort(key=itemgetter("rank"), reverse=True)
+    actors = [x["details"] for x in recommended_channels[:20]]
+  else:
+    actors = [] 
+    for channel in DEFAULT_OURPICKS_CHANNELS:
+      try:
+        actors.append(api.get_actor_details(channel))
+      except AttributeError:
+        pass
+    
   channels = api.channel_browse(request.user, 5) # top channels
   
   area = 'channel'

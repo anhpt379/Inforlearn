@@ -2919,7 +2919,7 @@ div#content div.bottom div.body div.contacts {
 }
 
 div.contacts ul.float li p.foot a.remove, div#current-stream a.confirm-spam, div#comments ul li a.confirm-spam {
-  background: transparent url(..http://{{COOKIELESS_DOMAIN}}/images/remove.gif) no-repeat 0 50%;
+  background: transparent url(http://{{COOKIELESS_DOMAIN}}/images/remove.gif) no-repeat 0 50%;
   padding-left: 12px;
 }
 

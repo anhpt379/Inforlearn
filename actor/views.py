@@ -233,6 +233,8 @@ def actor_invite(request, nick, format='html'):
     whose = u'bạn'
   else:
     whose = "%s's" % view.display_nick()
+    
+  page = 'invite'
 
   c = template.RequestContext(request, locals())
 
@@ -591,11 +593,35 @@ def actor_contacts(request, nick=None, format='html'):
   actors = dict([(k, v) for k, v in actors.iteritems() if v])
   per_page = per_page - (len(contact_nicks) - len(actors))
 
+
+  follower_nicks = api.actor_get_followers(request.user,
+                                           view.nick,
+                                           limit=(per_page + 1),
+                                           offset=offset)
+  followers = api.actor_get_actors(request.user, follower_nicks)
+  # clear deleted actors
+  followers = dict([(k, v) for k, v in followers.iteritems() if v])
+
+  _users = api.get_recommended_items(nick, "user:users")
+  users = []
+  if _users is not None:
+    for user in _users:
+      if user[1] not in contact_nicks:
+        details = api.get_actor_details(user[1])
+        if details:
+          users.append(details)
+    
+  actor_recommended_users_count = len(users) 
+
   # TODO(termie): incorporate this into paging so we only fetch the range
   #               on this page
   # add some extra info so we can let the user do contextual actions
   # on these homeboys
   if request.user and request.user.nick == view.nick:
+    for actor in list(followers):
+      if api.actor_is_contact(request.user, view.nick, actor):
+#        actors[actor].my_contact = True
+        followers.pop(actor)
     # looking at self, find out who of these people follow me so
     # I can highlight them
     for actor in actors:
@@ -621,13 +647,16 @@ def actor_contacts(request, nick=None, format='html'):
   # here comes lots of munging data into shape
   actor_tiles = [actors[x] for x in contact_nicks if x in actors]
 
-  actor_tiles_count = view.extra.get('contact_count', 0)
+#  c = view.extra.get('contact_count', 0)
+  actor_contact_count = view.extra.get("contact_count", 0)
+  actor_follower_count = len(followers)
   actor_tiles, actor_tiles_more = util.page_actors(request,
                                                    actor_tiles,
                                                    per_page)
 
   area = 'people'
-
+  page = 'contacts'
+  
   c = template.RequestContext(request, locals())
 
   if format == 'html':
@@ -651,13 +680,11 @@ def actor_followers(request, nick=None, format='html'):
     raise exception.UserDoesNotExistError(nick, request.user)
 
   if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
-      + request.META.get("PATH_INFO")        \
+    s = str(request.COOKIES.get('username'))      \
+      + request.META.get("PATH_INFO")  \
       + request.META.get("QUERY_STRING")
   else:
-    s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
+    s = str(request.COOKIES.get('username'))      \
       + request.META.get("PATH_INFO")
   key_name = "html:%s" % s.strip()
   
@@ -706,12 +733,29 @@ def actor_followers(request, nick=None, format='html'):
   # here comes lots of munging data into shape
   actor_tiles = [actors[x] for x in follower_nicks if x in actors]
 
-  actor_tiles_count = len(actors)
+  actor_follower_count = len(actors)
+  actor_contact_count = view.extra.get("contact_count", 0)
+#  actor_follower_count = view.extra.get("follower_count", 0)
+  
   actor_tiles, actor_tiles_more = util.page_actors(request,
                                                    actor_tiles,
                                                    per_page)
+  
+  contact_nicks = api.actor_get_contacts(request.user, view.nick,
+                                         limit=1000)
+  _users = api.get_recommended_items(nick, "user:users")
+  users = []
+  if _users is not None:
+    for user in _users:
+      if user[1] not in contact_nicks:
+        details = api.get_actor_details(user[1])
+        if details:
+          users.append(details)
+    
+  actor_recommended_users_count = len(users) 
 
   area = 'people'
+  page = 'followers'
 
   c = template.RequestContext(request, locals())
 
@@ -744,20 +788,39 @@ def recommended_users(request, nick=None, format="html"):
     whose = view.display_nick()
 
   area = 'people'
+  page = 'recommended_users'
 
+  contact_nicks = api.actor_get_contacts(request.user, view.nick,
+                                         limit=1000)
+  actor_nicks = contact_nicks
+  actors = api.actor_get_actors(request.user, actor_nicks)
+  # clear deleted actors
+  actors = dict([(k, v) for k, v in actors.iteritems() if v])
+
+
+  follower_nicks = api.actor_get_followers(request.user,
+                                           view.nick,
+                                           limit=1000)
+  followers = api.actor_get_actors(request.user, follower_nicks)
+  # clear deleted actors
+  followers = dict([(k, v) for k, v in followers.iteritems() if v])
+  
+  actor_follower_count = len(followers)
+  actor_contact_count = len(actors)
+  
 #  nick = nick.split("@")[0] + "@inforlearn.appspot.com"
   contacts = api.actor_get_contacts(request.user, request.user.nick, limit=1000)
 
   _users = api.get_recommended_items(nick, "user:users")
+  users = []
   if _users is not None:
-    users = []
     for user in _users:
       if user[1] not in contacts:
         details = api.get_actor_details(user[1])
         if details:
           users.append(details)
     
-    actor_tiles_count = len(users) 
+  actor_recommended_users_count = len(users) 
   
   c = template.RequestContext(request, locals())
 

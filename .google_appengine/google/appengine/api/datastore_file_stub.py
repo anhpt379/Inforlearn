@@ -132,8 +132,6 @@ class _Cursor(object):
   Class attributes:
     _next_cursor: the next cursor to allocate
     _next_cursor_lock: protects _next_cursor
-    _offset: the internal index for where we are in the results
-    _limit: the limit on the original query, used to track remaining results
   """
   _next_cursor = 1
   _next_cursor_lock = threading.Lock()
@@ -150,39 +148,37 @@ class _Cursor(object):
         follows sort order as specified by the query
     """
 
-    offset = 0
-    cursor_entity = None
     if query.has_compiled_cursor() and query.compiled_cursor().position_list():
-      (cursor_entity, inclusive) = self._DecodeCompiledCursor(
+      (self.__last_result, inclusive) = self._DecodeCompiledCursor(
           query, query.compiled_cursor())
-      offset += _Cursor._GetCursorOffset(results, cursor_entity, inclusive,
-                                         order_compare_entities)
-
-    if query.has_offset():
-      offset += query.offset()
-
-    if offset > 0 and results:
-      self.__last_result = results[min(len(results), offset) - 1]
+      start_cursor_position = _Cursor._GetCursorOffset(results,
+                                                       self.__last_result,
+                                                       inclusive,
+                                                       order_compare_entities)
     else:
-      self.__last_result = cursor_entity
+      self.__last_result = None
+      start_cursor_position = 0
 
-    last_index = None
     if query.has_end_compiled_cursor():
-      (cursor_entity, inclusive) = self._DecodeCompiledCursor(
+      (end_cursor_entity, inclusive) = self._DecodeCompiledCursor(
           query, query.end_compiled_cursor())
-      last_index = _Cursor._GetCursorOffset(results,
-                                            cursor_entity,
-                                            inclusive,
-                                            order_compare_entities)
+      end_cursor_position = _Cursor._GetCursorOffset(results,
+                                                     end_cursor_entity,
+                                                     inclusive,
+                                                     order_compare_entities)
+    else:
+      end_cursor_position = len(results)
+
+    results = results[start_cursor_position:end_cursor_position]
 
     if query.has_limit():
-      if last_index is None:
-        last_index = query.limit() + offset
-      else:
-        last_index = min(last_index, query.limit() + offset)
+      limit = query.limit()
+      if query.offset():
+        limit += query.offset()
+      if limit > 0 and limit < len(results):
+        results = results[:limit]
 
-    self.__results = results[offset:last_index]
-
+    self.__results = results
     self.__query = query
     self.__offset = 0
 
@@ -289,6 +285,27 @@ class _Cursor(object):
 
     return query_info
 
+  def _MinimalEntityInfo(self, entity_proto, query):
+    """Extract the minimal set of information that preserves entity order.
+
+    Args:
+      entity_proto: datastore_pb.EntityProto instance from which to extract
+      information
+      query: datastore_pb.Query instance for which ordering must be preserved.
+
+    Returns:
+      datastore_pb.EntityProto instance suitable for matching against a list of
+      results when finding cursor positions.
+    """
+    entity_info = datastore_pb.EntityProto();
+    order_names = [o.property() for o in query.order_list()]
+    entity_info.mutable_key().MergeFrom(entity_proto.key())
+    entity_info.mutable_entity_group().MergeFrom(entity_proto.entity_group())
+    for prop in entity_proto.property_list():
+      if prop.name() in order_names:
+        entity_info.add_property().MergeFrom(prop)
+    return entity_info;
+
   def _DecodeCompiledCursor(self, query, compiled_cursor):
     """Converts a compiled_cursor into a cursor_entity.
 
@@ -317,39 +334,45 @@ class _Cursor(object):
       query: the datastore_pb.Query this cursor is related to
       compiled_cursor: an empty datstore_pb.CompiledCursor
     """
-    if self.__last_result:
+    if self.__last_result is not None:
       position = compiled_cursor.add_position()
       query_info = self._MinimalQueryInfo(query)
+      entity_info = self._MinimalEntityInfo(self.__last_result.ToPb(), query)
       start_key = _CURSOR_CONCAT_STR.join((
           query_info.Encode(),
-          self.__last_result.ToPb().Encode()))
+          entity_info.Encode()))
       position.set_start_key(str(start_key))
       position.set_start_inclusive(False)
 
-  def PopulateQueryResult(self, result, count, compile=False):
+  def PopulateQueryResult(self, result, count, offset, compile=False):
     """Populates a QueryResult with this cursor and the given number of results.
 
     Args:
       result: datastore_pb.QueryResult
       count: integer of how many results to return
+      offset: integer of how many results to skip
       compile: boolean, whether we are compiling this query
     """
-    if count > _MAXIMUM_RESULTS:
-      count = _MAXIMUM_RESULTS
+    offset = min(offset, self.count - self.__offset)
+    limited_offset = min(offset, _MAX_QUERY_OFFSET)
+    if limited_offset:
+      self.__offset += limited_offset
+      result.set_skipped_results(limited_offset)
+
+    if offset == limited_offset and count:
+      if count > _MAXIMUM_RESULTS:
+        count = _MAXIMUM_RESULTS
+      results = self.__results[self.__offset:self.__offset + count]
+      count = len(results)
+      self.__offset += count
+      result.result_list().extend(r._ToPb() for r in results)
+
+    if self.__offset:
+      self.__last_result = self.__results[self.__offset - 1]
 
     result.mutable_cursor().set_app(self.app)
     result.mutable_cursor().set_cursor(self.cursor)
     result.set_keys_only(self.keys_only)
-
-    results = self.__results[self.__offset:self.__offset + count]
-    count = len(results)
-    if count:
-      self.__offset += count
-      self.__last_result = results[count - 1]
-
-    results_pbs = [r._ToPb() for r in results]
-    result.result_list().extend(results_pbs)
-
     result.set_more_results(self.__offset < self.count)
     if compile:
       self._EncodeCompiledCursor(
@@ -743,6 +766,8 @@ class DatastoreFileStub(apiproxy_stub.APIProxyStub):
 
     put_response.key_list().extend([c.key() for c in clones])
 
+  def _Dynamic_Touch(self, get_request, get_response):
+    pass
 
   def _Dynamic_Get(self, get_request, get_response):
     if get_request.has_transaction():
@@ -803,10 +828,6 @@ class DatastoreFileStub(apiproxy_stub.APIProxyStub):
     app_id = query.app()
     namespace = query.name_space()
     self.__ValidateAppId(app_id)
-
-    if query.has_offset() and query.offset() > _MAX_QUERY_OFFSET:
-      raise apiproxy_errors.ApplicationError(
-          datastore_pb.Error.BAD_REQUEST, 'Too big query offset.')
 
     num_components = len(query.filter_list()) + len(query.order_list())
     if query.has_ancestor():
@@ -1008,6 +1029,8 @@ class DatastoreFileStub(apiproxy_stub.APIProxyStub):
     clone = datastore_pb.Query()
     clone.CopyFrom(query)
     clone.clear_hint()
+    clone.clear_limit()
+    clone.clear_offset()
     if clone in self.__query_history:
       self.__query_history[clone] += 1
     else:
@@ -1023,7 +1046,8 @@ class DatastoreFileStub(apiproxy_stub.APIProxyStub):
     else:
       count = _BATCH_SIZE
 
-    cursor.PopulateQueryResult(query_result, count, compile=query.compile())
+    cursor.PopulateQueryResult(query_result, count,
+                               query.offset(), compile=query.compile())
 
     if query.compile():
       compiled_query = query_result.mutable_compiled_query()
@@ -1046,7 +1070,9 @@ class DatastoreFileStub(apiproxy_stub.APIProxyStub):
     count = _BATCH_SIZE
     if next_request.has_count():
       count = next_request.count()
-    cursor.PopulateQueryResult(query_result, count)
+    cursor.PopulateQueryResult(query_result,
+                               count, next_request.offset(),
+                               next_request.compile())
 
   def _Dynamic_Count(self, query, integer64proto):
     query_result = datastore_pb.QueryResult()
@@ -1204,17 +1230,22 @@ class DatastoreFileStub(apiproxy_stub.APIProxyStub):
 
   def _Dynamic_AllocateIds(self, allocate_ids_request, allocate_ids_response):
     model_key = allocate_ids_request.model_key()
-    size = allocate_ids_request.size()
 
     self.__ValidateAppId(model_key.app())
 
+    if allocate_ids_request.has_size() and allocate_ids_request.has_max():
+      raise apiproxy_errors.ApplicationError(datastore_pb.Error.BAD_REQUEST,
+                                             'Both size and max cannot be set.')
     try:
       self.__id_lock.acquire()
       start = self.__next_id
-      self.__next_id += size
+      if allocate_ids_request.has_size():
+        self.__next_id += allocate_ids_request.size()
+      elif allocate_ids_request.has_max():
+        self.__next_id = max(self.__next_id, allocate_ids_request.max() + 1)
       end = self.__next_id - 1
     finally:
-     self.__id_lock.release()
+      self.__id_lock.release()
 
     allocate_ids_response.set_start(start)
     allocate_ids_response.set_end(end)
@@ -1259,7 +1290,8 @@ class DatastoreFileStub(apiproxy_stub.APIProxyStub):
       raise apiproxy_errors.ApplicationError(datastore_pb.Error.BAD_REQUEST,
                                              "Index doesn't exist.")
     elif (index.state() != stored_index.state() and
-          index.state() not in self._INDEX_STATE_TRANSITIONS[stored_index.state()]):
+          index.state() not in self._INDEX_STATE_TRANSITIONS[
+              stored_index.state()]):
       raise apiproxy_errors.ApplicationError(
         datastore_pb.Error.BAD_REQUEST,
         "cannot move index state from %s to %s" %

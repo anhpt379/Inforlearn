@@ -41,7 +41,7 @@ _FILES_REGEX = r'(?!\^).*(?!\$).'
 _DELTA_REGEX = r'([0-9]+)([DdHhMm]|[sS]?)'
 _EXPIRATION_REGEX = r'\s*(%s)(\s+%s)*\s*' % (_DELTA_REGEX, _DELTA_REGEX)
 
-_SERVICE_RE_STRING = r'(mail|xmpp_message|rest)'
+_SERVICE_RE_STRING = r'(mail|xmpp_message|rest|warmup)'
 
 _PAGE_NAME_REGEX = r'^.+$'
 
@@ -129,9 +129,14 @@ DERIVED_FILE_TYPE = 'derived_file_type'
 JAVA_PRECOMPILED = 'java_precompiled'
 PYTHON_PRECOMPILED = 'python_precompiled'
 ADMIN_CONSOLE = 'admin_console'
+ERROR_HANDLERS = 'error_handlers'
 
 PAGES = 'pages'
 NAME = 'name'
+
+ERROR_CODE = 'error_code'
+FILE = 'file'
+_ERROR_CODE_REGEX = r'(default|over_quota|dos_api_denial|timeout)'
 
 
 class URLMap(validation.Validated):
@@ -337,6 +342,17 @@ class AdminConsole(validation.Validated):
   }
 
 
+
+class ErrorHandlers(validation.Validated):
+  """Class representing error handler directives in application info.
+  """
+  ATTRIBUTES = {
+      ERROR_CODE: validation.Optional(_ERROR_CODE_REGEX),
+      FILE: _FILES_REGEX,
+      MIME_TYPE: validation.Optional(str),
+  }
+
+
 class AppInfoExternal(validation.Validated):
   """Class representing users application info.
 
@@ -377,6 +393,7 @@ class AppInfoExternal(validation.Validated):
       DERIVED_FILE_TYPE: validation.Optional(validation.Repeated(
           validation.Options(JAVA_PRECOMPILED, PYTHON_PRECOMPILED))),
       ADMIN_CONSOLE: validation.Optional(AdminConsole),
+      ERROR_HANDLERS: validation.Optional(validation.Repeated(ErrorHandlers)),
   }
 
   def CheckInitialized(self):

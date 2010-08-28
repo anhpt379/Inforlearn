@@ -72,6 +72,9 @@ datastore_pb.Cursor.__hash__ = lambda self: hash(self.Encode())
 _MAXIMUM_RESULTS = 1000
 
 
+_MAX_QUERY_OFFSET = 1000
+
+
 _MAX_QUERY_COMPONENTS = 63
 
 
@@ -172,7 +175,7 @@ class QueryCursor(object):
     self.__cursor = db_cursor
     self.__seen = set()
 
-    self.__position = ''
+    self.__position = ('', '')
 
     self.__next_result = (None, None)
 
@@ -205,7 +208,7 @@ class QueryCursor(object):
       cc: The compiled cursor to fill out.
     """
     position = cc.add_position()
-    position.set_start_key(self.__position)
+    position.set_start_key(self.__position[0])
 
   def _GetResult(self):
     """Returns the next result from the result set, without deduplication.
@@ -213,6 +216,9 @@ class QueryCursor(object):
     Returns:
       (path, value): The path and value of the next result.
     """
+    if self.__position[1]:
+      self.__position = (self.__position[1], None)
+
     if not self.__cursor:
       return None, None
     row = self.__cursor.fetchone()
@@ -226,7 +232,7 @@ class QueryCursor(object):
       self.__cursor = None
       return None, None
 
-    self.__position = position
+    self.__position = (self.__position[0], position)
     return path, data
 
   def _Next(self):
@@ -235,25 +241,39 @@ class QueryCursor(object):
     Returns:
       A datastore_pb.EntityProto instance.
     """
-    entity = None
-    path, data = self.__next_result
-    self.__next_result = None, None
-    while self.__cursor and not entity:
-      if path and path not in self.__seen:
-        self.__seen.add(path)
-        entity = entity_pb.EntityProto(data)
-      else:
-        path, data = self._GetResult()
-    return entity
+    if self._HasNext():
+      self.__seen.add(self.__next_result[0])
+      entity = entity_pb.EntityProto(self.__next_result[1])
+      self.__next_result = None, None
+      return entity
+    return None
+
+  def _HasNext(self):
+    """Prefetches the next result and returns true if successful
+
+    Returns:
+      A boolean that indicates if there are more results.
+    """
+    while self.__cursor and (
+        not self.__next_result[0] or self.__next_result[0] in self.__seen):
+      self.__next_result = self._GetResult()
+    if self.__next_result[0]:
+      return True
+    return False
 
   def Skip(self, count):
     """Skips the specified number of unique results.
 
     Args:
       count: Number of results to skip.
+
+    Returns:
+      A number indicating how many results where actually skipped.
     """
-    for unused_i in xrange(count):
-      self._Next()
+    for i in xrange(count):
+      if not self._Next():
+        return i
+    return count
 
   def ResumeFromCompiledCursor(self, cc):
     """Resumes a query from a compiled cursor.
@@ -265,35 +285,41 @@ class QueryCursor(object):
     target_position = cc.position(0).start_key()
     if (self.__query.has_end_compiled_cursor() and target_position >=
         self.__query.end_compiled_cursor().position(0).start_key()):
-      self.__position = target_position
+      self.__position = (target_position, target_position)
       self.__cursor = None
       return
 
-    while self.__position <= target_position and self.__cursor:
+    while self.__position[1] <= target_position and self.__cursor:
       self.__next_result = self._GetResult()
 
-  def PopulateQueryResult(self, count, result):
+  def PopulateQueryResult(self, count, offset, result):
     """Populates a QueryResult PB with results from the cursor.
 
     Args:
       count: The number of results to retrieve.
+      offset: The number of results to skip
       result: out: A query_result PB.
     """
-    if count > _MAXIMUM_RESULTS:
-      count = _MAXIMUM_RESULTS
+
+    limited_offset = min(offset, _MAX_QUERY_OFFSET)
+    if limited_offset:
+      result.set_skipped_results(self.Skip(limited_offset))
+
+    if offset == limited_offset:
+      if count > _MAXIMUM_RESULTS:
+        count = _MAXIMUM_RESULTS
+
+      result_list = result.result_list()
+      while len(result_list) < count:
+        if self.limit is not None and len(self.__seen) >= self.limit:
+          break
+        entity = self._Next()
+        if entity is None:
+          break
+        result_list.append(entity)
 
     result.set_keys_only(self.__query.keys_only())
-
-    result_list = result.result_list()
-    while len(result_list) < count:
-      if self.limit is not None and len(self.__seen) >= self.limit:
-        break
-      entity = self._Next()
-      if entity is None:
-        break
-      result_list.append(entity)
-
-    result.set_more_results(len(result_list) == count)
+    result.set_more_results(self._HasNext())
     self._EncodeCompiledCursor(result.mutable_compiled_cursor())
 
 
@@ -728,35 +754,56 @@ class DatastoreSqliteStub(apiproxy_stub.APIProxyStub):
           'INSERT INTO "%s!EntitiesByProperty" VALUES (?, ?, ?, ?)' % prefix,
           RowGenerator(group))
 
-  def __AllocateIds(self, conn, prefix, size):
+  def __AllocateIds(self, conn, prefix, size=None, max=None):
     """Allocates IDs.
 
     Args:
       conn: An Sqlite connection object.
       prefix: A table namespace prefix.
       size: Number of IDs to allocate.
+      max: Upper bound of IDs to allocate
+
     Returns:
       int: The beginning of a range of size IDs
     """
     self.__id_lock.acquire()
-    next_id, block_size = self.__id_map.get(prefix, (0, 0))
-    if size >= block_size:
-      block_size = max(1000, size)
-      c = conn.execute(
-          'UPDATE IdSeq SET next_id = next_id + ? WHERE prefix = ?',
-          (block_size, prefix))
-      assert c.rowcount == 1
+    ret = None
+    if size is not None:
+      assert size > 0
+      next_id, block_size = self.__id_map.get(prefix, (0, 0))
+      if not block_size:
+        block_size = (size / 1000 + 1) * 1000
+        c = conn.execute('SELECT next_id FROM IdSeq WHERE prefix = ? LIMIT 1',
+                         (prefix,))
+        next_id = c.fetchone()[0]
+        c = conn.execute(
+            'UPDATE IdSeq SET next_id = next_id + ? WHERE prefix = ?',
+            (block_size, prefix))
+        assert c.rowcount == 1
+
+      if size > block_size:
+        c = conn.execute('SELECT next_id FROM IdSeq WHERE prefix = ? LIMIT 1',
+                         (prefix,))
+        ret = c.fetchone()[0]
+        c = conn.execute(
+            'UPDATE IdSeq SET next_id = next_id + ? WHERE prefix = ?',
+            (size, prefix))
+        assert c.rowcount == 1
+      else:
+        ret = next_id;
+        next_id += size
+        block_size -= size
+        self.__id_map[prefix] = (next_id, block_size)
+    else:
       c = conn.execute('SELECT next_id FROM IdSeq WHERE prefix = ? LIMIT 1',
                        (prefix,))
-      next_id = c.fetchone()[0] - block_size
-
-    ret = next_id
-
-    next_id += size
-    block_size -= size
-    self.__id_map[prefix] = (next_id, block_size)
+      ret = c.fetchone()[0]
+      if max and max >= ret:
+        c = conn.execute(
+            'UPDATE IdSeq SET next_id = ? WHERE prefix = ?',
+            (max + 1, prefix))
+        assert c.rowcount == 1
     self.__id_lock.release()
-
     return ret
 
   def MakeSyncCall(self, service, call, request, response):
@@ -1196,8 +1243,6 @@ class DatastoreSqliteStub(apiproxy_stub.APIProxyStub):
     cursor = QueryCursor(query, db_cursor)
     if query.has_compiled_cursor() and query.compiled_cursor().position_size():
       cursor.ResumeFromCompiledCursor(query.compiled_cursor())
-    if query.has_offset():
-      cursor.Skip(query.offset())
 
     clone = datastore_pb.Query()
     clone.CopyFrom(query)
@@ -1230,7 +1275,7 @@ class DatastoreSqliteStub(apiproxy_stub.APIProxyStub):
       else:
         count = _BATCH_SIZE
 
-      cursor.PopulateQueryResult(count, query_result)
+      cursor.PopulateQueryResult(count, query.offset(), query_result)
       self.__cursors[cursor_pb] = cursor
     finally:
       self.__ReleaseConnection(conn, query.transaction())
@@ -1250,7 +1295,7 @@ class DatastoreSqliteStub(apiproxy_stub.APIProxyStub):
     count = _BATCH_SIZE
     if next_request.has_count():
       count = next_request.count()
-    cursor.PopulateQueryResult(count, query_result)
+    cursor.PopulateQueryResult(count, next_request.offset(), query_result)
 
   def _Dynamic_Count(self, query, integer64proto):
     if query.has_limit():
@@ -1405,15 +1450,30 @@ class DatastoreSqliteStub(apiproxy_stub.APIProxyStub):
 
   def _Dynamic_AllocateIds(self, allocate_ids_request, allocate_ids_response):
     conn = self.__GetConnection(None)
-
     model_key = allocate_ids_request.model_key()
-    size = allocate_ids_request.size()
-
     self.__ValidateAppId(model_key.app())
+    if allocate_ids_request.has_size() and allocate_ids_request.has_max():
+      raise apiproxy_errors.ApplicationError(datastore_pb.Error.BAD_REQUEST,
+                                             'Both size and max cannot be set.')
 
-    first_id = self.__AllocateIds(conn, self.__GetTablePrefix(model_key), size)
-    allocate_ids_response.set_start(first_id)
-    allocate_ids_response.set_end(first_id + size - 1)
+    if allocate_ids_request.has_size():
+      if allocate_ids_request.size() < 1:
+        raise apiproxy_errors.ApplicationError(datastore_pb.Error.BAD_REQUEST,
+                                               'Size must be greater than 0.')
+      first_id = self.__AllocateIds(conn, self.__GetTablePrefix(model_key),
+                                    size=allocate_ids_request.size())
+      allocate_ids_response.set_start(first_id)
+      allocate_ids_response.set_end(first_id + allocate_ids_request.size() - 1)
+    else:
+      if allocate_ids_request.max() < 0:
+        raise apiproxy_errors.ApplicationError(
+            datastore_pb.Error.BAD_REQUEST,
+            'Max must be greater than or equal to 0.')
+      first_id = self.__AllocateIds(conn, self.__GetTablePrefix(model_key),
+                                    max=allocate_ids_request.max())
+      allocate_ids_response.set_start(first_id)
+      allocate_ids_response.set_end(max(allocate_ids_request.max(),
+                                        first_id - 1))
 
     self.__ReleaseConnection(conn, None)
 

@@ -1,6 +1,6 @@
 {% load json %}
 {
-  "contact_count": {{actor_tiles_count|escapejson}},
+  "contact_count": {{actor_contact_count|escapejson}},
   "contacts": [
                 {% for actor_ref in actor_tiles %}
                   {% include 'common/templates/user.json' %}

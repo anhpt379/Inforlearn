@@ -20,7 +20,7 @@ Usage:
   %(arg0)s [flags]
 
     --debug                 Show debugging information. (Optional)
-    --app_id=<string>       Application ID of endpoint (Optional for
+    --application=<string>  Application ID of endpoint (Optional for
                             *.appspot.com)
     --auth_domain=<domain>  The auth domain to use for logging in and for
                             UserProperties. (Default: gmail.com)
@@ -271,10 +271,6 @@ class KeyRangeError(Error):
 
 class KindStatError(Error):
   """Unable to find kind stats for an all-kinds download."""
-
-
-class NameSpaceError(Error):
-  """Invalid namespace requested."""
 
 
 class FieldSizeLimitError(Error):
@@ -3115,7 +3111,7 @@ class BulkTransporterApp(object):
       progress_queue_factory: Used for dependency injection.
       thread_pool_factory: Used for dependency injection.
     """
-    self.app_id = arg_dict['app_id']
+    self.app_id = arg_dict['application']
     self.post_url = arg_dict['url']
     self.kind = arg_dict['kind']
     self.batch_size = arg_dict['batch_size']
@@ -3397,12 +3393,12 @@ INT_ARGS = ('bandwidth_limit', 'batch_size', 'http_limit', 'num_threads',
             'rps_limit')
 FILENAME_ARGS = ('config_file', 'db_filename', 'filename', 'log_file',
                  'result_db_filename')
-STRING_ARGS = ('app_id', 'auth_domain', 'email', 'exporter_opts', 'kind',
-               'loader_opts', 'mapper_opts', 'namespace', 'url')
-FLAG_SPEC = (['--csv_has_header', '--help'] +
+STRING_ARGS = ('application', 'auth_domain', 'email', 'exporter_opts',
+               'kind', 'loader_opts', 'mapper_opts', 'namespace', 'url')
+DEPRECATED_OPTIONS = {'csv_has_header': 'has_header', 'app_id': 'application'}
+FLAG_SPEC = (['csv_has_header', 'help', 'app_id='] +
              list(BOOL_ARGS) +
              [arg + '=' for arg in INT_ARGS + FILENAME_ARGS + STRING_ARGS])
-
 
 def ParseArguments(argv, die_fn=lambda: PrintUsageExit(1)):
   """Parses command-line arguments.
@@ -3434,7 +3430,7 @@ def ParseArguments(argv, die_fn=lambda: PrintUsageExit(1)):
   arg_dict['rps_limit'] = DEFAULT_RPS_LIMIT
   arg_dict['http_limit'] = DEFAULT_REQUEST_LIMIT
 
-  arg_dict['app_id'] = ''
+  arg_dict['application'] = ''
   arg_dict['auth_domain'] = 'gmail.com'
   arg_dict['create_config'] = False
   arg_dict['db_filename'] = None
@@ -3464,11 +3460,12 @@ def ParseArguments(argv, die_fn=lambda: PrintUsageExit(1)):
     if not option.startswith('--'):
       continue
     option = option[2:]
-    if option == 'csv_has_header':
-      print >>sys.stderr, ('--csv_has_header is deprecated, please use '
-                           '--has_header.')
-      arg_dict['has_header'] = True
-    elif option in BOOL_ARGS:
+    if option in DEPRECATED_OPTIONS:
+      print >>sys.stderr, ('--%s is deprecated, please use --%s.' %
+                           (option, DEPRECATED_OPTIONS[option]))
+      option = DEPRECATED_OPTIONS[option]
+
+    if option in BOOL_ARGS:
       arg_dict[option] = True
     elif option in INT_ARGS:
       arg_dict[option] = int(value)
@@ -3654,7 +3651,7 @@ def ProcessArguments(arg_dict,
   Returns:
     A dictionary of bulkloader options.
   """
-  app_id = GetArgument(arg_dict, 'app_id', die_fn)
+  application = GetArgument(arg_dict, 'application', die_fn)
   url = GetArgument(arg_dict, 'url', die_fn)
   dump = GetArgument(arg_dict, 'dump', die_fn)
   restore = GetArgument(arg_dict, 'restore', die_fn)
@@ -3717,17 +3714,17 @@ def ProcessArguments(arg_dict,
     except namespace_manager.BadValueError, msg:
       errors.append('namespace parameter %s' % msg)
 
-  if not app_id:
+  if not application:
     if url and url is not REQUIRED_OPTION:
       (unused_scheme, host_port, unused_url_path,
        unused_query, unused_fragment) = urlparse.urlsplit(url)
       suffix_idx = host_port.find('.appspot.com')
       if suffix_idx > -1:
-        arg_dict['app_id'] = host_port[:suffix_idx]
+        arg_dict['application'] = host_port[:suffix_idx]
       elif host_port.split(':')[0].endswith('google.com'):
-        arg_dict['app_id'] = host_port.split('.')[0]
+        arg_dict['application'] = host_port.split('.')[0]
       else:
-        errors.append('app_id argument required for non appspot.com domains')
+        errors.append('application argument required for non appspot.com domains')
 
   POSSIBLE_COMMANDS = ('create_config', 'download', 'dump', 'map', 'restore')
   commands = []
@@ -3768,7 +3765,7 @@ def _PerformBulkload(arg_dict,
   Raises:
     ConfigurationError: if inconsistent options are passed.
   """
-  app_id = arg_dict['app_id']
+  app_id = arg_dict['application']
   url = arg_dict['url']
   filename = arg_dict['filename']
   batch_size = arg_dict['batch_size']

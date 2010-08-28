@@ -366,7 +366,7 @@ class URLForNode(template.Node):
     try:
       actual_entity = self.entity.resolve(context)
       actual_request = self.request.resolve(context)
-
+      
       try:
         return actual_entity.url(request=actual_request)
       except AttributeError:

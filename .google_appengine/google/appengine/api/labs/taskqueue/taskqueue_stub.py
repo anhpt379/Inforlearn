@@ -312,7 +312,8 @@ class TaskQueueServiceStub(apiproxy_stub.APIProxyStub):
                service_name='taskqueue',
                root_path=None,
                auto_task_running=False,
-               task_retry_seconds=30):
+               task_retry_seconds=30,
+               _all_queues_valid=False):
     """Constructor.
 
     Args:
@@ -329,6 +330,7 @@ class TaskQueueServiceStub(apiproxy_stub.APIProxyStub):
     self._taskqueues = {}
     self._next_task_id = 1
     self._root_path = root_path
+    self._all_queues_valid = _all_queues_valid
 
     self._add_event = None
     self._auto_task_running = auto_task_running
@@ -337,7 +339,7 @@ class TaskQueueServiceStub(apiproxy_stub.APIProxyStub):
     self._app_queues = {}
 
   class _QueueDetails(taskqueue_service_pb.TaskQueueUpdateQueueRequest):
-    def __init__(self, paused=None):
+    def __init__(self, paused=False):
       self.paused = paused
 
   def _ChooseTaskName(self):
@@ -518,6 +520,8 @@ class TaskQueueServiceStub(apiproxy_stub.APIProxyStub):
     Returns:
       True iff queue is valid.
     """
+    if self._all_queues_valid:
+      return True
     if queue_name == DEFAULT_QUEUE_NAME or queue_name == CRON_QUEUE_NAME:
       return True
     queue_info = self.queue_yaml_parser(self._root_path)
@@ -819,7 +823,7 @@ class TaskQueueServiceStub(apiproxy_stub.APIProxyStub):
     task_store_key = (app_id, queue_name)
     if task_store_key not in admin_console_dummy_tasks:
       store = _DummyTaskStore()
-      if queue_name != CRON_QUEUE_NAME:
+      if not self._all_queues_valid and queue_name != CRON_QUEUE_NAME:
         store.Populate(random.randint(10, 100))
       admin_console_dummy_tasks[task_store_key] = store
     else:
@@ -950,5 +954,3 @@ class TaskQueueServiceStub(apiproxy_stub.APIProxyStub):
           taskqueue_service_pb.TaskQueueServiceError.INVALID_REQUEST)
 
     response.set_new_limit(request.limit())
-
-
