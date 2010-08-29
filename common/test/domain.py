@@ -4,9 +4,9 @@ from common.test import base
 from common.test import util
 
 class DomainTest(base.ViewTestCase):
-  domain = 'www.jaikuengine.com'
-  gae_domain = 'jaikuengine.appspot.com'
-  hosted_domain = 'jaikuengine.com'
+  domain = 'www.inforlearn.com'
+  gae_domain = 'inforlearn.appspot.com'
+  hosted_domain = 'inforlearn.com'
 
   def get_with_host(self, url, host, ssl=False):
     params = {'path': url,
@@ -56,7 +56,7 @@ class DomainTest(base.ViewTestCase):
   def test_hosted_domain_redirect(self):
     bad_hosts = ['www.somewhere.com',
                  'somewhere.com',
-                 'jaikuengine.com',
+                 'inforlearn.com',
                  self.gae_domain,
                  ]
     good_host = self.domain
@@ -111,7 +111,7 @@ class DomainTest(base.ViewTestCase):
   def test_hosted_domain_redirect_login_ssl(self):
     bad_hosts = ['www.somewhere.com',
                  'somewhere.com',
-                 'jaikuengine.com',
+                 'inforlearn.com',
                  ]
 
     good_host = self.gae_domain
@@ -158,7 +158,7 @@ class DomainTest(base.ViewTestCase):
   def test_hosted_domain_redirect_login(self):
     bad_hosts = ['www.somewhere.com',
                  'somewhere.com',
-                 'jaikuengine.com',
+                 'inforlearn.com',
                  self.gae_domain
                  ]
 
@@ -203,7 +203,7 @@ class DomainTest(base.ViewTestCase):
   def test_redirect(self):
     bad_hosts = ['www.somewhere.com',
                  'somewhere.com',
-                 'jaikuengine.com',
+                 'inforlearn.com',
                  self.domain,
                  ]
     good_host = self.gae_domain
@@ -258,7 +258,7 @@ class DomainTest(base.ViewTestCase):
   def test_redirect_login(self):
     bad_hosts = ['www.somewhere.com',
                  'somewhere.com',
-                 'jaikuengine.com',
+                 'inforlearn.com',
                  ]
 
     good_host = self.gae_domain
@@ -301,7 +301,7 @@ class DomainTest(base.ViewTestCase):
   def test_redirect_login_ssl(self):
     bad_hosts = ['www.somewhere.com',
                  'somewhere.com',
-                 'jaikuengine.com',
+                 'inforlearn.com',
                  ]
 
     good_host = self.gae_domain

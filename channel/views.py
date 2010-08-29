@@ -13,8 +13,6 @@ from common import util
 from common import views as common_views
 from operator import itemgetter
 from settings import DEFAULT_OURPICKS_CHANNELS
-#from cachepy import cachepy as cache
-from common.memcache import client as cache
 from common.slimmer import html_slimmer
 
 

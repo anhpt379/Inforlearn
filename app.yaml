@@ -71,6 +71,7 @@ handlers:
 
 - url: /themes
   static_dir: themes
+  expiration: "365d"
 
 - url: /favicon.ico
   static_files: static/favicon.ico

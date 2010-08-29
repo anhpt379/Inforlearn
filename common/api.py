@@ -11,7 +11,6 @@ except ImportError:
   import pickle
 
 import simplejson
-from hashlib import md5
 
 from django import template
 from django.conf import settings
@@ -884,8 +883,8 @@ def actor_get(api_user, nick):
 
     * nick - the nick of the actor
 
-      * Example - ``jaiku`` for ``jaiku`` user, or ``#jaiku``
-        for ``#jaiku`` channel
+      * Example - ``inforlearn`` for ``inforlearn`` user, or ``#inforlearn``
+        for ``#inforlearn`` channel
 
   RETURNS: an `actor_ref`_
 
@@ -2424,7 +2423,7 @@ def invite_request_email(api_user, nick, email):
 def login_forgot(api_user, nick_or_email):
   # This call should be made when the user is not logged in, so pass ROOT for
   # api_user to all subsequent calls.
-
+  
   if patterns.EMAIL_COMPILED.match(nick_or_email):
     # This is an email address.  
     # Does it map to a user? (confirmed email)

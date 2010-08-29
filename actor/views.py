@@ -19,7 +19,6 @@ from common import views as common_views
 #from cachepy import cachepy as cache
 from common.memcache import client as cache
 from common.slimmer import html_slimmer
-from hashlib import md5
 
 ENTRIES_PER_PAGE = 20
 CONTACTS_PER_PAGE = 48
@@ -823,7 +822,7 @@ def actor_settings(request, nick, page='index'):
 
   # TODO(tyler/termie):  This conflicts with the global settings import.
   # Also, this seems fishy.  Do none of the settings.* items work in templates?
-  import settings
+  from settings import FEEDS_ENABLED
 
   # TODO(tyler): Merge this into handle_view_action, if possible
   if 'password' in request.POST:
@@ -848,7 +847,7 @@ def actor_settings(request, nick, page='index'):
 
   if page == 'feeds':
     try:
-      if not settings.FEEDS_ENABLED:
+      if not FEEDS_ENABLED:
         raise exception.DisabledFeatureError('Feeds are currently disabled')
     except:
       exception.handle_exception(request)

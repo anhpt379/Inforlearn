@@ -58,14 +58,24 @@
       {% block mainnav %}
         <ul id="main-nav" style="margin-bottom: 0;">
                 <div id="site-logo">
-                <li>
-                  <span>
-                    <a href="http://{{DOMAIN}}/" style="color: #fafafa;background: #9C0;">
-                      <b>Inforlearn.com</b>
-                    </a>
-                  </span>
-                </li>
-             </div>  
+                  <li id="top_logo">
+                    <span>
+                      <a href="http://{{DOMAIN}}/" style="color: #fafafa;background: #9C0;">
+                        » inforlearn
+                      </a>
+                    </span>
+                  </li>
+                </div>
+                <script type="text/javascript">
+                  new Tip("top_logo", "<p style='text-align: left;'>Inforlearn được phát triển với mục tiêu kết nối các nguồn kiến thức và những người có cùng mối quan tâm để gặp gỡ, trao đổi và học hỏi lẫn nhau </p>", 
+                      {title: "Mạng học tập Inforlearn",
+                      stem: 'topLeft',
+                      hideOn: false,
+                      hideAfter: 0.25,
+                      delay: 0.5,
+                      closeButton: true,
+                      hook: {target: 'bottomMiddle', tip: 'topLeft'}});
+                 </script>  
           {% if request.user %} {# The logged-in navigation #}
             <li {% ifequal area "home" %}class="current"{% endifequal %} >
               <span><a href="{{request.user.url}}/overview">Nhà tôi</a></span>

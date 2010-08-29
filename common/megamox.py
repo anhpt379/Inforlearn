@@ -3,7 +3,7 @@ import mox
 import stubout
 
 
-# Some hacks to make Mox work a bit better with JaikuEngine tests
+# Some hacks to make Mox work a bit better with Inforlearn tests
 
 
 class Stubber(object):

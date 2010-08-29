@@ -1,5 +1,4 @@
 import logging
-import re
 from django import http
 from common import decorator
 from common import exception

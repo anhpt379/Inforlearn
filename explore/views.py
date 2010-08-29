@@ -4,7 +4,6 @@ from django.template import loader
 from common import api, util
 from common.display import prep_entry_list, prep_stream_dict
 from common.views import handle_view_action
-from common.memcache import client as cache
 from common.slimmer import html_slimmer
 
 ENTRIES_PER_PAGE = 20

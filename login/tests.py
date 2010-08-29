@@ -130,7 +130,7 @@ class LoginForgotTest(ViewTestCase):
     self.assertTemplateUsed(r, 'common/templates/flash.html')
 
   def test_login_reset(self):
-    r = self.client.post('/login/forgot',
+    self.client.post('/login/forgot',
                          {
                            '_nonce': util.create_nonce(None, 'login_forgot'),
                            'login_forgot' : '',
@@ -266,7 +266,7 @@ class LoginForgotTest(ViewTestCase):
 
 class LoginResetTest(ViewTestCase):
   #def test_mixed_case(self):
-  #  activation_ref = api.activation_create(api.ROOT, 'CapitalPunishment@jaiku.com', 'password_lost', 'CapitalPunishment@jaiku.com')
+  #  activation_ref = api.activation_create(api.ROOT, 'CapitalPunishment@inforlearn.com', 'password_lost', 'CapitalPunishment@inforlearn.com')
   #  code = util.hash_generic(activation_ref)
 
 

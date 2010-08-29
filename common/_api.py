@@ -905,8 +905,8 @@ def actor_get(api_user, nick):
 
     * nick - the nick of the actor
 
-      * Example - ``jaiku`` for ``jaiku`` user, or ``#jaiku``
-        for ``#jaiku`` channel
+      * Example - ``inforlearn`` for ``inforlearn`` user, or ``#inforlearn``
+        for ``#inforlearn`` channel
 
   RETURNS: an `actor_ref`_
 

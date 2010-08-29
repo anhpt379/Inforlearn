@@ -120,6 +120,7 @@ div#header-container {
 }
 
 div#header {
+  opacity: 0.9;
   position: relative;
   padding-bottom: 8px;
   z-index: 100;

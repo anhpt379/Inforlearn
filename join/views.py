@@ -16,7 +16,6 @@ from common import user
 from common import util
 from common import validate
 from common import views as common_views
-from common import clean
 
 
 def join_join(request):

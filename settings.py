@@ -110,7 +110,7 @@ TEST_RUNNER = 'common.test.runner.run_tests'
 
 ####
 #
-# Below this is custom for Jaiku Engine (not related to Django)
+# Below this is custom for Inforlearn (not related to Django)
 #
 ####
 

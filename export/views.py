@@ -10,8 +10,6 @@ from common.models import Relation, StreamEntry, File
 from google.appengine.ext import db
 import os
 from google.appengine.api import users
-from google.appengine.ext import webapp
-from google.appengine.ext.webapp import util
 from zlib import compress
 
 line_format = "%s\t%s"

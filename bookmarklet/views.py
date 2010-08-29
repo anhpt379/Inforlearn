@@ -11,10 +11,7 @@ from common import exception
 from common import util
 from common import display
 from common import views as common_views
-#from cachepy import cachepy as cache
-from common.memcache import client as cache
 from common.slimmer import html_slimmer
-from hashlib import md5
 import re
 
 
@@ -119,10 +116,6 @@ def actor_post(request, format='html'):
   selectable_icons = display.SELECTABLE_ICONS
 
   area = 'home'
-
-  # TODO(tyler/termie):  This conflicts with the global settings import.
-  # Also, this seems fishy.  Do none of the settings.* items work in templates?
-  import settings
 
   c = template.RequestContext(request, locals())
 
