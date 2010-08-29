@@ -5,10 +5,6 @@
   {{request.user|noncefield:"update_design"}}
   <div id="picker" style="float: right;"></div>
   <div>
-    <label id="bg_color">Màu nền</label>
-    <input type="text" name="bg_color" id="bg_color" class="colorwell" value="{{view.extra.bg_color|default:"#F1F1F1"}}" />
-  </div>
-  <div>
     <label id="bg_image">Ảnh nền</label>
     <input type="hidden" name="MAX_FILE_SIZE" value="400000" /> 
     <input type="hidden" name="action" value="upload" /> 
@@ -48,9 +44,7 @@
     {% if redirect_to %}
       <input type="hidden" name="redirect_to" value="{{redirect_to}}" />
     {% endif %}
-    <input type="submit" class="button" value="Lưu thay đổi"/>
-    hoặc <a href="?restore=1">Khôi phục trạng thái mặc định</a>
-    
+        
     <button type="submit" name="continue" value="2" style="margin-top: 20px;">
       <big class="active">
         <span>&#8250; Tiếp tục</span>

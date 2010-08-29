@@ -4,7 +4,7 @@
   <h2>Thông tin tài khoản</h2>
   {% include 'form_error.html' %}
 
-  <form action="{{view.url}}/settings/profile" method="post">
+  <form action="" method="post">
     {{request.user|noncefield:"settings_update_account"}}
     <script src="http://{{COOKIELESS_DOMAIN}}/js/shortcut.js" type="text/javascript"></script>
     
@@ -33,68 +33,6 @@
       <input type="text" name="full_name" id="full_name" maxlength="60" onclick='AVIMObj.setMethod(0);'
              class="text" value="{{view.extra.full_name}}"/>
     </div>
-  
-    {% if SMS_ENABLED %}
-      <div>
-        <label for="mobile">Số di động</label>
-        {% if mobile %}
-          <span><strong>{{mobile}}</strong>
-            <a href="{{view.url}}/settings/mobile">(Thay đổi)</a>
-          </span>
-        {% else %}
-          {% if unactivated_mobile %}
-            <span>
-              <strong>{{unactivated_mobile}}</strong>
-              <a href="{{view.url}}/settings/mobile">(Không kích hoạt)</a>
-            </span>
-          {% else %}
-            <span>
-              <strong>Không có</strong>
-              <a href="{{view.url}}/settings/mobile">(Thêm)</a>
-            </span>
-          {% endif %}
-        {% endif %}
-      </div>
-    {% endif %}
-  
-    <div>
-      <label for="email">Email: </label>
-      {% if email %}
-        <span>
-          <strong>{{email}}</strong>
-          <a href="{{view.url}}/settings/email">(Thay đổi)</a>
-        </span>
-      {% else %}
-        {% if unconfirmed_email %}
-          <span>
-            <strong>{{unconfirmed_email}}</strong>
-            <a href="{{view.url}}/settings/email">(Chưa xác thực)</a>
-          </span>
-        {% else %}
-          <span>
-            <strong>Không có</strong>
-            <a href="{{view.url}}/settings/email">(Thêm)</a>
-          </span>
-        {% endif %}
-      {% endif %}
-    </div>
-  
-    {% if IM_ENABLED %}
-      <div>
-        <label for="email">IM: </label>
-        {% if im %}
-          <span>
-            <strong>{{im}}</strong>
-            <a href="{{view.url}}/settings/im/">(Thay đổi)</a>
-          </span>
-        {% else %}
-          <span>
-            <strong>Chưa có</strong>
-            <a href="{{view.url}}/settings/im">(Thêm)</a>
-          </span>
-        {% endif %}
-      </div>
-    {% endif %}
    
     <div>
       <label for="homepage">Trang cá nhân: </label>
@@ -109,7 +47,6 @@
       <input type="hidden" name="redirect_to" value="{{redirect_to}}" />
       {% endif %}
       
-      <input type="submit" class="button" value="Lưu thay đổi"/>
       <div style="width: 300px;">
         <button type="submit" name="continue" value="1">
           <big class="active">

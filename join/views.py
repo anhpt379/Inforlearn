@@ -218,22 +218,20 @@ def join_welcome_profile(request):
   if 'continue' in request.POST:
     success = next
 
-  rv = common_views.common_design_update(
-    request,
-    util.qsa(success, {'redirect_to': redirect_to})
-    )
-  if rv:
-    return rv
+  handled = common_views.handle_view_action(
+      request,
+      {
+        'settings_update_account': '/welcome/4'
+      }
+  )
+  if handled:
+    return handled
 
   # If avatar wasn't changed, just go to next page, if 'Continue' was clicked.
   if 'continue' in request.POST:
     return http.HttpResponseRedirect(util.qsa(next, {'redirect_to': redirect_to}))
 
-  # set the progress
-  welcome_photo = True
-
   page = 'profile'
-
   area = 'welcome'
   c = template.RequestContext(request, locals())
 

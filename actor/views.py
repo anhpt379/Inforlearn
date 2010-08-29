@@ -308,9 +308,6 @@ def actor_unread_messages(request, nick, format='html'):
         'entry_remove': request.path,
         'entry_remove_comment': request.path,
         'entry_mark_as_spam': request.path,
-        'presence_set': request.path,
-        'settings_hide_comments': request.path,
-        'post': request.path,
       }
   )
 
@@ -327,6 +324,7 @@ def actor_unread_messages(request, nick, format='html'):
     offset = datetime.datetime.fromtimestamp(float(offset))
   else:
     offset = cache.get(key)
+    old_offset = offset
     if offset:
       t = datetime.datetime.now().utctimetuple()
       t = time.mktime(t)
@@ -353,31 +351,16 @@ def actor_unread_messages(request, nick, format='html'):
                                                               entries,
                                                               actor_streams,
                                                               view)
-
+  _entries = []
+  for entry in entries:
+    if view.nick != entry.actor:
+      _entries.append(entry)
+  entries = _entries
   total_unread = len(entries)
-  # Check for unconfirmed emails
-  unconfirmeds = api.activation_get_actor_email(request.user, view.nick)
-  if unconfirmeds:
-    unconfirmed_email = unconfirmeds[0].content
-
-  # If not logged in, cannot write
-  is_owner = False
-  try:
-    is_owner = view.nick == request.user.nick
-  except:
-    pass
-  presence = api.presence_get(request.user, view.nick)
-
-  # for sidebar streams
-  view_streams = _get_sidebar_streams(actor_streams, streams)
-
-  # for sidebar_contacts
-  contacts_count = view.extra.get('contact_count', 0)
-  contacts_more = contacts_count > CONTACTS_PER_PAGE
-
-  # for sidebar channels
-  channels_count = view.extra.get('channel_count', 0)
-  channels_more = channels_count > CHANNELS_PER_PAGE
+  if total_unread == 0:
+    cache.set(key, old_offset)
+    url = request.user.url(request=request)
+    return http.HttpResponseRedirect(url + "/overview")
 
   # Config for the template
   green_top = True

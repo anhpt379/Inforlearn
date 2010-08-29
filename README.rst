@@ -22,7 +22,7 @@ Chạy thử sản phẩm
     
   2. Khởi chạy ứng dụng::
   
-      ./start.sh  
+      bin/start.sh  
     
   3. Truy cập ứng dụng tại địa chỉ::
   
@@ -40,10 +40,10 @@ Triển khai ứng dụng với Google App Engine
 
   4. Chuyển code lên Google App Engine::
     
-      ./update.sh
+      bin/update.sh
       
   5. Truy cập dòng lệnh điều khiển ứng dụng đang chạy::
       
-      ./console.sh
+      bin/console.sh
 
 
