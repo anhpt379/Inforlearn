@@ -20,7 +20,7 @@
                 </p>
                 <p class="meta">
                   Gửi {{comment.created_at|je_timesince}} trước bởi {% actor_link comment.actor_ref request %}
-            
+                  &nbsp;&nbsp;&nbsp;
                   {% entry_remove_comment request.user comment %}
                   {% entry_mark_as_spam request.user comment %}
                 </p>
@@ -137,9 +137,9 @@
           <p class="help">
             Bạn có thể sử dụng một số cú pháp quy định hiển thị như: <br/>
             &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            *<em>chữ nghiêng</em>*, **<strong>chữ đậm</strong>**, [Inforlearn](http://www.inforlearn.com/)
+            *<em>chữ nghiêng</em>*, **<strong>chữ đậm</strong>**, ![Tên ảnh](link ảnh)
           </p>
-          <p>Các ô nhập liệu trong Inforlearn hỗ trợ chuẩn <a href="http://xbeta.org/wiki/show/Markdown">Markdown</a> và <a href="http://vn.messenger.yahoo.com/features/emoticons/">Yahoo Emoticons</a></p>
+          <p>Các ô nhập liệu trong Inforlearn hỗ trợ cú pháp theo chuẩn <a href="http://xbeta.org/wiki/show/Markdown" target="_new">Markdown</a> và <a href="http://vn.messenger.yahoo.com/features/emoticons/" target="_new">Yahoo Emoticons</a></p>
         {% endif %}
       </div>
     </form>
