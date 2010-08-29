@@ -30,7 +30,7 @@ def login_login(request):
       current_user = user.lookup_user_by_login(login, password)
       if current_user:
         if redirect_to == '/':
-          redirect_to = current_user.url('/overview')
+          redirect_to = current_user.url('/unread_messages')
 
         # Attempt to do some cleanup on the user if necessary
         api.user_cleanup(api.ROOT, current_user.nick)

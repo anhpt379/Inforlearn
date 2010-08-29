@@ -82,13 +82,15 @@ def flat_help(request, page='index'):
     'sms': 'Gửi tin qua tin nhắn SMS',
     'im': 'Gửi và nhận tin qua IM Client',
     'commands': 'Cú pháp khi sử dụng IM Client',
-    'im_clients': "Danh sách IM Client hỗ trợ XMPP"
+    'im_clients': "Danh sách IM Client hỗ trợ XMPP",
+    'getting_started': 'Hướng dẫn sử dụng'
   }
 
   path = paths[page]
 
   # config for template
-  green_top = False
+  green_top = True
+  area = "help"
 
   c = template.RequestContext(request, locals())
 

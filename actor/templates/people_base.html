@@ -11,10 +11,10 @@
         <li {% ifequal page "contacts" %}class="current"{% endifequal %}>
           <a href="{% url_for view request %}/contacts">Bạn của {{whose}} ({{actor_contact_count}})</a>
         </li>
-        <li {% ifequal page "followers" %}class="current"{% endifequal %}>
-          <a href="{% url_for view request %}/followers">Đang chờ sự đồng ý của {{whose}} ({{actor_follower_count}})</a>
-        </li>
         {% if request.user %}
+          <li {% ifequal page "followers" %}class="current"{% endifequal %}>
+            <a href="{% url_for view request %}/followers">Đang chờ sự đồng ý của {{whose}} ({{actor_follower_count}})</a>
+          </li>
           <li {% ifequal page "recommended_users" %}class="current"{% endifequal %}>
             <a href="{% url_for view request %}/recommended_users">Gợi ý kết bạn ({{actor_recommended_users_count}})</a>
           </li>

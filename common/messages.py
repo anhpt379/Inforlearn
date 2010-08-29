@@ -91,7 +91,7 @@ _message_table__ = {
        'Các thiết lập đã được cập nhật lại.'),
   'settings_hide_comments':
       (None,
-       'Thiết lập của bạn đã được lưu.'),
+       'Thông tin tài khoản của bạn đã được cập nhật lại.'),
   'settings_update_account':
       (None,
        'Hồ sơ của bạn đã được cập nhật lại.'),

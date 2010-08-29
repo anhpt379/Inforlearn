@@ -128,7 +128,7 @@ SUPPORT_CHANNEL = 'support'
 POST_NAME = 'Post'
 
 # This is the name of the root user of the site
-ROOT_NICK = 'AloneRoad'
+ROOT_NICK = 'inforlearn'
 
 
 # This is the domain where this is installed on App Engine. It will be
@@ -171,7 +171,8 @@ SUBDOMAINS_ENABLED = True
 INSTALLED_SUBDOMAINS = {
     'api': 'api.urls', # api-only urlconf
     'm': 'urls', # default urlconf, but allow the subdomain,
-    'static': 'urls'
+    'static': 'urls',
+    'status': 'urls'
     }
 
 # Enable SSL support for login and join, if using HOSTED_DOMAIN_ENABLED

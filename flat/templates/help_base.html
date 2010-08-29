@@ -10,6 +10,9 @@
     <li class="first{% ifequal page "index" %} current{% endifequal %}">
       <a href="/help">Thông tin liên hệ</a>
     </li>
+    <li {% ifequal page "getting_started" %}class="current"{% endifequal %} >
+      <a href="/help/getting_started">Hướng dẫn sử dụng</a>
+    </li>      
     <li {% ifequal page "im" %}class="current"{% endifequal %} >
       <a href="/help/im">Gửi và nhận tin từ IM Client</a>
     </li>      

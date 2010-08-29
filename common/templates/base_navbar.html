@@ -26,10 +26,13 @@
                   {% endifequal %}          
                   {% ifequal area "channel"%}
                     <a href="http://{{DOMAIN}}/login?redirect_to={{request.META.PATH_INFO}}">Đăng nhập</a> | 
+                  {% endifequal %}        
+                  {% ifequal area "help"%}
+                    <a href="http://{{DOMAIN}}/login?redirect_to={{request.META.PATH_INFO}}">Đăng nhập</a> | 
                   {% endifequal %}
                   
                   {% ifnotequal request.path "/join" %}
-                    Không có tài khoản? <a href="http://{{DOMAIN}}/join?redirect_to={{redirect_to|urlencode}}">Đăng ký</a>
+                    Không có tài khoản? <a href="http://{{DOMAIN}}/join?redirect_to=/">Đăng ký</a>
                   {% else %}
                     Đã là thành viên? 
                     {% if SUBDOMAINS_ENABLED %}
@@ -57,7 +60,7 @@
                 <div id="site-logo">
                 <li>
                   <span>
-                    <a href="http://{{DOMAIN}}/" style="color: #fafafa;background: #9C0;font-family: 'Droid Sans'">
+                    <a href="http://{{DOMAIN}}/" style="color: #fafafa;background: #9C0;">
                       <b>Inforlearn.com</b>
                     </a>
                   </span>

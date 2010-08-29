@@ -16,6 +16,7 @@ from common import user
 from common import util
 from common import validate
 from common import views as common_views
+from common import clean
 
 
 def join_join(request):
@@ -201,6 +202,44 @@ def join_welcome_design(request):
   t = loader.get_template('join/templates/welcome_%s.html' % page)
   return http.HttpResponse(t.render(c))
 
+@decorator.login_required
+def join_welcome_profile(request):
+  nick = request.user.display_nick()
+  view = api.actor_lookup_nick(api.ROOT, nick)
+  if not api.actor_owns_actor(request.user, view):
+    raise exception.ApiOwnerRequired(
+        u'Bạn không phải là chủ sở hữu của tài khoản %s' % (view.shortnick()))
+
+  redirect_to = request.REQUEST.get('redirect_to', '/')
+  next = '/welcome/4'
+
+  # Welcome pages have a 'Continue' button that should always lead
+  # to the next page. 
+  success = '/welcome/3'
+  if 'continue' in request.POST:
+    success = next
+
+  rv = common_views.common_design_update(
+    request,
+    util.qsa(success, {'redirect_to': redirect_to})
+    )
+  if rv:
+    return rv
+
+  # If avatar wasn't changed, just go to next page, if 'Continue' was clicked.
+  if 'continue' in request.POST:
+    return http.HttpResponseRedirect(util.qsa(next, {'redirect_to': redirect_to}))
+
+  # set the progress
+  welcome_photo = True
+
+  page = 'profile'
+
+  area = 'welcome'
+  c = template.RequestContext(request, locals())
+
+  t = loader.get_template('join/templates/welcome_%s.html' % page)
+  return http.HttpResponse(t.render(c))
 
 @decorator.login_required
 def join_welcome_contacts(request):

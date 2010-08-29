@@ -164,7 +164,6 @@ def random_tips(value, arg=None):
 @safe
 def format_emoticons(value, arg=None):
   value = " %s" % value # add a space at first of line - simple hack for emoticon bugs &xxx;) -> ;)
-  return value
   for e in emoticons:
     value = value.replace(" " + e[0], " " + e[1].replace("img src", "img %s src" % emoticons_style))
   return value

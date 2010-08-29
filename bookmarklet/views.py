@@ -56,17 +56,6 @@ def actor_post(request, format='html'):
   if not request.user or view.nick != request.user.nick:
     # Instead of displaying the overview, redirect to the public-facing page
     return http.HttpResponseRedirect(view.url())
-  
-  if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('username')) \
-      + str(request.COOKIES.get('username').split("@")[0] + '.inforlearn.com') \
-      + request.META.get("PATH_INFO")        \
-      + request.META.get("QUERY_STRING")
-  else:
-    s = str(request.COOKIES.get('username')) \
-      + str(request.COOKIES.get('username').split("@")[0] + '.inforlearn.com') \
-      + request.META.get("PATH_INFO")
-  key_name = "html:%s" % s.strip()
 
   handled = common_views.handle_view_action(
       request,
@@ -80,24 +69,10 @@ def actor_post(request, format='html'):
       }
   )
   if handled:
-    cache.delete(key_name)
-    s = str(request.COOKIES.get('username'))   \
-      + str(request.COOKIES.get('username').split("@")[0] + '.inforlearn.com') \
-      + str(request.META.get("PATH_INFO")).replace("/overview", "")
-    key_name = "html:%s" % s
-    cache.delete(key_name)
     return handled
   
   message = request.GET.get("message")
-  cached_data = cache.get(key_name)
-  if cached_data and format == "html":
-    if message:
-      replace_text = get_text('<textarea id="message" name="message" rows="4" cols="25">', '</textarea>', cached_data)[0]
-#      print replace_text
-      cached_data = cached_data.replace(replace_text, message)
-    return http.HttpResponse(cached_data)
-  
-  
+    
   per_page = ENTRIES_PER_PAGE
   offset, prev = util.page_offset(request)
 
@@ -154,8 +129,6 @@ def actor_post(request, format='html'):
   if format == 'html':
     t = loader.get_template('actor/templates/overview.html')
     html = html_slimmer(t.render(c))
-    cache.set(key_name, html)
-#    print "not cache"
     return http.HttpResponse(html)
   elif format == 'json':
     t = loader.get_template('actor/templates/overview.json')

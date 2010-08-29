@@ -25,7 +25,9 @@
     {% endifequal %}
 
     {% if actor_tiles %}
+      {% with actor_follower_count as actor_contact_count %}
       {% include 'common/templates/actor_tiles.html' %}
+      {% endwith %}
     {% else %}
       <p>Hiện tại chưa có ai, nhưng chắc sẽ có sớm thôi :)</p>
     {% endif %}

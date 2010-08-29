@@ -1,0 +1,20 @@
+{% extends 'common/templates/base_single.html' %}
+{% load avatar nonce %}
+
+{# don't show flash from parent because we want it in a different position #}
+{% block flash %}
+{% endblock %}
+
+{% block title %}
+  Ảnh đại diện
+{% endblock %}
+
+{% block content %}
+  {% include 'join/templates/welcome_header.html' %}
+  <div class="body" id="settings">
+   
+    <div class="body">
+    {% include 'join/templates/welcome_form_profile.html' %}
+    </div>
+  </div>
+{% endblock %}

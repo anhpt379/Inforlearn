@@ -1,7 +1,19 @@
-#! coding: utf-8
-# pylint: disable-msg=W0311
+# Copyright 2009 Google Inc.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#     http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
 
 import base64
+import datetime
 import logging
 import random
 import re
@@ -10,17 +22,18 @@ try:
 except ImportError:
   import pickle
 
+from cleanliness import cleaner
 import simplejson
-from hashlib import md5
 
 from django import template
 from django.conf import settings
 
 from google.appengine.ext import db
+from google.appengine.api import urlfetch
 from google.appengine.api import images
 from google.appengine.api.labs import taskqueue
 
-from common.models import Stream, StreamEntry, InboxEntry, Actor, Relation, Recommendation
+from common.models import Stream, StreamEntry, InboxEntry, Actor, Relation
 from common.models import Subscription, Invite, OAuthConsumer, OAuthRequestToken
 from common.models import OAuthAccessToken, Image, Activation
 from common.models import KeyValue, Presence
@@ -38,6 +51,7 @@ from common import memcache
 from common import models
 from common import normalize
 from common import patterns
+from common import properties
 from common import throttle
 from common import util
 from common import validate
@@ -59,7 +73,6 @@ ACCESS_LEVELS = [NO_ACCESS,
 ROOT = Actor(nick=settings.ROOT_NICK, type='user')
 ROOT.access_level = ADMIN_ACCESS
 
-PER_PAGE = 20
 
 # Max length of a message. Conciseness is a virtue.
 # UIs should prevent posting longer messages. API will truncate
@@ -158,19 +171,19 @@ def actor_owns_actor(actor_ref, other_ref):
   # actors own themselves
   if actor_ref.nick == other_ref.nick:
     return True
-
+  
   # admins own anything
   if has_access(actor_ref, ADMIN_ACCESS):
     return True
-
+  
   # if this is a channel, it is owned by its admins
-  if (other_ref.is_channel()
+  if (other_ref.is_channel() 
       and channel_has_admin(ROOT, other_ref.nick, actor_ref.nick)
       ):
     return True
 
   # well, we tried.
-  return False
+  return False  
 
 def actor_owns_stream(actor_ref, stream_ref):
   if not stream_ref:
@@ -235,7 +248,7 @@ def actor_can_view_actor(actor_ref, other_ref):
   # other_ref is restricted
   if other_ref.is_restricted():
     # and we are a contact
-    if (not other_ref.is_channel()
+    if (not other_ref.is_channel() 
         and actor_has_contact(ROOT, other_ref.nick, actor_ref.nick)
         ):
       return True
@@ -324,7 +337,8 @@ def owner_required(f):
 
     if not actor_owns_actor(api_user, actor_ref):
       raise exception.ApiOwnerRequired(
-          'Bạn không có quyền thực hiện hành động này')
+          'Operation not allowed: %s does not own %s' 
+          % (api_user and api_user.nick or '(nobody)', actor_ref.nick))                                           
     # everything checks out, call the original function
     return f(api_user, *args, **kw)
 
@@ -343,13 +357,13 @@ def owner_required_by_target(f):
 
     actor_ref = actor_get_safe(ROOT, nick)
     if not actor_ref:
-      raise exception.ApiNotFound('Người dùng này (%s) không tồn tại' % nick)
+      raise exception.ApiNotFound('Actor does not exist: %s' % nick)
 
 
     if not actor_owns_actor(api_user, actor_ref):
       raise exception.ApiOwnerRequired(
-          'Bạn không phải là chủ sở hữu của tài khoản %s'
-          % (actor_ref.nick.split('@')[0]))
+          'Operation not allowed: %s does not own %s' 
+          % (api_user and api_user.nick or '(nobody)', actor_ref.nick))
 
     # everything checks out, call the original function
     return f(api_user, *args, **kw)
@@ -364,7 +378,7 @@ def owner_required_by_entry(f):
 
     if not actor_owns_entry(api_user, entry_ref):
       raise exception.ApiOwnerRequired(
-          'Operation not allowed: %s does not own %s'
+          'Operation not allowed: %s does not own %s' 
           % (api_user.nick, entry_ref.keyname()))
 
     # everything checks out, call the original function
@@ -379,44 +393,50 @@ def viewable_required(f):
   def _wrap(api_user, *args, **kw):
     if not has_access(api_user, ADMIN_ACCESS):
       actor_ref = _actor_from_args_kw(['channel', 'nick', 'owner'], args, kw)
-
+      
       if not actor_can_view_actor(api_user, actor_ref):
-        raise exception.ApiViewableRequired(u'Bạn không được phép xem trang này')
+        raise exception.ApiViewableRequired(
+            'Operation not allowed: %s can not see %s' 
+            % (api_user and api_user.nick or '(nobody)', actor_ref.nick))
 
     # everything checks out, call the original function
     return f(api_user, *args, **kw)
 
   _wrap.func_name = f.func_name
   _wrap.meta = append_meta(f, 'viewable_required')
-  return _wrap
+  return _wrap  
 
 def viewable_required_by_entry(f):
   def _wrap(api_user, *args, **kw):
     if not has_access(api_user, ADMIN_ACCESS):
       entry_ref = _entry_from_args_kw(['entry', 'comment'], args, kw)
       if not actor_can_view_entry(api_user, entry_ref):
-        raise exception.ApiViewableRequired(u'Bạn không được phép xem trang này')
+        raise exception.ApiViewableRequired(
+            'Operation not allowed: %s can not see %s' 
+            % (api_user and api_user.nick or '(nobody)', entry_ref.keyname()))
 
     # everything checks out, call the original function
     return f(api_user, *args, **kw)
 
   _wrap.func_name = f.func_name
   _wrap.meta = append_meta(f, 'viewable_required_by_entry')
-  return _wrap
+  return _wrap  
 
 def viewable_required_by_stream(f):
   def _wrap(api_user, *args, **kw):
     if not has_access(api_user, ADMIN_ACCESS):
       stream_ref = _stream_from_args_kw(['stream'], args, kw)
       if not actor_can_view_stream(api_user, stream_ref):
-        raise exception.ApiViewableRequired(u'Bạn không được phép xem trang này')
+        raise exception.ApiViewableRequired(
+            'Operation not allowed: %s can not see %s' 
+            % (api_user and api_user.nick or '(nobody)', stream_ref.keyname()))
 
     # everything checks out, call the original function
     return f(api_user, *args, **kw)
 
   _wrap.func_name = f.func_name
   _wrap.meta = append_meta(f, 'viewable_required_by_stream')
-  return _wrap
+  return _wrap 
 
 public_owner_or_contact = viewable_required
 public_owner_or_member = viewable_required
@@ -480,18 +500,18 @@ def abuse_report_entry(api_user, nick, entry):
   else:
     params = {'entry': entry_ref.keyname(),
               'actor': entry_ref.actor,
-              'count': 1,
+              'count': 1, 
               'reports': [reporter_ref.nick],
               }
     abuse_ref = AbuseReport(**params)
   abuse_ref.put()
-
+  
   # TODO(termie): if we cross some sort of threshold we should probably
   #               mark a user as an abuser and prevent them from posting
-
+  
 
   # XXX end transaction
-
+  
   return abuse_ref
 
 
@@ -503,7 +523,7 @@ def abuse_report_entry(api_user, nick, entry):
 def activation_activate_email(api_user, nick, code):
   activation_ref = activation_get_code(api_user, nick, 'email', code)
   if not activation_ref:
-    raise exception.ApiNotFound('Mã xác thực %s không hợp lệ' % code)
+    raise exception.ApiNotFound('Invalid code: %s' % code)
 
   actor_ref = actor_get(api_user, nick)
   existing_ref = actor_lookup_email(ROOT, activation_ref.content)
@@ -513,12 +533,13 @@ def activation_activate_email(api_user, nick, code):
                     actor_ref.nick, email)
     relation_ref = Relation(owner=actor_ref.nick,
                             relation='email',
-                            target=email,)
+                            target=email,
+                            )
     return relation_ref
 
   if existing_ref:
     raise exception.ApiAlreadyInUse(
-        'Địa chỉ email %s đã được kích hoạt.' % activation_ref.content)
+        'Email address %s has already been activated' % activation_ref.content)
 
   # XXX begin transaction
 
@@ -532,7 +553,7 @@ def activation_activate_email(api_user, nick, code):
 def activation_activate_mobile(api_user, nick, code):
   activation_ref = activation_get_code(api_user, nick, 'mobile', code)
   if not activation_ref:
-    raise exception.ApiNotFound('Mã xác thực %s không hợp lệ' % code)
+    raise exception.ApiNotFound('Invalid code: %s' % code)
 
   actor_ref = actor_get(api_user, nick)
   existing_ref = actor_lookup_mobile(ROOT, activation_ref.content)
@@ -579,7 +600,7 @@ def activation_create_email(api_user, nick, email):
   existing_ref = actor_lookup_email(ROOT, email)
   if existing_ref:
     raise exception.ApiAlreadyInUse(
-        u"Địa chỉ email %s đã có người sử dụng" % email)
+        "Email address is already in use: %s" % email)
 
   return activation_create(api_user, nick, 'email', email)
 
@@ -607,7 +628,8 @@ def activation_get(api_user, nick, type, content):
 def activation_get_actor_email(api_user, nick):
   """Get a list of outstanding email activations for actor"""
   query = Activation.gql('WHERE type = :1 AND actor = :2',
-                         'email', nick)
+                         'email',
+                         nick)
 
   activations = list(query.run())
   return activations
@@ -615,7 +637,8 @@ def activation_get_actor_email(api_user, nick):
 @owner_required
 def activation_get_actor_mobile(api_user, nick):
   query = Activation.gql('WHERE type = :1 AND actor = :2',
-                         'mobile', nick)
+                         'mobile',
+                         nick)
 
   activations = list(query.run())
   return activations
@@ -654,6 +677,8 @@ def activation_request_email(api_user, nick, email):
   email = normalize.email(email)
   validate.email(email)
 
+  actor_ref = actor_get(api_user, nick)
+
   # check whether they've already tried to activate this email
   # if they have send them the same code
   # TODO(tyler): Abstract into activation_get_or_create
@@ -676,6 +701,8 @@ def activation_request_email(api_user, nick, email):
 def activation_request_mobile(api_user, nick, mobile):
   mobile = clean.mobile(mobile)
 
+  actor_ref = actor_get(api_user, nick)
+
   # check whether they've already tried to activate this email
   # if they have send them the same code
   # TODO(tyler): Abstract into activation_get_or_create
@@ -687,7 +714,7 @@ def activation_request_mobile(api_user, nick, mobile):
 
     activation_ref = activation_create_mobile(ROOT, nick, mobile)
 
-  message = u"Mã số kích hoạt của bạn là %s" % activation_ref.code
+  message = "Your activation code is %s" % activation_ref.code
   sms_send(ROOT, api_user.nick, mobile, message)
   return activation_ref
 
@@ -736,10 +763,10 @@ def actor_add_contact(api_user, owner, target):
   target_ref = actor_get(api_user, target)
 
   if not owner_ref:
-    raise exception.ApiException('Đối tượng %s không tồn tại' % owner)
+    raise exception.ApiException('Actor does not exist: %s' % owner)
 
   if not target_ref:
-    raise exception.ApiException('Đối tượng %s không tồn tại' % target)
+    raise exception.ApiException('Actor does not exist: %s' % target)
 
   existing_rel_ref = actor_has_contact(ROOT, owner, target)
 
@@ -779,19 +806,15 @@ def actor_add_contact(api_user, owner, target):
 
     target_ref.extra.setdefault('follower_count', 0)
     target_ref.extra['follower_count'] += 1
-    try:
-      target_ref.rank += 1
-    except TypeError:
-      target_ref.rank = 0
     target_ref.put()
 
   # Subscribe owner to all of target's streams
   streams = stream_get_actor(ROOT, target)
   for stream in streams:
-    subscription_request(api_user,
-                         topic=stream.key().name(),
-                         target='inbox/%s/overview' % owner
-                        )
+    sub = subscription_request(api_user,
+                               topic=stream.key().name(),
+                               target='inbox/%s/overview' % owner
+                              )
 
   owner_streams = stream_get_actor(api_user, owner)
   for stream in owner_streams:
@@ -836,8 +859,7 @@ def actor_count_contacts(api_user, nick):
   query = Relation.gql('WHERE owner = :1 AND relation = :2',
                        nick,
                        'contact')
-  result = query.count()
-  return result
+  return query.count()
 
 @admin_required
 def actor_count_followers(api_user, nick):
@@ -845,8 +867,7 @@ def actor_count_followers(api_user, nick):
   query = Relation.gql('WHERE target = :1 AND relation = :2',
                        nick,
                        'contact')
-  result = query.count()
-  return result
+  return query.count()
 
 def actor_is_follower(api_user, nick, potential_follower):
   """Determine if one is a follower.
@@ -875,7 +896,7 @@ def actor_is_contact(api_user, nick, potential_contact):
                                target=potential_contact)
   rel_ref = Relation.get_by_key_name(key_name)
   return rel_ref and True
-
+  
 
 def actor_get(api_user, nick):
   """Returns an actor by the given nick.
@@ -902,7 +923,8 @@ def actor_get(api_user, nick):
                                 'follower_count': 7,
                                 'follower_count': 14,
                                 'icon': 'default/animal_8',
-                                'full_name': 'Test'
+                                'given_name': 'Test',
+                                'family_name': 'User'
                                 }
                       }
             }
@@ -914,22 +936,22 @@ def actor_get(api_user, nick):
   """
   nick = clean.nick(nick)
   if not nick:
-    raise exception.ApiException("Nick %s không hợp lệ" % nick)
+    raise exception.ApiException("Invalid nick: %s" % nick)
 
-  not_found_message = u'Đối tượng %s không tồn tại' % nick
+  not_found_message = 'Actor not found: %s' % nick
 
   key_name = Actor.key_from(nick=nick)
   actor_ref = Actor.get_by_key_name(key_name)
-
+  
   if not actor_ref:
     raise exception.ApiNotFound(not_found_message)
-
+    
   if actor_ref.is_deleted():
     raise exception.ApiDeleted(not_found_message)
-
+  
   if actor_ref.nick == ROOT.nick:
     actor_ref.access_level = ADMIN_ACCESS
-    
+
   if actor_can_view_actor(api_user, actor_ref):
     return ResultWrapper(actor_ref, actor=actor_ref)
 
@@ -967,8 +989,7 @@ def actor_get_channels_admin(api_user, nick, limit=48, offset=None):
                        'channeladmin',
                        offset)
   rv = query.fetch(limit)
-  result = [x.owner for x in rv]
-  return result
+  return [x.owner for x in rv]
 
 @public_owner_or_contact
 def actor_get_channels_member(api_user, nick, limit=48, offset=None):
@@ -978,8 +999,7 @@ def actor_get_channels_member(api_user, nick, limit=48, offset=None):
                        'channelmember',
                        offset)
   rv = query.fetch(limit)
-  result = [x.owner for x in rv]
-  return result
+  return [x.owner for x in rv]
 
 def actor_get_channels_member_safe(api_user, nick, limit=48, offset=None):
   try:
@@ -995,14 +1015,13 @@ def actor_get_contacts(api_user, nick, limit=48, offset=None):
                        'contact',
                        offset)
   results = query.fetch(limit)
-  result = [x.target for x in results]
-  return result
+  return [x.target for x in results]
 
 def actor_get_contacts_safe(api_user, nick, limit=48, offset=None):
   try:
     return actor_get_contacts(api_user, nick, limit, offset)
   except exception.ApiException:
-    return []
+     return []
 
 @owner_required
 def actor_get_contacts_since(api_user, nick, limit=30, since_time=None):
@@ -1010,10 +1029,9 @@ def actor_get_contacts_since(api_user, nick, limit=30, since_time=None):
   query = Relation.gql('WHERE owner = :1 AND relation = :2 AND target > :3',
                        nick,
                        'contact',
-                       since_time)
+                       offset)
   results = query.fetch(limit)
-  result = [x.target for x in results]
-  return result
+  return [x.target for x in results]
 
 @owner_required
 def actor_get_contacts_avatars_since(api_user, nick, limit=30, since_time=None):
@@ -1069,8 +1087,7 @@ def actor_get_followers(api_user, nick, limit=48, offset=None):
                        'contact',
                        offset)
   results = query.fetch(limit)
-  result = [x.owner for x in results]
-  return result
+  return [x.owner for x in results]
 
 def actor_get_safe(api_user, nick):
   try:
@@ -1100,13 +1117,13 @@ def actor_lookup_email(api_user, email):
 
 def actor_lookup_im(api_user, im):
   query = Relation.gql('WHERE relation = :1 AND target = :2',
-                       'im_account', im)
+                       'im_account',
+                       im)
   rel_ref = query.get()
   if not rel_ref:
     return None
   else:
-    result = actor_get(api_user, rel_ref.owner)
-    return result
+    return actor_get(api_user, rel_ref.owner)
 
 def actor_lookup_mobile(api_user, mobile):
   mobile = clean.mobile(mobile)
@@ -1130,8 +1147,7 @@ def actor_lookup_nick(api_user, nick):
   actor_ref = query.get()
   if not actor_ref:
     return None
-  result = actor_get_safe(api_user, actor_ref.nick)
-  return result
+  return actor_get_safe(api_user, actor_ref.nick)
 
 @delete_required
 @owner_required
@@ -1153,7 +1169,7 @@ def actor_remove_contact(api_user, owner, target):
 
   # XXX start transaction
   # Delete the relationship
-  key_name = Relation.key_from(relation='contact',
+  key_name = Relation.key_from(relation='contact', 
                                owner=owner_ref.nick,
                                target=target_ref.nick)
   rel = Relation.get_by_key_name(key_name)
@@ -1171,18 +1187,14 @@ def actor_remove_contact(api_user, owner, target):
 
   target_ref.extra.setdefault('follower_count', 1)
   target_ref.extra['follower_count'] -= 1
-  try:
-    target_ref.rank -= 2
-  except TypeError:
-    target_ref.rank = 0
   target_ref.put()
 
   # Unsubscribe owner from all of target's streams
   streams = stream_get_actor(ROOT, target)
   for stream in streams:
-    subscription_remove(ROOT,
-                        topic=stream.key().name(),
-                        target='inbox/%s/overview' % owner)
+    sub = subscription_remove(ROOT,
+                              topic=stream.key().name(),
+                              target='inbox/%s/overview' % owner)
 
   # If owner is private mark all subscriptions to her streams as pending
   if owner_ref.privacy < PRIVACY_PUBLIC:
@@ -1195,8 +1207,6 @@ def actor_remove_contact(api_user, owner, target):
         sub_ref.state = "pending"
         sub_ref.put()
 
-  _notify_contact_deleted(owner_ref, target_ref)
-    
   # XXX end transaction
   return rel
 
@@ -1264,12 +1274,12 @@ def avatar_upload(api_user, nick, content):
     path = 'avatar_%s_%s' % (path_uuid, img_size)
 
     # TODO: Check for hash collisions before uploading (!!)
-    image_set(api_user,
-              nick,
-              path=path,
-              content=img_data,
-              format='jpg',
-              size=img_size)
+    img_ref = image_set(api_user,
+                        nick,
+                        path=path,
+                        content=img_data,
+                        format='jpg',
+                        size=img_size)
   # XXX end transaction
 
   # TODO(termie): this returns somewhat differently than background_upload below,
@@ -1316,7 +1326,7 @@ def background_upload(api_user, nick, content):
   nick = clean.nick(nick)
 
   # XXX begin transaction
-#  img = images.Image(content)
+  img = images.Image(content)
 
   # note: only supporting JPEG format
   #img_data = img.execute_transforms(output_encoding=images.JPEG)
@@ -1327,29 +1337,20 @@ def background_upload(api_user, nick, content):
   path = 'bg_%s' % (path_uuid)
 
   # TODO: Check for hash collisions before uploading (!!)
-  image_set(api_user,
-            nick,
-            path=path,
-            format='jpg',
-            content=content)
+  img_ref = image_set(api_user, 
+                      nick, 
+                      path=path, 
+                      format='jpg', 
+                      content=content)
   # XXX end transaction
 
 
   # TODO(termie): this returns somewhat differently than avatar_upload above,
-  return '%s/bg_%s' % (nick, path_uuid)
+  return '%s/bg_%s.jpg' % (nick, path_uuid)
 
 #######
-####### TODO: Slice channels
 #######
-def top_actors(limit):
-  # Sort by nick, so that filtering works.
-  query = Actor.gql('WHERE type = :1 AND deleted_at = :2 '
-                    'ORDER BY rank DESC',
-                    'user',
-                    None)
-  
-  results = query.fetch(limit)
-  return results
+#######
 
 def channel_browse(api_user, limit, offset_channel_nick=''):
   """Return all channels.
@@ -1358,16 +1359,17 @@ def channel_browse(api_user, limit, offset_channel_nick=''):
     offset_channel_nick - Retrieve channels with nick > this value.
   """
   # Sort by nick, so that filtering works.
-  query = Actor.gql('WHERE type = :1 AND deleted_at = :2 '
-                    'ORDER BY rank DESC',
+  query = Actor.gql('WHERE type = :1 AND deleted_at = :2 and nick > :3 '
+                    'ORDER BY nick',
                     'channel',
-                    None)
+                    None,
+                    offset_channel_nick)
 
   # Limit to the range specified:
   if offset_channel_nick:
     logging.info('offset: ' + offset_channel_nick)
   results = query.fetch(limit)
-#  memcache.client.add(cache_key, results, 120)
+
   return results
 
 def channel_browse_recent(api_user, limit=48, offset=None):
@@ -1395,11 +1397,8 @@ def channel_create(api_user, **kw):
     existing_ref = False
 
   if existing_ref:
-    channel_nick = channel_nick.split("@")[0][1:]
     raise exception.ApiException(
-        u'Nhóm %s đã tồn tại. Bạn có thể tham gia bằng cách truy cập vào\
-        địa chỉ: http://inforlearn.com/channel/%s' % (channel_nick,
-                                                      channel_nick))
+        'Name of the channel is already in use: %s' % channel_nick)
 
   admin_channels = actor_get_channels_admin(api_user, creator_ref.nick)
   if len(admin_channels) >= MAX_ADMINS_PER_ACTOR:
@@ -1415,7 +1414,6 @@ def channel_create(api_user, **kw):
             'privacy': kw.get('privacy', PRIVACY_PUBLIC),
             'type': 'channel',
             'password': '',
-            'rank': 0,
             'extra': {'description': kw.get('description', ''),
                       'member_count': 0,
                       'admin_count': 1,
@@ -1434,10 +1432,10 @@ def channel_create(api_user, **kw):
   rel_ref.put()
 
   # create the presence stream for the channel
-  stream_create_presence(api_user,
-                         channel_ref.nick,
-                         read_privacy=PRIVACY_PUBLIC,
-                         write_privacy=PRIVACY_CONTACTS)
+  stream_ref = stream_create_presence(api_user,
+                                      channel_ref.nick,
+                                      read_privacy=PRIVACY_PUBLIC,
+                                      write_privacy=PRIVACY_CONTACTS)
 
   channel_join(api_user, creator_nick, channel_nick)
   # XXX end transaction
@@ -1454,26 +1452,19 @@ def channel_get(api_user, channel):
   RETURNS:  Channel object
   THROWS: ApiExceptioon
   """
+
   not_found_message = 'Channel not found: %s' % channel
   channel = clean.channel(channel)
-
-  nick = clean.normalize_nick(clean.nick(channel))
-  query = Actor.gql('WHERE normalized_nick = :1', nick)
-  channel_ref = query.get()
-
-# Thêm đoạn ở trên và bỏ chỗ này để ID nhóm không phân biệt HOA/thường
-#  if not channel_ref:
-#    raise exception.ApiNotFound(not_found_message)
-#  
-#  
-#  key_name = Actor.key_from(nick=channel)
-#  channel_ref = Actor.get_by_key_name(key_name)
-
+  
+  key_name = Actor.key_from(nick=channel)
+  channel_ref = Actor.get_by_key_name(key_name)
+  
   if not channel_ref:
     raise exception.ApiNotFound(not_found_message)
 
   if channel_ref.is_deleted():
     raise exception.ApiDeleted(not_found_message)
+
   return channel_ref
 
 @public_owner_or_member
@@ -1481,8 +1472,7 @@ def channel_get_admins(api_user, channel, limit=24):
   query = Relation.gql('WHERE owner = :1 AND relation = :2',
                        channel,
                        'channeladmin')
-  results = [a.target for a in query.fetch(limit)]
-  return results
+  return [a.target for a in query.fetch(limit)]
 
 # depends on channel_get's privacy
 def channel_get_channels(api_user, channels):
@@ -1515,8 +1505,7 @@ def channel_get_members(api_user, channel, limit=24, offset=None):
                        channel,
                        'channelmember',
                        offset)
-  results = [a.target for a in query.fetch(limit)]
-  return results
+  return [a.target for a in query.fetch(limit)]
 
 def channel_get_safe(api_user, channel):
   """Retrieve the specified channel, if it has not been deleted.
@@ -1533,10 +1522,9 @@ def channel_get_safe(api_user, channel):
 
 @public_owner_or_member
 def channel_has_admin(api_user, channel, nick):
-  key_name = Relation.key_from(relation='channeladmin',
-                               owner=channel,
+  key_name = Relation.key_from(relation='channeladmin', 
+                               owner=channel, 
                                target=nick)
-  
   admin_ref = Relation.get_by_key_name(key_name)
   if admin_ref:
     return True
@@ -1563,15 +1551,15 @@ def channel_join(api_user, nick, channel):
 
   # XXX start transaction
   relation = 'channelmember'
-  rel = Relation(owner=channel_ref.nick,
+  rel = Relation(owner=channel_ref.nick, 
                  relation=relation,
                  target=actor_ref.nick,
                  )
   rel.put()
 
   # TODO probably a race-condition
+  count = channel_ref.extra['member_count']
   channel_ref.extra['member_count'] += 1
-  channel_ref.rank += 1
   channel_ref.put()
 
   actor_ref.extra.setdefault('channel_count', 0)
@@ -1580,9 +1568,9 @@ def channel_join(api_user, nick, channel):
 
   streams = stream_get_actor(ROOT, channel)
   for stream in streams:
-    subscription_request(api_user,
-                         topic=stream.key().name(),
-                         target='inbox/%s/overview' % actor_ref.nick)
+    sub = subscription_request(api_user,
+                               topic=stream.key().name(),
+                               target='inbox/%s/overview' % actor_ref.nick)
   # XXX end transaction
 
   return rel
@@ -1595,7 +1583,7 @@ def channel_part(api_user, nick, channel):
 
   if not channel_has_member(api_user, channel_ref.nick, actor_ref.nick):
     raise exception.ApiException("not a member")
-
+  
   key_name = Relation.key_from(relation='channelmember',
                                owner=channel_ref.nick,
                                target=actor_ref.nick)
@@ -1604,7 +1592,6 @@ def channel_part(api_user, nick, channel):
   rel_ref.delete()
 
   channel_ref.extra['member_count'] -= 1
-  channel_ref.rank -= 2
   channel_ref.put()
 
   if 'channel_count' in actor_ref.extra:
@@ -1614,9 +1601,9 @@ def channel_part(api_user, nick, channel):
   # Unsubscribe owner from all of target's streams
   streams = stream_get_actor(ROOT, channel)
   for stream in streams:
-    subscription_remove(ROOT,
-                        topic=stream.key().name(),
-                        target='inbox/%s/overview' % actor_ref.nick)
+    sub = subscription_remove(ROOT,
+                              topic=stream.key().name(),
+                              target='inbox/%s/overview' % actor_ref.nick)
   # XXX end transaction
 
   return rel_ref
@@ -1632,23 +1619,6 @@ def channel_post(api_user, **kw):
   uuid = kw.get('uuid', util.generate_uuid())
   channel = kw.get('channel', None)
   nick = kw.get('nick', None)
-  
-  extra = {}
-  # Thumbnails are not yet shown on the site but are supported by the mobile
-  # client.
-  thumbnail_url = kw.get('thumbnail_url', None)
-  if thumbnail_url:
-    extra['thumbnail_url'] = clean.url(thumbnail_url)
-  channel_post_match = channel_post_re.search(message.replace("\n", "<br/>")) # temporary replace '\n' for match channel post regular expression  
-  if channel_post_match:
-    match_dict = channel_post_match.groupdict()
-    channel = match_dict['channel']
-    message = match_dict['message'].replace("<br/>", "\n") # re-replace
-    new_kw = kw.copy()
-    new_kw['channel'] = channel
-    new_kw['message'] = message
-    new_kw['extra'] = extra
-    return channel_post(api_user, **new_kw)
 
   validate.length(message, 0, MAX_POST_LENGTH)
   validate.location(location)
@@ -1674,7 +1644,6 @@ def channel_post(api_user, **kw):
 
   values = {
     'stream': stream.key().name(),
-    'normalized_nick': channel.lower(),
     'uuid': uuid,
     'owner': stream.owner,
     'actor': actor_ref.nick,
@@ -1689,14 +1658,9 @@ def channel_post(api_user, **kw):
   #presence = _set_presence(**values)
   entry = _add_entry(stream, new_values=values)
   subscribers = _subscribers_for_channel_entry(stream, entry)
-  
-  subscribers.append('inbox/%s/private' % entry.actor)  # gửi một bản sao của tin nhắn vào "Gửi lên bởi tôi"
-  
-  _add_inboxes_for_entry(subscribers, stream, entry)
+  inboxes = _add_inboxes_for_entry(subscribers, stream, entry)
   _notify_subscribers_for_entry(subscribers, actor_ref, stream, entry)
   # XXX end transaction
-
-  
 
   return entry
 
@@ -1708,7 +1672,7 @@ def channel_update(api_user, channel, **kw):
 
   channel_ref = channel_get(api_user, channel)
 
-
+  
   for k, v in kw.iteritems():
     if k not in allowed_attributes:
       continue
@@ -1868,11 +1832,11 @@ def entry_add_comment(api_user, _task_ref=None, **kw):
             }
 
   try:
-    task_spec = AddEntryTaskSpec(task_ref,
-                                 actor_ref=actor_ref,
+    task_spec = AddEntryTaskSpec(task_ref, 
+                                 actor_ref=actor_ref, 
                                  new_stream_ref=comment_stream_ref,
-                                 new_values=values,
-                                 entry_ref=entry_ref,
+                                 new_values=values, 
+                                 entry_ref=entry_ref, 
                                  entry_stream_ref=stream_ref)
     comment_ref = task_spec.process()
   except exception.ApiException:
@@ -1896,19 +1860,19 @@ def entry_add_comment_with_entry_uuid(api_user, **kw):
 def entry_get(api_user, entry):
   entry_ref = StreamEntry.get_by_key_name(entry)
 
-  not_found_message = u'Chủ đề %s không tồn tại' % entry
+  not_found_message = 'Entry not found: %s' % entry
   if not entry_ref:
     raise exception.ApiNotFound(not_found_message)
-
+  
   if entry_ref.is_deleted():
     raise exception.ApiDeleted(not_found_message)
-
+  
   try:
     # if this is a comment ensure that the parent exists
     if entry_ref.entry:
       # A comment
-      entry_get(api_user, entry_ref.entry)
-
+      parent_entry = entry_get(api_user, entry_ref.entry)
+    
     # ensure the author exists
     actor_get(api_user, entry_ref.actor)
 
@@ -1933,8 +1897,7 @@ def entry_get_comments(api_user, entry):
   query = InboxEntry.gql('WHERE inbox = :1 ORDER BY created_at',
                          entry_ref.key().name() + '/comments')
   comment_keys = [c.stream_entry_keyname() for c in query]
-  results = entry_get_entries(api_user, comment_keys)
-  return results
+  return entry_get_entries(api_user, comment_keys)
 
 # Relies on ACLs on the called functions
 def entry_get_comments_with_entry_uuid(api_user, entry_uuid):
@@ -1963,8 +1926,6 @@ def entry_get_entries(api_user, entries, hide_comments=False):
     entry = entries_dict.get(entry_key, None)
     if entry:
       out.append(entry)
-    if len(out) > PER_PAGE:
-      break
   return out
 
 def entry_get_entries_dict(api_user, entries, hide_comments=False):
@@ -2063,8 +2024,7 @@ def entry_get_last(api_user, stream):
   entry_ref = query.get()
   if not entry_ref:
     return None
-  results = entry_get(api_user, entry_ref.key().name())
-  return results
+  return entry_get(api_user, entry_ref.key().name())
 
 def entry_get_uuid(api_user, uuid):
   """ Queries the StreamEntry entities to find the StreamEntry corresponding to
@@ -2077,8 +2037,7 @@ def entry_get_uuid(api_user, uuid):
     raise exception.ApiViewableRequired(
         'Operation not allowed: %s cannot see entry with uuid %s'
         % (api_user.nick, uuid))
-  results = entry_get(api_user, entry_ref.key().name())
-  return results
+  return entry_get(api_user, entry_ref.key().name())
 
 def entry_get_safe(api_user, entry):
   """Like entry_get, but returns None for entries you don't have rights to see
@@ -2140,7 +2099,7 @@ def keyvalue_get(api_user, nick, keyname):
 @owner_required
 def keyvalue_prefix_list(api_user, nick, keyname):
   if not keyname:
-    return ResultWrapper(keyvalues=None)
+    return ResultWrapper(keyvalues, keyvalues=None)
   nick = clean.nick(nick)
   key_name_lower = unicode(keyname)
   key_name_upper = key_name_lower + "\xEF\xBF\xBD".decode('utf-8')
@@ -2174,6 +2133,8 @@ def keyvalue_put(api_user, nick, keyname, value):
 
 @admin_required
 def im_associate(api_user, nick, im):
+  actor_ref = actor_get(ROOT, nick)
+
   rel_ref = Relation(owner=nick,
                      relation='im_account',
                      target=im,
@@ -2183,7 +2144,7 @@ def im_associate(api_user, nick, im):
 
 @admin_required
 def im_disassociate(api_user, nick, im):
-  actor_get(ROOT, nick)
+  actor_ref = actor_get(ROOT, nick)
 
   key_name = Relation.key_from(relation='im_account',
                                owner=nick,
@@ -2214,7 +2175,7 @@ def im_get_actor(api_user, nick):
 def image_get(api_user, nick, path, format='jpg'):
   keyname = 'image/%s/%s.%s' % (nick, path, format)
   image_ref = Image.get_by_key_name(keyname)
-
+  
   # LEGACY COMPAT
   if not image_ref:
     actor_ref = actor_get(ROOT, nick)
@@ -2226,8 +2187,7 @@ def image_get(api_user, nick, path, format='jpg'):
 def image_get_all_keys(api_user, nick, size):
   """Given an actor, retrieve keynames"""
   query = Image.gql('WHERE actor = :1 AND size = :2', nick, size)
-  results = list(query.run())
-  return results
+  return list(query.run())
 
 @public_owner_or_contact
 def image_set(api_user, nick, path, content, format='jpg', size=None):
@@ -2265,40 +2225,33 @@ def inbox_copy_entries(api_user, target, nick, limit=5):
   return
 
 @public_owner_or_contact
-def inbox_get_actor_contacts(api_user, nick, limit=5, offset=None,
+def inbox_get_actor_contacts(api_user, nick, limit=5, offset=None, 
                              stream_type=None):
   nick = clean.nick(nick)
   inbox = 'inbox/%s/contacts' % nick
   return inbox_get_entries(api_user, inbox, limit, offset, stream_type)
 
 @owner_required
-def inbox_get_actor_overview(api_user, nick, limit=5, offset=None,
+def inbox_get_actor_overview(api_user, nick, limit=5, offset=None, 
                              stream_type=None):
   nick = clean.nick(nick)
   inbox = 'inbox/%s/overview' % nick
   return inbox_get_entries(api_user, inbox, limit, offset, stream_type)
 
 @owner_required
-def inbox_get_actor_unread_messages(api_user, nick, limit=5, offset=None,
-                             stream_type=None):
-  nick = clean.nick(nick)
-  inbox = 'inbox/%s/overview' % nick
-  return inbox_get_unread(api_user, inbox, limit, offset, stream_type)
-
-@owner_required
-def inbox_get_actor_private(api_user, nick, limit=5, offset=None,
+def inbox_get_actor_private(api_user, nick, limit=5, offset=None, 
                             stream_type=None):
   nick = clean.nick(nick)
   inbox = 'inbox/%s/private' % nick
   return inbox_get_entries(api_user, inbox, limit, offset)
 
-def inbox_get_actor_public(api_user, nick, limit=5, offset=None,
+def inbox_get_actor_public(api_user, nick, limit=5, offset=None, 
                            stream_type=None):
   nick = clean.nick(nick)
   inbox = 'inbox/%s/public' % nick
   return inbox_get_entries(api_user, inbox, limit, offset, stream_type)
 
-def inbox_get_entries(api_user, inbox, limit=30, offset=None,
+def inbox_get_entries(api_user, inbox, limit=30, offset=None, 
                       stream_type=None):
   limit = clean.limit(limit)
   query = InboxEntry.Query().filter('inbox =', inbox).order('-created_at')
@@ -2311,20 +2264,7 @@ def inbox_get_entries(api_user, inbox, limit=30, offset=None,
   results = query.fetch(limit=limit)
   return [x.stream_entry_keyname() for x in results]
 
-def inbox_get_unread(api_user, inbox, limit=30, offset=None,
-                      stream_type=None):
-  limit = clean.limit(limit)
-  query = InboxEntry.Query().filter('inbox =', inbox).order('-created_at')
-  if offset is not None:
-    offset = clean.datetime(offset)
-    query.filter('created_at >=', offset)
-  if stream_type is not None:
-    query.filter('stream_type =', stream_type)
-
-  results = query.fetch(limit=limit)
-  return [x.stream_entry_keyname() for x in results]
-
-def inbox_get_entries_since(api_user, inbox, limit=30, since_time=None,
+def inbox_get_entries_since(api_user, inbox, limit=30, since_time=None, 
                             stream_type=None):
   limit = clean.limit(limit)
   query = InboxEntry.Query().filter('inbox =', inbox).order('created_at')
@@ -2337,7 +2277,7 @@ def inbox_get_entries_since(api_user, inbox, limit=30, since_time=None,
 
   results = query.fetch(limit=limit)
   return [x.stream_entry_keyname() for x in results]
-  
+
 def inbox_get_explore(api_user, limit=30, offset=None):
   inbox = 'inbox/%s/explore' % ROOT.nick
   return inbox_get_entries(api_user, inbox, limit, offset)
@@ -2375,7 +2315,7 @@ def invite_get(api_user, code):
   key_name = Invite.key_from(code=code)
   invite_ref = Invite.get_by_key_name(key_name)
   if not invite_ref:
-    raise exception.ApiException("Mã thư mời không hợp lệ.")
+    raise exception.ApiException("Invalid invite code")
   return invite_ref
 
 @owner_required
@@ -2429,7 +2369,7 @@ def login_forgot(api_user, nick_or_email):
     # This is an email address.  
     # Does it map to a user? (confirmed email)
     actor_ref = actor_lookup_email(ROOT, nick_or_email)
-
+    
     # Is it an unconfirmed email, and does it map to exactly one user?
     if not actor_ref:
       activations = activation_get_by_email(ROOT, nick_or_email)
@@ -2440,36 +2380,36 @@ def login_forgot(api_user, nick_or_email):
         raise exception.ApiException(
             'Email matches more than one account')
       actor_ref = actor_get(ROOT, activations[0].actor)
-  else:
+  else: 
     actor_ref = actor_lookup_nick(ROOT, nick_or_email)
     if not actor_ref:
-      raise exception.ApiNotFound('User not found: %s' % nick_or_email)
-
+      raise exception.ApiNotFound('User not found: %s' % nick_or_email) 
+    
   # Get the user's email.  First, has it been confirmed?
   email = email_get_actor(ROOT, actor_ref.nick)
 
   if not email:
     # Do they have any unconfirmed emails?
     activation_refs = activation_get_actor_email(ROOT, actor_ref.nick)
-
+    
     if not activation_refs:
       raise exception.ApiException(
           'This user does not have an email address!')
     elif len(activation_refs) != 1:
       raise exception.ApiException(
           'This email address maps to multiple users!')
-
+    
     # At this point, we have an unconfirmed email address which maps to exactly
     # one user.
     email = activation_refs[0].content
 
   # Add a 'please reset this password' item to the DB.
-  activation_ref = activation_create(ROOT, actor_ref.nick, 'password_lost',
+  activation_ref = activation_create(ROOT, actor_ref.nick, 'password_lost', 
                                       email)
 
   # The code itself is boring.
   code = util.hash_generic(activation_ref.code)
-
+  
   # Inform the user about their thoughtlessness.
   (subject, message, html_message) = mail.email_lost_password(actor_ref, email, code)
   mail.send(email, subject, message, html_message=html_message)
@@ -2497,20 +2437,20 @@ def login_reset(api_user, email, hash):
   # The user didn't lose their password
   if not activation_ref:
     raise exception.ApiException('Invalid request')
-
+  
   # The hash doesn't match
   if util.hash_generic(activation_ref.code) != hash:
     raise exception.ApiException('Invalid request, hash does not match')
 
   # Generate a new password
   password = util.generate_password()
-
+  
   # Update our records
   password_hash = util.hash_password(actor_ref.nick, password)
   actor_ref.password = password_hash
   actor_ref.put()
   activation_ref.delete()
-
+  
   return password, actor_ref.nick
 
 #######
@@ -2554,7 +2494,7 @@ def mobile_confirm_doubleoptin(api_user, nick):
 
 @admin_required
 def mobile_disassociate(api_user, nick, mobile):
-  actor_get(ROOT, nick)
+  actor_ref = actor_get(ROOT, nick)
 
   key_name = Relation.key_from(relation='mobile',
                                owner=nick,
@@ -2726,7 +2666,7 @@ def oauth_get_consumer(api_user, key):
   actor_ref = actor_get(ROOT, key_ref.actor)
   if not actor_owns_actor(api_user, actor_ref):
     raise exception.ApiViewableRequired(
-        'Operation not allowed: %s does not own %s'
+        'Operation not allowed: %s does not own %s' 
         % (api_user.nick, actor_ref.nick))
   return key_ref
 
@@ -2755,7 +2695,10 @@ def post(api_user, _task_ref=None, **kw):
     * nick - the actor posting this entry
     * uuid - a unique identifier for this entry
   
-  RETURNS: entry_ref  
+  RETURNS: entry_ref
+
+  
+  
   """
   # grab the params we're interested in
   message = kw.get('message', '').strip()
@@ -2771,11 +2714,11 @@ def post(api_user, _task_ref=None, **kw):
   if thumbnail_url:
     extra['thumbnail_url'] = clean.url(thumbnail_url)
 
-  channel_post_match = channel_post_re.search(message.replace("\n", "<br/>")) # temporary replace '\n' for match channel post regular expression  
+  channel_post_match = channel_post_re.search(message)
   if channel_post_match:
     match_dict = channel_post_match.groupdict()
     channel = match_dict['channel']
-    message = match_dict['message'].replace("<br/>", "\n") # re-replace
+    message = match_dict['message']
     new_kw = kw.copy()
     new_kw['channel'] = channel
     new_kw['message'] = message
@@ -2796,7 +2739,7 @@ def post(api_user, _task_ref=None, **kw):
     # TODO(termie): update the presence, yo
     # update presence only
     return
-
+  
   task_ref = _task_ref
   if not task_ref:
     kw['uuid'] = uuid
@@ -2824,11 +2767,11 @@ def post(api_user, _task_ref=None, **kw):
   }
 
   try:
-    task_spec = AddEntryTaskSpec(task_ref,
-                                 actor_ref=actor_ref,
+    task_spec = AddEntryTaskSpec(task_ref, 
+                                 actor_ref=actor_ref, 
                                  new_stream_ref=stream_ref,
-                                 new_values=values,
-                                 entry_ref=None,
+                                 new_values=values, 
+                                 entry_ref=None, 
                                  entry_stream_ref=None)
     entry_ref = task_spec.process()
   except exception.ApiException:
@@ -2844,6 +2787,7 @@ def post(api_user, _task_ref=None, **kw):
 @public_owner_or_contact
 def presence_get(api_user, nick, at_time=None):
   """returns the presence for the given actor if the current can view"""
+  nick = clean.nick(nick)
   if not at_time:
     # Get current presence
     key_name = 'presence/%s/current' % nick
@@ -2904,8 +2848,8 @@ def presence_get_contacts(api_user, nick, since_time=None, limit=200):
     if presence:
       if not since_time or presence.updated_at > since_time:
         actor_ref = actor_get(api_user, nick)
-        presence.extra['full_name'] = actor_ref.extra.get('full_name', '')
-#        presence.extra['family_name'] = actor_ref.extra.get('family_name', '')
+        presence.extra['given_name'] = actor_ref.extra.get('given_name', '')
+        presence.extra['family_name'] = actor_ref.extra.get('family_name', '')
         o.append(presence)
 
   return ResultWrapper(o, contacts=o)
@@ -2928,7 +2872,7 @@ def presence_set(api_user, nick, **kw):
   """
 
   nick = clean.nick(nick)
-  updated_at = utcnow()
+  updated_at  = utcnow()
   uuid = kw.pop('uuid', util.generate_uuid())
   previous_presence = presence_get(api_user, nick)
 
@@ -2958,14 +2902,14 @@ def presence_set(api_user, nick, **kw):
 #######
 
 @owner_required
-def task_create(api_user, nick, action, action_id, args=None, kw=None,
+def task_create(api_user, nick, action, action_id, args=None, kw=None, 
                 progress=None, expire=None):
   logging.warning('task_create is deprecated')
   if args is None:
     args = []
   if kw is None:
     kw = {}
-
+  
   key_name = models.Task.key_from(
       actor=nick, action=action, action_id=action_id)
 
@@ -2989,7 +2933,7 @@ def task_create(api_user, nick, action, action_id, args=None, kw=None,
 def task_get(api_user, nick, action, action_id, expire=DEFAULT_TASK_EXPIRE):
   """ attempts to acquire a lock on a queue item for (default) 10 seconds """
   logging.warning('task_get is deprecated')
-
+  
   key_name = models.Task.key_from(
       actor=nick, action=action, action_id=action_id)
 
@@ -3000,27 +2944,27 @@ def task_get(api_user, nick, action, action_id, expire=DEFAULT_TASK_EXPIRE):
         'Could not find task: %s %s %s' % (nick, action, action_id))
 
   locked = memcache.client.add(key_name, 'owned', time=expire)
-  if not locked:
+  if not locked: 
     raise exception.ApiLocked("Lock could not be acquired: %s" % key_name)
   return q
 
 @owner_required
-def task_get_or_create(api_user, nick, action, action_id, args=None,
+def task_get_or_create(api_user, nick, action, action_id, args=None, 
                        kw=None, progress=None, expire=DEFAULT_TASK_EXPIRE):
   logging.warning('task_get_or_create is deprecated')
   try:
     task_ref = task_get(api_user, nick, action, action_id, expire)
   except exception.ApiNotFound:
-    task_ref = task_create(api_user,
-                           nick,
-                           action,
-                           action_id,
-                           args,
-                           kw,
-                           progress,
+    task_ref = task_create(api_user, 
+                           nick, 
+                           action, 
+                           action_id, 
+                           args, 
+                           kw, 
+                           progress, 
                            expire=expire)
   return task_ref
-
+    
 
 #@throttled(minute=30, hour=1200, day=4000, month=20000)
 @owner_required
@@ -3028,8 +2972,8 @@ def task_process_actor(api_user, nick):
   logging.warning('task_process_actor is deprecated')
   nick = clean.nick(nick)
   return task_process_any(ROOT, nick)
-
-@admin_required
+ 
+@admin_required   
 def task_process_any(api_user, nick=None):
   logging.warning('task_process_any is deprecated')
   # Basing this code largely off of pubsubhubbub's queueing approach
@@ -3045,7 +2989,7 @@ def task_process_any(api_user, nick=None):
                      nick)
   else:
     query = models.Task.gql('ORDER BY created_at')
-
+  
   work_to_do = query.fetch(sample_size)
   if not work_to_do:
     raise exception.ApiNoTasks('No tasks')
@@ -3057,7 +3001,7 @@ def task_process_any(api_user, nick=None):
   # key and unlock the work. This is much better than an iterative solution,
   # since a single locking API call per worker reduces the locking window.
   possible_work = random.sample(work_to_do,
-                                min(len(work_to_do),
+                                min(len(work_to_do), 
                                     lock_ratio * work_count)
                                 )
   work_map = dict([(str(w.key().name()), w) for w in possible_work])
@@ -3065,7 +3009,7 @@ def task_process_any(api_user, nick=None):
   not_set_keys = set(memcache.client.add_multi(try_lock_map, time=lease_period))
   if len(not_set_keys) == len(try_lock_map):
     return
-
+  
   locked_keys = [k for k in work_map if k not in not_set_keys]
   reset_keys = locked_keys[work_count:]
   if reset_keys and not memcache.client.delete_multi(reset_keys):
@@ -3073,7 +3017,7 @@ def task_process_any(api_user, nick=None):
                     'Task', reset_keys)
 
   work = [work_map[k] for k in locked_keys[:work_count]]
-
+  
   for old_task_ref in work:
     task_ref = Task(actor=old_task_ref.actor,
                     action=old_task_ref.action,
@@ -3081,9 +3025,9 @@ def task_process_any(api_user, nick=None):
                     progress=old_task_ref.progress,
                     args=old_task_ref.args,
                     kw=old_task_ref.kw)
-    logging.info("Processing task: %s %s %s p=%s",
+    logging.info("Processing task: %s %s %s p=%s", 
                   task_ref.actor,
-                  task_ref.action,
+                  task_ref.action, 
                   task_ref.action_id,
                   task_ref.progress
                   )
@@ -3093,10 +3037,10 @@ def task_process_any(api_user, nick=None):
 
       method_ref = PublicApi.get_method(task_ref.action)
 
-      method_ref(actor_ref,
-                 _task_ref=task_ref,
-                 *task_ref.args,
-                 **task_ref.kw)
+      rv = method_ref(actor_ref, 
+                      _task_ref = task_ref, 
+                      *task_ref.args, 
+                      **task_ref.kw)
 
       logging.warning('task_process_any is deprecated, deleting old task')
       task_ref.delete()
@@ -3106,14 +3050,14 @@ def task_process_any(api_user, nick=None):
       return
 
   return
-
+  
 
 @owner_required
 def task_remove(api_user, nick, action, action_id):
   logging.warning('task_remove is deprecated')
   key_name = models.Task.key_from(
       actor=nick, action=action, action_id=action_id)
-
+  
   q = models.Task.get_by_key_name(key_name)
   if not q:
     raise exception.ApiNotFound(
@@ -3136,7 +3080,7 @@ def task_update(api_user, nick, action, action_id, progress=None, unlock=True):
   if not q:
     raise exception.ApiNotFound(
         'Could not find task: %s %s %s' % (nick, action, action_id))
-
+  
   q.progress = progress
   q.put()
 
@@ -3222,11 +3166,11 @@ def settings_hide_comments(api_user, hide_comments, nick):
 @owner_required
 def settings_update_account(api_user, nick, **kw):
   # the only things we care about at this point are full_name and homepage
-  params = {'full_name': kw.get('full_name', kw.get('full_name', '')),
-#            'family_name': kw.get('family_name', kw.get('last_name', '')),
+  params = {'given_name': kw.get('given_name', kw.get('first_name', '')),
+            'family_name': kw.get('family_name', kw.get('last_name', '')),
             'homepage': kw.get('homepage', '')}
-#  validate.name(params['full_name'], "Your Name", 'full_name')
-#  validate.name(params['family_name'], "Your Last Name", 'family_name')
+  validate.name(params['given_name'], "Your First Name", 'given_name')
+  validate.name(params['family_name'], "Your Last Name", 'family_name')
 
   actor_ref = actor_get(api_user, nick)
   actor_ref.extra.update(params)
@@ -3305,8 +3249,8 @@ def stream_create_presence(api_user, nick, read_privacy=PRIVACY_PUBLIC,
 @public_owner_or_contact_by_stream
 def stream_get(api_user, stream):
   stream_ref = Stream.get_by_key_name(stream)
-
-  not_found_message = u'Stream %s không tồn tại' % stream
+  
+  not_found_message = 'Stream not found: %s' % stream
 
   if not stream_ref:
     raise exception.ApiNotFound(not_found_message)
@@ -3327,20 +3271,16 @@ def stream_get(api_user, stream):
 @public_owner_or_contact
 def stream_get_actor(api_user, nick):
   query = Stream.gql('WHERE owner = :1', nick)
-  results = list(query.run())
-  
-  return results
+  return list(query.run())
 
 @public_owner_or_contact
 def stream_get_comment(api_user, nick):
   """ stream/nick/comments """
   nick = clean.nick(nick)
-
   key_name = Stream.key_from(owner=nick, slug='comments')
   comment_stream = Stream.get_by_key_name(key_name)
   if not comment_stream:
     raise exception.ApiNotFound('Stream not found')
-  
   return comment_stream
 
 def stream_get_actor_safe(api_user, nick):
@@ -3357,7 +3297,6 @@ def stream_get_presence(api_user, nick):
   The returned value should be the "stream/<nick>/presence" stream.
   """
   nick = clean.nick(nick)
-
   key_name = Stream.key_from(owner=nick, slug='presence')
   presence_stream = Stream.get_by_key_name(key_name)
   if not presence_stream:
@@ -3439,7 +3378,7 @@ def subscription_is_active(api_user, topic, target):
 @owner_required_by_target
 def subscription_remove(api_user, topic, target):
   key_name = Subscription.key_from(topic=topic, target=target)
-  sub_ref = Subscription.get_by_key_name(key_name)
+  sub_ref =  Subscription.get_by_key_name(key_name)
   if not sub_ref:
     return
   sub_ref.delete()
@@ -3508,14 +3447,14 @@ def user_cleanup(api_user, nick):
     actor_ref.put()
 
   try:
-    stream_get_presence(api_user, actor_ref.nick)
+    presence_stream_ref = stream_get_presence(api_user, actor_ref.nick)
   except exception.ApiException:
     stream_create_presence(api_user,
                            actor_ref.nick,
                            read_privacy=actor_ref.privacy)
 
   try:
-    stream_get_comment(api_user, actor_ref.nick)
+    comment_stream_ref = stream_get_comment(api_user, actor_ref.nick)
   except exception.ApiException:
     stream_create_comment(api_user, actor_ref.nick)
 
@@ -3530,7 +3469,8 @@ def user_create(api_user, **kw):
     'type': 'user',
     'password': kw.get('password', ''),
     'extra': {
-      'full_name': kw.get('full_name', kw.get('full_name', '')),
+      'given_name': kw.get('given_name', kw.get('first_name', '')),
+      'family_name': kw.get('family_name', kw.get('last_name', '')),
       'homepage': kw.get('homepage', ''),
       'sms_double_opt_in': True,
     },
@@ -3540,8 +3480,8 @@ def user_create(api_user, **kw):
   validate.not_banned_name(params['nick'])
   validate.privacy(params['privacy'])
   validate.password(params['password'])
-#  validate.name(params['extra']['full_name'], "Your Name", 'full_name')
-#  validate.name(params['extra']['family_name'], "Your Last Name", 'family_name')
+  validate.name(params['extra']['given_name'], "Your First Name", 'given_name')
+  validate.name(params['extra']['family_name'], "Your Last Name", 'family_name')
 
   params['password'] = util.hash_password(params['nick'], params['password'])
 
@@ -3554,20 +3494,20 @@ def user_create(api_user, **kw):
 
   if existing_ref:
     raise exception.ValidationError(
-        u'Có người khác đã dùng tên %s trước bạn.' % util.display_nick(nick))
+        'Screen name %s is already in use.' % util.display_nick(nick))
 
   # Create the user
   actor = Actor(**params)
   actor.put()
 
   # Create the streams
-  stream_create_presence(api_user,
-                         actor.nick,
-                         read_privacy=params['privacy'])
-  stream_create_comment(api_user, actor.nick)
+  presence_stream = stream_create_presence(api_user,
+                                           actor.nick,
+                                           read_privacy=params['privacy'])
+  comments_stream = stream_create_comment(api_user, actor.nick)
 
   # Add the contact
-  actor_add_contact(actor, actor.nick, ROOT.nick)
+  rel = actor_add_contact(actor, actor.nick, ROOT.nick)
 
   return actor
 
@@ -3591,20 +3531,20 @@ def user_create_root(api_user):
 
   if existing_ref:
     raise exception.ValidationError(
-        'Có người khác đã dùng tên %s trước bạn.' % util.display_nick(nick))
+        'Screen name %s is already in use.' % util.display_nick(nick))
 
   # Create the user
   actor = Actor(**params)
   actor.put()
 
   # Create the streams
-  stream_create_presence(api_user,
-                         actor.nick,
-                         read_privacy=params['privacy'])
-  stream_create_comment(api_user, actor.nick)
+  presence_stream = stream_create_presence(api_user,
+                                           actor.nick,
+                                           read_privacy=params['privacy'])
+  comments_stream = stream_create_comment(api_user, actor.nick)
 
   # Add the contact
-  actor_add_contact(actor, actor.nick, ROOT.nick)
+  rel = actor_add_contact(actor, actor.nick, ROOT.nick)
 
   return actor
 
@@ -3612,7 +3552,7 @@ def user_create_root(api_user):
 def user_authenticate(api_user, nick, nonce, digest):
   actor_ref = actor_get(api_user, nick)
 
-  logging.info("nonce %s digest %s password %s" % (nonce, digest,
+  logging.info("nonce %s digest %s password %s"%(nonce, digest,
                                                  actor_ref.password))
 
   if digest == util.sha1(nonce + actor_ref.password):
@@ -3713,11 +3653,11 @@ class PrimitiveResultWrapper(object):
   """ ResultWrapper to be used by boolean responses """
   def __init__(self, primitive):
     self.value = primitive
-
+  
   def to_api(self):
     return self.value
 
-
+  
 
 # BACKEND
 class Task(object):
@@ -3728,7 +3668,7 @@ class Task(object):
     self.progress = progress
     self.args = args
     self.kw = kw
-
+  
   @classmethod
   def from_request(cls, request):
     actor = request.POST.get('actor')
@@ -3761,7 +3701,7 @@ class Task(object):
     logging.debug('Queueing task: base64(%s)', name)
     name = base64.b64encode(name).strip('=')
     taskqueue.add(name=name, params=params)
-
+  
 class TaskSpec(object):
   """An abstraction for dealing with multi-stage actions across requests.
 
@@ -3881,11 +3821,11 @@ class AddEntryInitial(Goal):
 
     # FIRST STAGE: make the entry and initial inbox
     #              we'll also try to make the first set of followers
-    throttle.throttle(self.actor_ref,
-                      self.task.task_ref.action,
-                      minute=10,
-                      hour=100,
-                      day=500,
+    throttle.throttle(self.actor_ref, 
+                      self.task.task_ref.action, 
+                      minute=10, 
+                      hour=100, 
+                      day=500, 
                       month=5000)
 
     # every step of the way we try to do things in a way that will
@@ -3893,23 +3833,23 @@ class AddEntryInitial(Goal):
     # additions don't go through then there isn't really any entry
     # and the user isn't going to see much until the queue picks
     # it up
-    new_entry_ref = _add_entry(self.new_stream_ref,
-                               self.new_values,
+    new_entry_ref = _add_entry(self.new_stream_ref, 
+                               self.new_values, 
                                entry_ref=self.entry_ref)
 
     # We're going to need this list all over so that we can remove it from 
     # the other inbox results we get after we've made the first one
-    initial_inboxes = _who_cares_web_initial(self.actor_ref,
-                                             new_entry_ref,
+    initial_inboxes = _who_cares_web_initial(self.actor_ref, 
+                                             new_entry_ref, 
                                              self.entry_ref)
 
     # these are the most important first inboxes, they get the entry to show
     # up for the user that made them and anybody who directly views the
     # author's history
-    _add_inbox(self.new_stream_ref,
-               new_entry_ref,
-               initial_inboxes,
-               shard='owner')
+    initial_inboxes_ref = _add_inbox(self.new_stream_ref, 
+                                     new_entry_ref,
+                                     initial_inboxes,
+                                     shard='owner')
 
     self.bump()
     return new_entry_ref
@@ -3924,15 +3864,15 @@ class AddEntryInboxes(Goal):
 
     # We're going to need this list all over so that we can remove it from 
     # the other inbox results we get after we've made the first one
-    initial_inboxes = _who_cares_web_initial(self.actor_ref,
-                                             new_entry_ref,
+    initial_inboxes = _who_cares_web_initial(self.actor_ref, 
+                                             new_entry_ref, 
                                              self.entry_ref)
 
     # More followers! Over and over. Like a monkey with a miniature cymbal.
-    follower_inboxes, more = _who_cares_web(new_entry_ref,
+    follower_inboxes, more = _who_cares_web(new_entry_ref, 
                                             progress=self.stage_progress,
                                             skip=initial_inboxes)
-
+    
     last_inbox = _paged_add_inbox(follower_inboxes,
                                   self.new_stream_ref,
                                   new_entry_ref)
@@ -3961,9 +3901,9 @@ class AddEntryNotify(Goal):
     last_inbox = None
     if follower_inboxes:
       last_inbox = follower_inboxes[-1]
-
+    
     self.bump(next_progress=last_inbox)
-
+    
     self.notify(follower_inboxes, new_entry_ref)
 
   def notify(self, follower_inboxes, new_entry_ref):
@@ -3982,13 +3922,13 @@ class AddEntryNotify(Goal):
 class AddEntryNotifyIm(AddEntryNotify):
   stage = "notify_im"
   notification_type = "im"
-
+  
   def get_inboxes(self, new_entry_ref):
-    initial_inboxes = _who_cares_im_initial(self.actor_ref,
-                                            new_entry_ref,
+    initial_inboxes = _who_cares_im_initial(self.actor_ref, 
+                                            new_entry_ref, 
                                             self.entry_ref)
 
-    follower_inboxes, more = _who_cares_im(new_entry_ref,
+    follower_inboxes, more = _who_cares_im(new_entry_ref, 
                                            progress=self.stage_progress,
                                            skip=initial_inboxes)
 
@@ -3997,13 +3937,13 @@ class AddEntryNotifyIm(AddEntryNotify):
 class AddEntryNotifySms(AddEntryNotify):
   stage = "notify_sms"
   notification_type = "sms"
-
+  
   def get_inboxes(self, new_entry_ref):
-    initial_inboxes = _who_cares_sms_initial(self.actor_ref,
-                                             new_entry_ref,
+    initial_inboxes = _who_cares_sms_initial(self.actor_ref, 
+                                             new_entry_ref, 
                                              self.entry_ref)
 
-    follower_inboxes, more = _who_cares_sms(new_entry_ref,
+    follower_inboxes, more = _who_cares_sms(new_entry_ref, 
                                             progress=self.stage_progress,
                                             skip=initial_inboxes)
     return initial_inboxes, follower_inboxes
@@ -4011,16 +3951,16 @@ class AddEntryNotifySms(AddEntryNotify):
 class AddEntryNotifyEmail(AddEntryNotify):
   stage = "notify_email"
   notification_type = "email"
-
+  
   def get_inboxes(self, new_entry_ref):
     initial_inboxes = _who_cares_email_initial(self.actor_ref,
                                                new_entry_ref,
                                                self.entry_ref)
 
-    follower_inboxes, more = _who_cares_email(new_entry_ref,
+    follower_inboxes, more = _who_cares_email(new_entry_ref, 
                                               progress=self.stage_progress,
-                                              skip=initial_inboxes)
-
+                                              skip=initial_inboxes)    
+    
     return initial_inboxes, follower_inboxes
 
 class AddEntryTaskSpec(TaskSpec):
@@ -4035,7 +3975,7 @@ class AddEntryTaskSpec(TaskSpec):
 
 # new squeuel
 def _process_new_entry_with_progress(task_ref, actor_ref, new_stream_ref,
-                                     new_values, entry_ref=None,
+                                     new_values, entry_ref=None, 
                                      entry_stream_ref=None):
   """ this is probably one of the more complex pieces of machinery in the
   entire codebase so we'll be being very liberal with comments
@@ -4078,31 +4018,31 @@ def _process_new_entry_with_progress(task_ref, actor_ref, new_stream_ref,
     # additions don't go through then there isn't really any entry
     # and the user isn't going to see much until the queue picks
     # it up
-    new_entry_ref = _add_entry(new_stream_ref,
-                               new_values,
+    new_entry_ref = _add_entry(new_stream_ref, 
+                               new_values, 
                                entry_ref=entry_ref)
 
     # We're going to need this list all over so that we can remove it from 
     # the other inbox results we get after we've made the first one
-    initial_inboxes = _who_cares_web_initial(actor_ref,
-                                             new_entry_ref,
+    initial_inboxes = _who_cares_web_initial(actor_ref, 
+                                             new_entry_ref, 
                                              entry_ref)
 
     # these are the most important first inboxes, they get the entry to show
     # up for the user that made them and anybody who directly views the
     # author's history
-    initial_inboxes_ref = _add_inbox(new_stream_ref,
+    initial_inboxes_ref = _add_inbox(new_stream_ref, 
                                      new_entry_ref,
                                      initial_inboxes,
                                      shard='owner')
-
+    
     # we've accomplished something useful, bump our progress
     # if this times out the above actions should all handle themselves well
     # we leave the task locked because we hope to still get some more done     
     try:
-      task_ref = task_update(ROOT,
-                             task_ref.actor,
-                             task_ref.action,
+      task_ref = task_update(ROOT, 
+                             task_ref.actor, 
+                             task_ref.action, 
                              task_ref.action_id,
                              progress='inboxes:',
                              unlock=False)
@@ -4112,10 +4052,10 @@ def _process_new_entry_with_progress(task_ref, actor_ref, new_stream_ref,
 
     # Next up will be the inboxes for the overviews of the first bunch
     # of subscribers
-    follower_inboxes, more = _who_cares_web(new_entry_ref,
+    follower_inboxes, more = _who_cares_web(new_entry_ref, 
                                             progress=progress,
                                             skip=initial_inboxes)
-
+    
     last_inbox = _paged_add_inbox(follower_inboxes,
                                   new_stream_ref,
                                   new_entry_ref)
@@ -4132,7 +4072,7 @@ def _process_new_entry_with_progress(task_ref, actor_ref, new_stream_ref,
 
     # Bump the task and chill out, unlock it for the next eager hands
     try:
-      task_ref = task_update(ROOT,
+      task_ref = task_update(ROOT, 
                              task_ref.actor,
                              task_ref.action,
                              task_ref.action_id,
@@ -4150,29 +4090,29 @@ def _process_new_entry_with_progress(task_ref, actor_ref, new_stream_ref,
 
     # We're going to need this list all over so that we can remove it from 
     # the other inbox results we get after we've made the first one
-    initial_inboxes = _who_cares_web_initial(actor_ref,
-                                             new_entry_ref,
+    initial_inboxes = _who_cares_web_initial(actor_ref, 
+                                             new_entry_ref, 
                                              entry_ref)
-
+    
     my_progress = progress[len('inboxes:'):]
-
+    
     # More followers! Over and over. Like a monkey with a miniature cymbal.
-    follower_inboxes, more = _who_cares_web(new_entry_ref,
+    follower_inboxes, more = _who_cares_web(new_entry_ref, 
                                             progress=my_progress,
                                             skip=initial_inboxes)
-
+    
     last_inbox = _paged_add_inbox(follower_inboxes,
                                   new_stream_ref,
                                   new_entry_ref)
-
+    
     # if that was all of them, bump us up to notifications stage
     if more and last_inbox:
       next_progress = 'inboxes:%s' % last_inbox
     else:
       next_progress = 'notifications:'
-
+    
     try:
-      task_ref = task_update(ROOT,
+      task_ref = task_update(ROOT, 
                              task_ref.actor,
                              task_ref.action,
                              task_ref.action_id,
@@ -4182,29 +4122,29 @@ def _process_new_entry_with_progress(task_ref, actor_ref, new_stream_ref,
       exception.log_exception()
 
   # THIRD STAGE: notifications!
-  elif progress.startswith('notifications:'):
+  elif progress.startswith('notifications:'):    
     # We'll need to get a reference to the entry that has already been created
     entry_keyname = StreamEntry.key_from(**new_values)
     new_entry_ref = entry_get(ROOT, entry_keyname)
 
-
+    
     my_progress = progress[len('notifications:'):]
-
+    
 
     # SUBSTAGES! Oh my!
     if not my_progress:
       my_progress = 'im:'
-
+    
     if my_progress.startswith('im:'):
       my_progress = my_progress[len('im:'):]
       notification_type = 'im'
       next_notification_type = 'sms'
-
-      initial_inboxes = _who_cares_im_initial(actor_ref,
-                                              new_entry_ref,
+      
+      initial_inboxes = _who_cares_im_initial(actor_ref, 
+                                              new_entry_ref, 
                                               entry_ref)
 
-      follower_inboxes, more = _who_cares_im(new_entry_ref,
+      follower_inboxes, more = _who_cares_im(new_entry_ref, 
                                              progress=my_progress,
                                              skip=initial_inboxes)
 
@@ -4217,11 +4157,11 @@ def _process_new_entry_with_progress(task_ref, actor_ref, new_stream_ref,
       notification_type = 'sms'
       next_notification_type = 'email'
 
-      initial_inboxes = _who_cares_sms_initial(actor_ref,
-                                               new_entry_ref,
+      initial_inboxes = _who_cares_sms_initial(actor_ref, 
+                                               new_entry_ref, 
                                                entry_ref)
 
-      follower_inboxes, more = _who_cares_sms(new_entry_ref,
+      follower_inboxes, more = _who_cares_sms(new_entry_ref, 
                                               progress=my_progress,
                                               skip=initial_inboxes)
 
@@ -4233,19 +4173,19 @@ def _process_new_entry_with_progress(task_ref, actor_ref, new_stream_ref,
       my_progress = my_progress[len('email:'):]
       notification_type = 'email'
       next_notification_type = None
-
+        
       initial_inboxes = _who_cares_email_initial(actor_ref,
                                                  new_entry_ref,
                                                  entry_ref)
 
-      follower_inboxes, more = _who_cares_email(new_entry_ref,
+      follower_inboxes, more = _who_cares_email(new_entry_ref, 
                                                 progress=my_progress,
                                                 skip=initial_inboxes)
 
       # The first time through we'll want to include the initial inboxes, too
       if not my_progress:
         follower_inboxes = initial_inboxes + follower_inboxes
-
+ 
     # Back to things that happen regardless of notification type
     last_inbox = None
     if follower_inboxes:
@@ -4259,9 +4199,9 @@ def _process_new_entry_with_progress(task_ref, actor_ref, new_stream_ref,
                                                  last_inbox)
       else:
         next_progress = 'notifications:%s:' % (next_notification_type)
-
+      
       try:
-        task_ref = task_update(ROOT,
+        task_ref = task_update(ROOT, 
                                task_ref.actor,
                                task_ref.action,
                                task_ref.action_id,
@@ -4273,11 +4213,11 @@ def _process_new_entry_with_progress(task_ref, actor_ref, new_stream_ref,
     # That's it! I can hardly believe it.
     else:
       task_remove(ROOT,
-                  task_ref.actor,
-                  task_ref.action,
+                  task_ref.actor, 
+                  task_ref.action, 
                   task_ref.action_id
                   )
-
+    
     # perform the notifications
     _notify_subscribers_for_entry_by_type(notification_type,
                                           follower_inboxes,
@@ -4304,7 +4244,7 @@ def _add_entry(new_stream_ref, new_values, entry_ref=None):
   if entry_get_uuid(ROOT, new_values['uuid']):
     raise exception.ApiException(
         "Duplicate entry, uuid %s already used" % new_values['uuid'])
-
+    
   # Now the key is uuid and this check duplicates the above, but we will change
   # the key to use the slug later.
   try:
@@ -4370,7 +4310,7 @@ def _add_inbox(stream_ref, entry_ref, inboxes, shard):
   inbox_ref = InboxEntry(**values)
   inbox_ref.put()
   return inbox_ref
-
+ 
 def _who_cares_web(entry_ref, progress=None, limit=None, skip=None):
   """ figure out who wants to see this on the web 
   
@@ -4389,13 +4329,13 @@ def _who_cares_web(entry_ref, progress=None, limit=None, skip=None):
 
   """
   limit = limit is None and MAX_FOLLOWERS_PER_INBOX or limit
-
+  
   topic_keys = [entry_ref.stream]
   if entry_ref.is_comment():
     topic_keys.append(entry_ref.entry)
     entry_stream_ref = stream_get(ROOT, entry_ref.extra.get('entry_stream'))
     actor_ref = actor_get(ROOT, entry_ref.actor)
-    is_restricted = (entry_stream_ref.is_restricted() or
+    is_restricted = (entry_stream_ref.is_restricted() or 
                      actor_ref.is_restricted())
   else:
     stream_ref = stream_get(ROOT, entry_ref.stream)
@@ -4533,13 +4473,13 @@ def _who_cares_sms(entry_ref, progress=None, limit=None, skip=None):
 
   """
   limit = limit is None and MAX_NOTIFICATIONS_PER_TASK or limit
-
+  
   topic_keys = []
   if entry_ref.is_comment():
     topic_keys.append(entry_ref.entry)
     entry_stream_ref = stream_get(ROOT, entry_ref.extra.get('entry_stream'))
     actor_ref = actor_get(ROOT, entry_ref.actor)
-    is_restricted = (entry_stream_ref.is_restricted() or
+    is_restricted = (entry_stream_ref.is_restricted() or 
                      actor_ref.is_restricted())
   else:
     topic_keys = [entry_ref.stream]
@@ -4583,8 +4523,8 @@ def _paged_targets_for_topics(topic_keys, is_restricted=True, progress=None,
   # ...............    ...............    ...............
   # limit = 4          limit = 4          limit = 4
   # progress = None    progress = D       progress = H
-
-
+                      
+                  
   # full data          full data          full data    
   # stream   entry     stream   entry     stream   entry 
   # ------   -----     ------   -----     ------   ----- 
@@ -4598,8 +4538,8 @@ def _paged_targets_for_topics(topic_keys, is_restricted=True, progress=None,
   #            H                  H                  H   
   #   I                  I                  I            
   #   J                  J                  J            
-
-
+                    
+                    
   # fetched data      fetched data        fetched data 
   # stream   entry    stream   entry      stream   entry 
   # ------   -----    ------   -----      ------   ----- 
@@ -4615,7 +4555,7 @@ def _paged_targets_for_topics(topic_keys, is_restricted=True, progress=None,
   #            H                                       
   #   I                                                 
   #   J                                                 
-
+                                                       
   # merged  more       merged  more       merged  more   
   # ------  -----      ------  -----      ------  -----  
   #   A     yes          E     yes          I     yes    
@@ -4627,7 +4567,7 @@ def _paged_targets_for_topics(topic_keys, is_restricted=True, progress=None,
   for topic in topic_keys:
     subs += subscription_get_topic(ROOT,
                                    topic,
-                                   limit=limit + 1,
+                                   limit=limit +1,
                                    offset=progress)
 
   # unique and sort
@@ -4639,7 +4579,7 @@ def _paged_targets_for_topics(topic_keys, is_restricted=True, progress=None,
   if len(targets) > limit:
     more = True
     targets = targets[:limit]
-
+  
   # Alright, we've handled all that stuff described in the note above
   # now we need to filter out the subscriptions that aren't subscribed 
   if is_restricted:
@@ -4655,17 +4595,17 @@ def _paged_add_inbox(inboxes, stream_ref, entry_ref):
     #               theoretically, upon replay of this item the last item
     #               could change (a subscriber goes away) and we duplicate
     #               the inbox entry
-    _add_inbox(stream_ref,
-               entry_ref,
-               inboxes,
-               shard=last_inbox)
+    inbox_ref = _add_inbox(stream_ref, 
+                           entry_ref, 
+                           inboxes,
+                           shard=last_inbox)
 
     return last_inbox
   return None
 
 # half squewl
 def _notify_subscribers_for_entry_by_type(notification_type, inboxes,
-                                          actor_ref, new_stream_ref,
+                                          actor_ref, new_stream_ref, 
                                           new_entry_ref, entry_ref=None,
                                           entry_stream_ref=None):
 
@@ -4673,7 +4613,7 @@ def _notify_subscribers_for_entry_by_type(notification_type, inboxes,
   #               it'd be nice if the subscription encoded the information
   #               about whether there should be im or sms delivery
   #               so that we at least have a smaller subset to work with
-
+  
   if notification_type == 'im':
     _notify_im_for_entry(inboxes,
                          actor_ref,
@@ -4695,7 +4635,7 @@ def _notify_subscribers_for_entry_by_type(notification_type, inboxes,
                             new_entry_ref,
                             entry_ref=entry_ref,
                             entry_stream_ref=entry_stream_ref)
-
+  
 def _notify_email_for_entry(inboxes, actor_ref, new_stream_ref, new_entry_ref,
                             entry_ref=None, entry_stream_ref=None):
 
@@ -4706,8 +4646,8 @@ def _notify_email_for_entry(inboxes, actor_ref, new_stream_ref, new_entry_ref,
   subscribers = list(set(subscribers))
   subscribers_ref = actor_get_actors(ROOT, subscribers)
   subscribers_ref = [v for k, v in subscribers_ref.iteritems() if v]
-
-  _notify_email_subscribers_for_comment(subscribers_ref,
+  
+  _notify_email_subscribers_for_comment(subscribers_ref, 
                                         actor_ref,
                                         new_entry_ref,
                                         entry_ref)
@@ -4718,7 +4658,7 @@ def _notify_im_for_entry(inboxes, actor_ref, new_stream_ref, new_entry_ref,
   subscribers = list(set(subscribers))
   subscribers_ref = actor_get_actors(ROOT, subscribers)
   subscribers_ref = [v for k, v in subscribers_ref.iteritems() if v]
-
+  
   # TODO(termie): merge these
   if new_entry_ref.is_comment():
     _notify_im_subscribers_for_comment(subscribers_ref,
@@ -4738,7 +4678,7 @@ def _notify_sms_for_entry(inboxes, actor_ref, new_stream_ref, new_entry_ref,
   subscribers = list(set(subscribers))
   subscribers_ref = actor_get_actors(ROOT, subscribers)
   subscribers_ref = [v for k, v in subscribers_ref.iteritems() if v]
-
+  
   mobile_numbers = []
   for subscriber_ref in subscribers_ref:
     if not subscriber_ref.extra.get('sms_notify'):
@@ -4751,9 +4691,9 @@ def _notify_sms_for_entry(inboxes, actor_ref, new_stream_ref, new_entry_ref,
       mobile_numbers.append(mobile)
   if not mobile_numbers:
     return
-
+  
   sms_connection = sms.SmsConnection()
-
+  
   if new_entry_ref.is_comment():
     template = '%s^%s: %s'
     title = entry_ref.title()
@@ -4786,6 +4726,7 @@ def _subscribers_for_channel_entry(stream_ref, entry_ref):
   """
   # the users subscribed to the stream this entry is going to
   subscribers = subscription_get_topic(ROOT, stream_ref.key().name())
+
   if stream_is_private(ROOT, stream_ref.key().name()):
     # LEGACY COMPAT: the 'or' in there is for legacy compat
     subscribers = [s.target for s in subscribers
@@ -4793,8 +4734,8 @@ def _subscribers_for_channel_entry(stream_ref, entry_ref):
   else:
     subscribers = [s.target for s in subscribers]
 
-  # the explore page if this isn't a comment and message post in a group
-  if stream_ref.type != 'comment' and stream_ref.owner.startswith('#'):
+  # the explore page if this isn't a comment
+  if stream_ref.type != 'comment' and not stream_ref.owner.startswith('#'):
     subscribers.append('inbox/%s/explore' % ROOT.nick)
 
   # the views of the entry owner
@@ -4956,7 +4897,7 @@ def _notify_im_subscribers_for_comment(subscribers_ref, actor_ref,
   if settings.IM_PLAIN_TEXT_ONLY:
     html_message = None
   else:
-    t = template.loader.get_template('common/templates/im/im_comment.txt') # .html
+    t = template.loader.get_template('common/templates/im/im_comment.html')
     html_message = t.render(c)
 
     t = template.loader.get_template('common/templates/im/im_comment.atom')
@@ -5005,7 +4946,7 @@ def _notify_im_subscribers_for_entry(subscribers_ref, actor_ref, stream_ref, ent
   if settings.IM_PLAIN_TEXT_ONLY:
     html_message = None
   else:
-    t = template.loader.get_template('common/templates/im/im_entry.txt') # .html
+    t = template.loader.get_template('common/templates/im/im_entry.html')
     html_message = t.render(c)
     t = template.loader.get_template('common/templates/im/im_entry.atom')
     atom_message = t.render(c)
@@ -5036,23 +4977,11 @@ def _notify_new_contact(owner_ref, target_ref):
 
   email_send(ROOT, email, subject, message, html_message=html_message)
 
-def _notify_contact_deleted(owner_ref, target_ref):
-  if not target_ref.extra.get('email_notify'):
-    return
-  email = email_get_actor(ROOT, target_ref.nick)
-  if not email:
-    return
 
-  # using ROOT for internal functionality
-  subject, message, html_message = mail.email_deleted_contact(
-        owner_ref, target_ref)
-
-  email_send(ROOT, email, subject, message, html_message=html_message)
-  
 # Helpers for replying via @nick
 def _reply_cache_key(sender, target, service=''):
-  cache_key = 'reply/%s/%s/%s' % (service, sender, target)
-  return cache_key
+  memcache_key = 'reply/%s/%s/%s' % (service, sender, target)
+  return memcache_key
 
 def _reply_add_cache(sender_ref, target_refs, entry, service=''):
   """Add an entry in the memcache, matching each outgoing IM message
@@ -5065,10 +4994,10 @@ def _reply_add_cache(sender_ref, target_refs, entry, service=''):
   """
   memcache_entry = {}
   for target_ref in target_refs:
-    cache_key = _reply_cache_key(sender_ref.nick,
-                                    target_ref.nick,
+    memcache_key = _reply_cache_key(sender_ref.nick, 
+                                    target_ref.nick, 
                                     service=service)
-    memcache_entry[cache_key] = entry
+    memcache_entry[memcache_key] = entry
 
   memcache.client.set_multi(memcache_entry)
 
@@ -5091,17 +5020,17 @@ def reply_get_cache(sender, target, service=''):
   entry_ref = None
   sender_ref = actor_lookup_nick(ROOT, sender)
   target_ref = actor_lookup_nick(ROOT, target)
-  cache_key = _reply_cache_key(sender_ref.nick,
-                                  target_ref.nick,
+  memcache_key = _reply_cache_key(sender_ref.nick, 
+                                  target_ref.nick, 
                                   service=service)
-  stream_key = memcache.client.get(cache_key)
+  stream_key = memcache.client.get(memcache_key)
   if stream_key:
     entry_ref = entry_get(ROOT, stream_key)
   if not entry_ref:
     # TODO(termie): should work for non-public users too
-    inbox = inbox_get_actor_public(sender_ref,
-                                   target_ref.nick,
-                                   limit=1,
+    inbox = inbox_get_actor_public(sender_ref, 
+                                   target_ref.nick, 
+                                   limit=1, 
                                    stream_type='presence')
     if not inbox:
       logging.info('NO INBOX!')
@@ -5143,7 +5072,7 @@ def _limit_query(query, limit, offset):
     except StopIteration:
       break
     o.append(x)
-  return o[offset:(offset + limit)]
+  return o[offset:(offset+limit)]
 
 def _crop_to_square(size, dimensions):
   sq = dimensions[0]
@@ -5162,45 +5091,3 @@ def _crop_to_square(size, dimensions):
     bottom_y = top_y + sq
   return (float(left_x) / w, float(top_y) / h,
           float(right_x) / w, float(bottom_y) / h)
-  
-  
-def get_recommended_items(actor_name, type):
-  """
-  key_name: 
-    user:users/AloneRoad
-  
-  actor_name: user@example.com
-  type: 
-  - user:users
-  - user:channels
-  - channel:channels
-  """ 
-  key_name = type + "/" + actor_name
-  data = Recommendation.get_by_key_name(key_name)
-  if not data:
-    return []
-  data = data.items
-  return eval(data)
-  
-def get_actor_details(actor_nick):
-  key_name = "actor/%s" % actor_nick
-  actor = Actor.get_by_key_name(key_name)
-  if not actor.is_deleted():
-    return actor
-
-def _actor_get_channels(actor_nick):
-  limit = 1000
-  query = Relation.gql('WHERE target = :1 AND relation = :2',
-                       actor_nick,
-                       'channelmember')
-  rv = query.fetch(limit)
-  result = [x.owner for x in rv]
-  return result
-
-def get_email(actor_nick):
-  query = Relation.gql('WHERE owner = :1 AND relation = :2',
-                         actor_nick, 'email') 
-  result = query.fetch(1)
-  if result:
-    return result[0].target
-  return None

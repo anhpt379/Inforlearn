@@ -1,5 +1,6 @@
 #! coding: utf-8
 # pylint: disable-msg=W0311
+import datetime, time
 from django import http
 from django import template
 from django.conf import settings
@@ -52,18 +53,6 @@ def actor_history(request, nick=None, format='html'):
     else:
       message = 'Subscription requested.'
     return util.RedirectFlash(view.url(), message)
-
-  if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
-      + request.META.get("PATH_INFO")        \
-      + request.META.get("QUERY_STRING")
-  else:
-    s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
-      + request.META.get("PATH_INFO")
-  key_name = "html:%s" % s.strip()
-#  return http.HttpResponse(key_name)
   
   handled = common_views.handle_view_action(
       request,
@@ -77,42 +66,8 @@ def actor_history(request, nick=None, format='html'):
         'presence_set': request.path,
       }
   )
-  if handled:
-    cache.delete(key_name)    
-    
-    s = str(None)   \
-      + "/explore"
-    key_name = "html:%s" % s
-    cache.delete(key_name)
-    
-    s = str(request.COOKIES.get('username')) \
-      + "/explore"
-    key_name = "html:%s" % s
-    cache.delete(key_name)
-    
-    s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
-      + str(request.META.get("PATH_INFO"))   \
-      + "/overview"
-    key_name = "html:%s" % s.strip()
-    cache.delete(key_name)
-    
-    s = str(request.COOKIES.get('username')) + "/channel"
-    key_name = "html:%s" % s
-    cache.delete(key_name)
-       
-    s = str(None)               \
-      + str(request.subdomain)  \
-      + str(request.META.get("PATH_INFO")).replace("/overview", "")
-    key_name = "html:%s" % s.strip()
-    cache.delete(key_name)
+  if handled: 
     return handled
-
-  cached_data = cache.get(key_name)
-  if cached_data and format == "html":
-#    print "has cache"
-#    return http.HttpResponse(key_name)
-    return http.HttpResponse(cached_data)
   
   privacy = 'public'
   if request.user:
@@ -196,7 +151,6 @@ def actor_history(request, nick=None, format='html'):
   if format == 'html':
     t = loader.get_template('actor/templates/history.html')
     html = t.render(c)
-    cache.set(key_name, html, 120)
     return http.HttpResponse(html)
   elif format == 'json':
     t = loader.get_template('actor/templates/history.json')
@@ -255,17 +209,6 @@ def actor_overview(request, nick, format='html'):
     # Instead of displaying the overview, redirect to the public-facing page
     return http.HttpResponseRedirect(view.url())
 
-  if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
-      + request.META.get("PATH_INFO")        \
-      + request.META.get("QUERY_STRING")
-  else:
-    s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
-      + request.META.get("PATH_INFO")
-  key_name = "html:%s" % s.strip()
-
   handled = common_views.handle_view_action(
       request,
       {
@@ -278,37 +221,8 @@ def actor_overview(request, nick, format='html'):
       }
   )
   if handled:
-    cache.delete(key_name)
-    
-    s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
-      + str(request.META.get("PATH_INFO")).replace("/overview", "")
-    key_name = "html:%s" % s.strip()
-    cache.delete(key_name)
-    
-    s = str(None)              \
-      + str(request.subdomain) \
-      + str(request.META.get("PATH_INFO")).replace("/overview", "")
-    key_name = "html:%s" % s.strip()
-    cache.delete(key_name)
-    
-    s = str(None)      \
-      + "/explore"
-    key_name = "html:%s" % s
-    cache.delete(key_name)
-    
-    s = str(request.COOKIES.get('username'))      \
-      + "/explore"
-    key_name = "html:%s" % s
-    cache.delete(key_name)
     return handled
-  
-  cached_data = cache.get(key_name)
-  if cached_data and format == "html":
-#    print str(request)
-#    print "has cache"
-    return http.HttpResponse(cached_data)
-  
+    
   per_page = ENTRIES_PER_PAGE
   offset, prev = util.page_offset(request)
 
@@ -316,7 +230,7 @@ def actor_overview(request, nick, format='html'):
                                        view.nick,
                                        limit=100,#(per_page + 1),
                                        offset=offset)
-
+#  return http.HttpResponse(str(inbox))
   actor_streams = api.stream_get_actor(request.user, view.nick)
   entries, more = _get_inbox_entries(request, inbox,
                                      view.extra.get('comments_hide', 0))
@@ -325,6 +239,123 @@ def actor_overview(request, nick, format='html'):
                                                               actor_streams,
                                                               view)
 
+  # Check for unconfirmed emails
+  unconfirmeds = api.activation_get_actor_email(request.user, view.nick)
+  if unconfirmeds:
+    unconfirmed_email = unconfirmeds[0].content
+
+  # If not logged in, cannot write
+  is_owner = False
+  try:
+    is_owner = view.nick == request.user.nick
+  except:
+    pass
+  presence = api.presence_get(request.user, view.nick)
+
+#  # for sidebar streams
+#  view_streams = _get_sidebar_streams(actor_streams, streams)
+
+  # for sidebar_contacts
+  contacts_count = view.extra.get('contact_count', 0)
+  contacts_more = contacts_count > CONTACTS_PER_PAGE
+
+  # for sidebar channels
+  channels_count = view.extra.get('channel_count', 0)
+  channels_more = channels_count > CHANNELS_PER_PAGE
+
+  # Config for the template
+  green_top = True
+  sidebar_green_top = True
+#  selectable_icons = display.SELECTABLE_ICONS
+
+  area = 'home'
+
+  # TODO(tyler/termie):  This conflicts with the global settings import.
+  # Also, this seems fishy.  Do none of the settings.* items work in templates?
+#  import settings
+
+  c = template.RequestContext(request, locals())
+
+  if format == 'html':
+    t = loader.get_template('actor/templates/overview.html')
+    html = html_slimmer(t.render(c))
+    return http.HttpResponse(html)
+  elif format == 'json':
+    t = loader.get_template('actor/templates/overview.json')
+    return util.HttpJsonResponse(t.render(c), request)
+  elif format == 'atom':
+    t = loader.get_template('actor/templates/overview.atom')
+    return util.HttpAtomResponse(t.render(c), request)
+  elif format == 'rss':
+    t = loader.get_template('actor/templates/overview.rss')
+    return util.HttpRssResponse(t.render(c), request)
+
+@alternate_nick
+def actor_unread_messages(request, nick, format='html'):
+  nick = clean.nick(nick)
+
+  view = api.actor_lookup_nick(request.user, nick)
+
+  if not view:
+    raise exception.UserDoesNotExistError(nick, request.user)
+
+  if not request.user or view.nick != request.user.nick:
+    # Instead of displaying the overview, redirect to the public-facing page
+    return http.HttpResponseRedirect(view.url())
+
+  handled = common_views.handle_view_action(
+      request,
+      {
+        'entry_remove': request.path,
+        'entry_remove_comment': request.path,
+        'entry_mark_as_spam': request.path,
+        'presence_set': request.path,
+        'settings_hide_comments': request.path,
+        'post': request.path,
+      }
+  )
+
+  key = request.user.shortnick() + ":last_view"
+  if handled:
+    t = datetime.datetime.now().utctimetuple()
+    t = time.mktime(t)
+    new_offset = str(t)
+    cache.set(key, new_offset)
+    return handled  
+  
+  offset = request.GET.get('offset', None)
+  if offset:
+    offset = datetime.datetime.fromtimestamp(float(offset))
+  else:
+    offset = cache.get(key)
+    if offset:
+      t = datetime.datetime.now().utctimetuple()
+      t = time.mktime(t)
+      new_offset = str(t)
+      cache.set(key, new_offset)
+      offset = datetime.datetime.fromtimestamp(float(offset))
+    else:
+      t = datetime.datetime.now().utctimetuple()
+      t = time.mktime(t)
+      offset = str(t)
+      cache.set(key, offset)
+      offset = datetime.datetime.fromtimestamp(float(offset))
+
+  inbox = api.inbox_get_actor_unread_messages(request.user,
+                                       view.nick,
+                                       limit=200,#(per_page + 1),
+                                       offset=offset)
+
+  actor_streams = api.stream_get_actor(request.user, view.nick)
+  entries, more = _get_inbox_unread_messages(request, inbox,
+                                     view.extra.get('comments_hide', 0))
+
+  contacts, channels, streams, entries = _assemble_inbox_data(request,
+                                                              entries,
+                                                              actor_streams,
+                                                              view)
+
+  total_unread = len(entries)
   # Check for unconfirmed emails
   unconfirmeds = api.activation_get_actor_email(request.user, view.nick)
   if unconfirmeds:
@@ -354,29 +385,18 @@ def actor_overview(request, nick, format='html'):
   sidebar_green_top = True
   selectable_icons = display.SELECTABLE_ICONS
 
-  area = 'home'
-
   # TODO(tyler/termie):  This conflicts with the global settings import.
   # Also, this seems fishy.  Do none of the settings.* items work in templates?
-  import settings
+#  import settings
 
   c = template.RequestContext(request, locals())
 
   if format == 'html':
-    t = loader.get_template('actor/templates/overview.html')
+    t = loader.get_template('actor/templates/unread_messages.html')
     html = html_slimmer(t.render(c))
-    cache.set(key_name, html, 120)
-#    print "not cache"
     return http.HttpResponse(html)
-  elif format == 'json':
-    t = loader.get_template('actor/templates/overview.json')
-    return util.HttpJsonResponse(t.render(c), request)
-  elif format == 'atom':
-    t = loader.get_template('actor/templates/overview.atom')
-    return util.HttpAtomResponse(t.render(c), request)
-  elif format == 'rss':
-    t = loader.get_template('actor/templates/overview.rss')
-    return util.HttpRssResponse(t.render(c), request)
+
+
 
 
 # The following section heavily commented for use in
@@ -410,18 +430,6 @@ def actor_item(request, nick=None, item=None, format='html'):
   if not view:
     raise exception.UserDoesNotExistError(nick, request.user)
 
-  if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
-      + request.META.get("PATH_INFO")        \
-      + request.META.get("QUERY_STRING")
-  else:
-    s = str(request.COOKIES.get('username')) \
-      + str(request.subdomain)               \
-      + request.META.get("PATH_INFO")
-  key_name = "html:%s" % s.strip()
-  
-#  print str(request)
   
   # With very few exceptions, whenever we are referring to a an
   # instance that is an entity from the datastore we append `_ref`
@@ -485,12 +493,7 @@ def actor_item(request, nick=None, item=None, format='html'):
        }
       )
   if handled:
-    cache.delete(key_name)
     return handled
-
-  cached_data = cache.get(key_name)
-  if cached_data and format == "html":
-    return http.HttpResponse(cached_data)
   
   comments = api.entry_get_comments(request.user, entry_ref.key().name())
 
@@ -540,7 +543,6 @@ def actor_item(request, nick=None, item=None, format='html'):
     # and difficult searches.
     t = loader.get_template('actor/templates/item.html')
     html = html_slimmer(t.render(c))
-    cache.set(key_name, html, 120)
     return http.HttpResponse(html)
 
   elif format == 'json':
@@ -556,31 +558,13 @@ def actor_contacts(request, nick=None, format='html'):
 
   if not view:
     raise exception.UserDoesNotExistError(nick, request.user)
-
-  if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('username'))      \
-      + request.META.get("PATH_INFO")  \
-      + request.META.get("QUERY_STRING")
-  else:
-    s = str(request.COOKIES.get('username'))      \
-      + request.META.get("PATH_INFO")
-  key_name = "html:%s" % s.strip()
   
   handled = common_views.handle_view_action(
       request,
       { 'actor_add_contact': request.path,
         'actor_remove_contact': request.path, })
   if handled:
-    cache.delete(key_name)
-    s = str(request.COOKIES.get('username')) + "/channel"
-    key_name = "html:%s" % s
-    cache.delete(key_name)
     return handled
-
-  cached_data = cache.get(key_name)
-  if cached_data and format == "html":
-#    print "has cache"
-    return http.HttpResponse(cached_data)
 
   per_page = CONTACTS_PER_PAGE
   offset, prev = util.page_offset_nick(request)
@@ -662,13 +646,10 @@ def actor_contacts(request, nick=None, format='html'):
   if format == 'html':
     t = loader.get_template('actor/templates/contacts.html')
     html = html_slimmer(t.render(c))
-    cache.set(key_name, html, 120)
     return http.HttpResponse(html)
   elif format == 'json':
     t = loader.get_template('actor/templates/contacts.json')
     return util.HttpJsonResponse(t.render(c), request)
-
-
 
 @alternate_nick
 def actor_followers(request, nick=None, format='html'):
@@ -678,31 +659,13 @@ def actor_followers(request, nick=None, format='html'):
 
   if not view:
     raise exception.UserDoesNotExistError(nick, request.user)
-
-  if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('username'))      \
-      + request.META.get("PATH_INFO")  \
-      + request.META.get("QUERY_STRING")
-  else:
-    s = str(request.COOKIES.get('username'))      \
-      + request.META.get("PATH_INFO")
-  key_name = "html:%s" % s.strip()
   
   handled = common_views.handle_view_action(
       request,
       { 'actor_add_contact': request.path,
         'actor_remove_contact': request.path, })
   if handled:
-    cache.delete(key_name)
-    s = str(request.COOKIES.get('username')) + "/channel"
-    key_name = "html:%s" % s
-    cache.delete(key_name)
     return handled
-
-  cached_data = cache.get(key_name)
-  if cached_data and format == "html":
-#    print "has cache"
-    return http.HttpResponse(cached_data)
 
   per_page = CONTACTS_PER_PAGE
   offset, prev = util.page_offset_nick(request)
@@ -763,7 +726,6 @@ def actor_followers(request, nick=None, format='html'):
   if format == 'html':
     t = loader.get_template('actor/templates/followers.html')
     html = html_slimmer(t.render(c))
-    cache.set(key_name, html, 120)
     return http.HttpResponse(html)
 
 @alternate_nick
@@ -952,7 +914,16 @@ def actor_settings(request, nick, page='index'):
     sms_confirm = sms_notify and not view.extra.get('sms_confirmed', False)
     # TODO(termie): remove this once we can actually receive sms
     sms_confirm = False
-  elif page == 'profile':
+  elif page == 'profile':    
+#    handled = common_views.handle_view_action(
+#      request,
+#      {
+#        'settings_update_account': view.url('/settings/profile')
+#      }
+#      )
+#    if handled:
+#      return handled
+    
     full_page = "Thông tin cá nhân"
     # check if we already have an email
     email = api.email_get_actor(request.user, view.nick)
@@ -1069,3 +1040,8 @@ def _get_inbox_entries(request, inbox, hide_comments=False):
   entries = api.entry_get_entries(request.user, inbox, hide_comments)
   per_page = 20# ENTRIES_PER_PAGE #- (len(inbox) - len(entries))
   return util.page_entries(request, entries, per_page)
+
+
+def _get_inbox_unread_messages(request, inbox, hide_comments=False):
+  entries = api.entry_get_entries(request.user, inbox, hide_comments)
+  return util.page_entries(request, entries, 200)

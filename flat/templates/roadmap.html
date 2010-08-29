@@ -5,7 +5,25 @@
   <div class="path">
     <h1>Roadmap</h1>
   </div>
-  
+  <div id="side-nav">
+    <ul>
+      <li class="first{% ifequal page "index" %} current{% endifequal %}">
+        <a href="/help">Thông tin liên hệ</a>
+      </li>
+      <li {% ifequal page "getting_started" %}class="current"{% endifequal %} >
+        <a href="/help/getting_started">Hướng dẫn sử dụng</a>
+      </li>      
+      <li {% ifequal page "im" %}class="current"{% endifequal %} >
+        <a href="/help/im">Gửi và nhận tin từ IM Client</a>
+      </li>      
+      <li {% ifequal page "commands" %}class="current"{% endifequal %} >
+        <a href="/help/commands">Cú pháp khi sử dụng IM Client</a>
+      </li>
+      <li {% ifequal page "im_clients" %}class="current"{% endifequal %} >
+        <a href="/help/im_clients">Danh sách IM Client hỗ trợ XMPP</a>
+      </li>
+    </ul>
+  </div>
   <div class="body">
    
     <h3>Các tính năng sẽ phát triển:</h3>

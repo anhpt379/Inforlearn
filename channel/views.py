@@ -26,7 +26,6 @@ CONTACTS_PER_PAGE = 24
 
 @decorator.login_required
 def channel_create(request, format='html'):
-  key_name = "html:channel_create"
   green_top = True
   channel = request.REQUEST.get('channel', '')
 
@@ -35,17 +34,8 @@ def channel_create(request, format='html'):
       {'channel_create': '/channel/%s' % channel,}
       )
   if handled:
-    cache.delete(key_name)
-    
-    s = str(request.COOKIES.get('username')) + "/channel"
-    key_name = "html:%s" % s
-    cache.delete(key_name)
     return handled
   
-#  cached_data = cache.get(key_name)
-#  if cached_data:
-#    return http.HttpResponse(cached_data)
-
   # for template sidebar
   sidebar_green_top = True
 
@@ -55,7 +45,6 @@ def channel_create(request, format='html'):
   if format == 'html':
     t = loader.get_template('channel/templates/create.html')
     html = html_slimmer(t.render(c))
-    cache.set(key_name, html, 120)
     return http.HttpResponse(html)
 
 
@@ -70,20 +59,6 @@ def channel_index(request, format='html'):
   """
   if not request.user:
     return channel_index_signedout(request, format='html')
-
-  if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('username')) \
-      + request.META.get("PATH_INFO")        \
-      + request.META.get("QUERY_STRING")
-  else:
-    s = str(request.COOKIES.get('username')) \
-      + request.META.get("PATH_INFO")
-  key_name = "html:%s" % s.strip()
-  
-  cached_data = cache.get(key_name)
-  if cached_data and format == "html":
-#    print "has cache"
-    return http.HttpResponse(cached_data)
   
   view = api.actor_lookup_nick(request.user, request.user.nick)
   
@@ -142,7 +117,6 @@ def channel_index(request, format='html'):
   if format == 'html':
     t = loader.get_template('channel/templates/index.html')
     html = html_slimmer(t.render(c))
-    cache.set(key_name, html, 120)
     return http.HttpResponse(html)
 
 
@@ -186,20 +160,6 @@ def channel_recommendation_list(request, format="html"):
 
 def channel_index_signedout(request, format='html'):
   # for the Our Picks section of the sidebar
-  if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('username')) \
-      + request.META.get("PATH_INFO")        \
-      + request.META.get("QUERY_STRING")
-  else:
-    s = str(request.COOKIES.get('username')) \
-      + request.META.get("PATH_INFO")
-  key_name = "html:%s" % s.strip()
-  
-  cached_data = cache.get(key_name)
-  if cached_data and format == "html":
-#    print "has cache"
-    return http.HttpResponse(cached_data)
-  
   ourpicks_channels = [] 
   for channel in DEFAULT_OURPICKS_CHANNELS:
     try:
@@ -213,7 +173,6 @@ def channel_index_signedout(request, format='html'):
   if format == 'html':
     t = loader.get_template('channel/templates/index_signedout.html')
     html = html_slimmer(t.render(c))
-    cache.set(key_name, html, 20)
     return http.HttpResponse(html)
 
 
@@ -235,15 +194,6 @@ def channel_history(request, nick, format='html'):
   if not view:
     return http.HttpResponseRedirect('/channel/create?channel=%s' % nick)
 
-  if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('username')) \
-      + request.META.get("PATH_INFO")        \
-      + request.META.get("QUERY_STRING")
-  else:
-    s = str(request.COOKIES.get('username')) \
-      + request.META.get("PATH_INFO")
-  key_name = "html:%s" % s.strip()
-
   admins = api.channel_get_admins(request.user, channel=view.nick)
   members = api.channel_get_members(request.user, channel=view.nick)
   
@@ -260,22 +210,7 @@ def channel_history(request, nick, format='html'):
        }
       )
   if handled:
-    cache.delete(key_name)    
-    s = str(None)      \
-      + "/explore"
-    key_name = "html:%s" % s
-    cache.delete(key_name)
-    
-    s = str(request.COOKIES.get('username'))      \
-      + "/explore"
-    key_name = "html:%s" % s
-    cache.delete(key_name)
     return handled
-
-  cached_data = cache.get(key_name)
-  if cached_data and format == "html":
-#    print "has cache"
-    return http.HttpResponse(cached_data)
 
   privacy = 'public'
 
@@ -390,7 +325,6 @@ def channel_history(request, nick, format='html'):
   if format == 'html':
     t = loader.get_template('channel/templates/history.html')
     html = html_slimmer(t.render(c))
-    cache.set(key_name, html, 120)
     return http.HttpResponse(html)
   elif format == 'json':
     t = loader.get_template('channel/templates/history.json')
@@ -410,16 +344,6 @@ def channel_item(request, nick, item=None, format='html'):
   if not view:
     raise http.Http404()
 
-  if request.META.get("QUERY_STRING").startswith("offset"):
-    s = str(request.COOKIES.get('username')) \
-      + request.META.get("PATH_INFO")        \
-      + request.META.get("QUERY_STRING")
-  else:
-    s = str(request.COOKIES.get('username')) \
-      + request.META.get("PATH_INFO")
-  key_name = "html:%s" % s.strip()
-
-  
   stream_ref = api.stream_get_presence(request.user, view.nick)
 
   entry = '%s/%s' % (stream_ref.key().name(), item)
@@ -437,14 +361,8 @@ def channel_item(request, nick, item=None, format='html'):
        }
       )
   if handled:
-    cache.delete(key_name)
     return handled
   
-  cached_data = cache.get(key_name)
-  if cached_data and format == "html":
-#    print "has cache"
-    return http.HttpResponse(cached_data)
-
   admins = api.channel_get_admins(request.user, channel=view.nick)
   user_is_admin = request.user and request.user.nick in admins
 
@@ -478,7 +396,6 @@ def channel_item(request, nick, item=None, format='html'):
   if format == 'html':
     t = loader.get_template('channel/templates/item.html')
     html = html_slimmer(t.render(c))
-    cache.set(key_name, html, 120)
     return http.HttpResponse(html)
   elif format == 'json':
     t = loader.get_template('actor/templates/item.json')

@@ -11,6 +11,9 @@
       <li class="first{% ifequal page "index" %} current{% endifequal %}">
         <a href="/help">Thông tin liên hệ</a>
       </li>
+      <li {% ifequal page "getting_started" %}class="current"{% endifequal %} >
+        <a href="/help/getting_started">Hướng dẫn sử dụng</a>
+      </li>      
       <li {% ifequal page "im" %}class="current"{% endifequal %} >
         <a href="/help/im">Gửi và nhận tin từ IM Client</a>
       </li>
@@ -42,13 +45,12 @@
         những người nên kết bạn hay những nhóm nên tham gia.
       </p>
       <p>&nbsp;&nbsp;&nbsp;&nbsp;
-        Inforlearn bao gồm 2 thành phần: <br>&nbsp;&nbsp;&nbsp;&nbsp;
+        Mạng học tập Inforlearn bao gồm 2 thành phần: <br>&nbsp;&nbsp;&nbsp;&nbsp;
         • Thành phần xử lý các tương tác với người dùng: được phát triển và mở rộng từ 
         <a href="http://code.google.com/p/jaikuengine/">jaikuengine</a>, một dự án mã nguồn mở của Google Inc, sử dụng ngôn ngữ lập trình 
-        <a href="http://www.slideshare.net/climatewarrior/python-quickstart-for-programmers-python-kung-fu" target="_new">Python</a> và nền tảng điện toán đám mây <a href="http://www.slideshare.net/rajdeep/introduction-to-google-app-engine-presentation" target="_new">Google App Engine</a> làm nền tảng chính.<br>&nbsp;&nbsp;&nbsp;&nbsp;
+        <a href="http://www.slideshare.net/climatewarrior/python-quickstart-for-programmers-python-kung-fu" target="_new">Python</a> và nền tảng điện toán đám mây <a href="http://www.slideshare.net/rajdeep/introduction-to-google-app-engine-presentation" target="_new">Google App Engine</a>.<br>&nbsp;&nbsp;&nbsp;&nbsp;
         • Thành phần xử lý các bài toán phân tích dữ liệu - Recommendation Engine: sử 
-        dụng mô hình MapReduce và Hadoop Streaming để giải quyết bài toán khối lượng 
-        dữ liệu và thời gian tính toán.
+        dụng mô hình MapReduce và Hadoop Streaming.
       </p>
       <p>&nbsp;&nbsp;&nbsp;&nbsp;
         <a href="http://github.com/AloneRoad/Inforlearn/commits/1.0beta5" target="_new">Mã nguồn Inforlearn</a> đuợc cung cấp dưới giấy phép <a href="http://www.apache.org/licenses/LICENSE-2.0.html" target="_new">Apache License v2.0</a> và 

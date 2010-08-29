@@ -1,7 +1,6 @@
-{% extends 'actor/templates/settings_base.html' %}
 {% load nonce %}
 
-{% block settings %}
+
   <h2>Thông tin tài khoản</h2>
   {% include 'form_error.html' %}
 
@@ -105,13 +104,25 @@
      
     <div class="buttons">
       {% block buttons %}
+      
+      {% if redirect_to %}
+      <input type="hidden" name="redirect_to" value="{{redirect_to}}" />
+      {% endif %}
+      
       <input type="submit" class="button" value="Lưu thay đổi"/>
+      <div style="width: 300px;">
+        <button type="submit" name="continue" value="1">
+          <big class="active">
+            <span>&#8250; Tiếp tục</span>
+          </big>
+        </button>
+        <br><br>
+        <a style="float:right;" href="/welcome/4?redirect_to={{redirect_to|urlencode}}">bỏ qua bước này</a>
+      </div>
       {% endblock %}
     </div>
   
   </form>
-  
-  <a class="dangerous" href="{{view.url}}/settings/delete">
-    Xóa tài khoản
-  </a>
-{% endblock %}
+ 
+
+

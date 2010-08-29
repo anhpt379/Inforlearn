@@ -10,13 +10,6 @@ from common.slimmer import html_slimmer
 ENTRIES_PER_PAGE = 20
 
 def explore_recent(request, format="html"):
-  if request.META.get("QUERY_STRING").startswith("offset"):
-    key_name = "html:" + str(request.COOKIES.get('username')) \
-             + request.META.get("PATH_INFO")  \
-             + request.META.get("QUERY_STRING")
-  else:
-    key_name = "html:" + str(request.COOKIES.get('username')) \
-             + request.META.get("PATH_INFO")
   green_top = True
   handled = handle_view_action(request, {'entry_remove': request.path,
                                          'entry_remove_comment': request.path,
@@ -25,25 +18,7 @@ def explore_recent(request, format="html"):
                                          'settings_hide_comments': request.path,
                                          'post': request.path,})
   if handled:
-    cache.delete(key_name)
-    user = request.COOKIES.get('username')
-    if user:
-      s = str(request.COOKIES.get('username'))      \
-        + "%s.inforlearn.com" % user.split("@")[0]  \
-        + "/overview"
-      key_name = "html:%s" % s.strip()
-      cache.delete(key_name)
-      
-      s = str(request.COOKIES.get('username'))     \
-        + "%s.inforlearn.com" % user.split("@")[0]
-      key_name = "html:%s" % s.strip()
-      cache.delete(key_name)
-      
     return handled
-
-  cached_data = cache.get(key_name)
-  if cached_data:
-    return http.HttpResponse(cached_data)
 
   per_page = ENTRIES_PER_PAGE
 
@@ -81,7 +56,6 @@ def explore_recent(request, format="html"):
   if format == 'html':
     t = loader.get_template('explore/templates/recent.html')
     html = html_slimmer(t.render(c))
-    cache.set(key_name, html, 120)
     return http.HttpResponse(html);
   elif format == 'json':
     t = loader.get_template('explore/templates/recent.json')

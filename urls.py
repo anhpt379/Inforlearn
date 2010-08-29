@@ -43,7 +43,8 @@ urlpatterns += patterns('join.views',
     (r'^welcome$', 'join_welcome'),
     (r'^welcome/1$', 'join_welcome_photo'),
     (r'^welcome/2$', 'join_welcome_design'),
-    (r'^welcome/3$', 'join_welcome_contacts'),
+    (r'^welcome/3$', 'join_welcome_profile'),
+    (r'^welcome/4$', 'join_welcome_contacts'),
     (r'^welcome/done$', 'join_welcome_done'),
 )
 
@@ -74,6 +75,7 @@ urlpatterns += patterns('flat.views',
     (r'^help/im$', 'flat_help', {'page': 'im'}),
     (r'^help/commands$', 'flat_help', {'page': 'commands'}),
     (r'^help/im_clients$', 'flat_help', {'page': 'im_clients'}),
+    (r'^help/getting_started$', 'flat_help', {'page': 'getting_started'}),
 )
 
 # ACTOR
