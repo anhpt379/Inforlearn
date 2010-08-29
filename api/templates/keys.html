@@ -2,10 +2,7 @@
 {% load nonce %}
 {% block api %}
 
-<p>Mỗi ứng dụng cần sử dụng một api key riêng biệt để giúp Inforlearn giám sát 
-việc truy cập và các tác động của ứng dụng này lên tài khoản của bạn.</p>
-
-<div>
+<div style="margin-bottom:5px;">
   <h2 style="display: inline;">API Keys</h2>
   {% include 'form_error.html' %}
   <form action="" method="post">
@@ -24,21 +21,18 @@ việc truy cập và các tác động của ứng dụng này lên tài khoả
 
 		<div style="float: right;">
 
-			Secret:<br />
+			OAuth Consumer Secret:<br />
       <span><b>{{consumer_token_ref.secret}}</b></span>
 		</div>
 
-		Key:<br />
+		OAuth Consumer Key:<br />
     <span style="font-weight: bold; font-size: 16px;" class='disable-fadeout'>{{consumer_token_ref.key_}}</span>
 	</div>
 
 	<div style="clear: both; font-size: 12px; padding: 1em 0;">
 
-    <b>Ứng dụng:</b> {{consumer_token_ref.app_name}} |
-    <b>Hoạt động:</b>{{consumer_token_ref.created_at|timesince}} trước | 
-		<b>Trạng thái:</b> 
-    <span style="color: #0c0; font-weight: bold;" class="disable-fadeout">{{consumer_token_ref.status}}</span> |
-
+    <b>Ứng dụng: </b> {{consumer_token_ref.app_name}} |
+    <b>Hoạt động: </b>{{consumer_token_ref.created_at|timesince}} trước | 
 		<b>Loại ứng dụng:</b>
     {{consumer_token_ref.type}}
 	</div>

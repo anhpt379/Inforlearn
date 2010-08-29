@@ -24,7 +24,7 @@
 
   <div id="side-nav">
   {% block sidenav %}
-    <h3>Tài khoản</h3>
+    <h3 style="margin-bottom: 0.2em;">Tài khoản</h3>
     <ul>
       <li{% ifequal page "profile" %} class="current"{% endifequal %}>
         <a href="{{view.url}}/settings/profile">Thông tin cá nhân</a>
@@ -62,14 +62,14 @@
       -->
     </ul>
   
-    <h3>Tùy chọn</h3>
+    <h3 style="margin-bottom: 0.2em; margin-top: 1em;">Tùy chọn</h3>
     <ul>
       <li{% ifequal page "notifications" %} class="current"{% endifequal %}>
         <a href="{{view.url}}/settings/notifications">Thông báo</a>
       </li>
     </ul>
     {% if not request.mobile %}
-      <h3>Hiển thị</h3>
+      <h3 style="margin-bottom: 0.2em; margin-top: 1em;">Hiển thị</h3>
       <ul>
         <li{% ifequal page "design" %} class="current"{% endifequal %}>
           <a href="{{view.url}}/settings/design">Ảnh nền</a>
@@ -81,6 +81,12 @@
         {% endif %}
       </ul>
     {% endif %}
+    
+    <h3 style="margin-bottom: 0.2em; margin-top: 1em;">API</h3>
+    <ul>
+      <li><a href="/api/keys">API Keys</a></li>
+      <li><a href="/api/tokens">Các khóa đã kích hoạt</a></li>
+    </ul>
   {% endblock %}
   </div>
   <div class="body">

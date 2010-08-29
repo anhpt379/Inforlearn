@@ -24,11 +24,21 @@
     tại {{ entry.extra.location|location }}
   {% endif %}
   {% if not hide_links %}
-    {% if not entry.extra.comment_count %}
-      &nbsp;&nbsp;&nbsp;<a href="{% url_for entry request %}#comments" class="add-comment">Gửi bình luận</a>&nbsp;&nbsp;&nbsp;
+    {% ifnotequal area "unread-messages" %}
+      {% if not entry.extra.comment_count %}
+        &nbsp;&nbsp;&nbsp;<a href="{% url_for entry request %}#comments" class="add-comment">Gửi bình luận</a>&nbsp;&nbsp;&nbsp;
+      {% else %}
+        &nbsp;&nbsp;&nbsp;<a href="{% url_for entry request %}#comments" class="comments">{{entry.extra.comment_count}} ý kiến</a>&nbsp;&nbsp;&nbsp;
+      {% endif %}
+      {% entry_remove request.user entry user_is_admin %}
     {% else %}
-      &nbsp;&nbsp;&nbsp;<a href="{% url_for entry request %}#comments" class="comments">{{entry.extra.comment_count}} ý kiến</a>&nbsp;&nbsp;&nbsp;
-    {% endif %}
-    {% entry_remove request.user entry user_is_admin %}
+      {% if not entry.extra.comment_count %}
+        &nbsp;&nbsp;&nbsp;<a href="{% url_for entry request %}#comments" target="_new" class="add-comment">Gửi bình luận</a>&nbsp;&nbsp;&nbsp;
+      {% else %}
+        &nbsp;&nbsp;&nbsp;<a href="{% url_for entry request %}#comments" target="_new" class="comments">{{entry.extra.comment_count}} ý kiến</a>&nbsp;&nbsp;&nbsp;
+      {% endif %}
+      {% entry_remove request.user entry user_is_admin %}
+    {% endifnotequal %}
+    
   {% endif %}
 </p>

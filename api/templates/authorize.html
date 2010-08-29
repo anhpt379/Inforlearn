@@ -3,11 +3,16 @@
 
 {% block title %}Ứng dụng {{oauth_consumer_ref.app_name}} muốn truy cập vào tài khoản của bạn{% endblock %}
 
-{% block content %}
-<h2>Một ứng dụng muốn truy cập vào tài khoản của bạn</h2>
+{% block login %}
+{%endblock%}
 
-<p><strong>{{oauth_consumer_ref.app_name}}</strong> muốn được phép <strong>{{perms_pretty}}</strong> . 
-Nếu đồng ý, {{oauth_consumer_ref.app_name}} sẽ được phép truy cập và gửi tin dưới danh nghĩa của bạn.</p> 
+{% block content %}
+<div id="welcome" class="path"> 
+  <h1>Một ứng dụng muốn truy cập vào tài khoản của bạn</h1>
+</div>
+
+
+<p><strong>{{oauth_consumer_ref.app_name}}</strong> yêu cầu được phép {{perms_pretty}} từ tài khoản của bạn.
 
 <form id="authorizeform" action="/api/authorize" method="post">
   {% if oauth_callback %}
@@ -23,13 +28,11 @@ Nếu đồng ý, {{oauth_consumer_ref.app_name}} sẽ được phép truy cập
   <input type="hidden" name="authorize" value="1" />
 
 
-  <div class="buttons">
+  <div class="buttons" style="padding-left: 235px;">
     {{request.user|noncefield:"authorize_token"}}
     <input type="submit" class="button" value="Chấp nhận"/>
   </div>
 </form>
-
-<br />
 <p class="centered">
 <a href="http://{{DOMAIN}}">Trở về trang chủ</a>
 </p>

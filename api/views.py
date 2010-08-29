@@ -55,6 +55,12 @@ def api_keys(request):
   full_page = 'API Keys'
   page = 'keys'
   area = 'api'
+  
+  for consumer_token_ref in consumer_tokens:
+    type = consumer_token_ref.type
+    consumer_token_ref.type = {'web': 'Web Application',
+                   'desktop': 'Desktop Application',
+                   'mobile': 'Mobile Application'}[type]
 
   c = template.RequestContext(request, locals())
   t = loader.get_template('api/templates/keys.html')
@@ -79,9 +85,11 @@ def api_key(request, consumer_key):
   full_page = consumer_key
   page = 'key'
   area = 'api'
-  OAUTH_WEB = 'Web App'
-  OAUTH_DESKTOP = 'Desktop App'
-  OAUTH_MOBILE = 'Mobile App'
+  
+  type = consumer_token_ref.type
+  consumer_token_ref.type = {'web': 'Web Application',
+                 'desktop': 'Desktop Application',
+                 'mobile': 'Mobile Application'}[type]
 
   c = template.RequestContext(request, locals())
   t = loader.get_template('api/templates/key.html')
@@ -147,7 +155,13 @@ def api_tokens(request):
 
   consumer_tokens = api.oauth_get_actor_tokens(request.user,
                                                request.user.nick)
-
+  
+  for consumer in consumer_tokens:
+    perms = consumer.perms
+    perms_pretty = {'read': 'lấy tin',
+                    'write': 'lấy và gửi tin',
+                    'delete': 'lấy, gửi và xóa tin'}[perms]
+    consumer.perms = perms_pretty
   # for templates
   full_page = 'Danh sách các mã API đã kích hoạt'
   page = 'tokens'
@@ -179,6 +193,8 @@ def api_authorize(request):
     otherwise suggest that the user notify their application that authorization
     has completed
   """
+  
+  area = 'welcome'
   oauth_token = request.REQUEST.get('oauth_token', None)
   if not oauth_token:
     # please enter token page
@@ -212,9 +228,9 @@ def api_authorize(request):
     t = loader.get_template('api/templates/authorized.html')
     return http.HttpResponse(t.render(c))
 
-  perms_pretty = {'read': 'view',
-                  'write': 'view and update',
-                  'delete': 'view, update and delete'}[perms]
+  perms_pretty = {'read': 'lấy tin',
+                  'write': 'lấy và gửi tin',
+                  'delete': 'lấy, gửi và xóa tin'}[perms]
 
   c = template.RequestContext(request, locals())
   t = loader.get_template('api/templates/authorize.html')

@@ -207,7 +207,7 @@ def actor_overview(request, nick, format='html'):
   if not request.user or view.nick != request.user.nick:
     # Instead of displaying the overview, redirect to the public-facing page
     return http.HttpResponseRedirect(view.url())
-
+  
   handled = common_views.handle_view_action(
       request,
       {
@@ -365,7 +365,7 @@ def actor_unread_messages(request, nick, format='html'):
   # Config for the template
   green_top = True
   sidebar_green_top = True
-  selectable_icons = display.SELECTABLE_ICONS
+  area = "unread-messages"
 
   # TODO(tyler/termie):  This conflicts with the global settings import.
   # Also, this seems fishy.  Do none of the settings.* items work in templates?
