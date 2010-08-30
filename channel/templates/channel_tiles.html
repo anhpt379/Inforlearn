@@ -14,7 +14,7 @@
             | <a href="{% url_for channel request %}/settings">Thiết lập</a>
           {% else %}
             {% if channel.i_am_member %}
-              | <a class="confirm" href="{% url_for channel request %}?part={{channel.nick|urlencode}}&amp;{{channel|nonceparam:"channel_part"}}&amp;redirect_to={{request.path}}">
+              | <a class="confirm" href='{% url_for channel request %}?channel_part=&amp;channel={{channel.nick|urlencode}}&amp;nick={{request.user.nick|urlencode}}&amp;{{request.user|nonceparam:"channel_part"}}&amp;redirect_to={{request.path}}'>
               Rời khỏi {{channel.display_nick}}</a>
             {% endif %}
           {% endif %}

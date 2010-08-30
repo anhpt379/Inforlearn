@@ -172,7 +172,6 @@ INSTALLED_SUBDOMAINS = {
     'api': 'api.urls', # api-only urlconf
     'm': 'urls', # default urlconf, but allow the subdomain,
     'static': 'urls',
-    'status': 'urls'
     }
 
 # Enable SSL support for login and join, if using HOSTED_DOMAIN_ENABLED

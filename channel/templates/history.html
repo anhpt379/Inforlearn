@@ -4,22 +4,33 @@
 
 {% block content %}
   {% if user_can_post %}
-    {% include_extend 'common/templates/message_form.html' %}
-      {% block message_title %}
-        <ul class="float">
-          <li>
-            {% if not user_is_admin %}
-              Bạn đang là thành viên của nhóm này. <a href="{% url_for view request %}?channel_part=&amp;nick={{request.user.nick|urlencode}}&amp;channel={{view.nick|urlencode}}&amp;{{request.user|nonceparam:"channel_part"}}">Rời khỏi nhóm {{view.display_nick}}</a>
-            {% else %}
-              <a href="{{view.url}}/settings">Thiết lập</a>
-            {% endif %}
-          </li>
-        </ul>
-        <h1 class="fn" style="margin-top: -5px">
-          <span class="nickname">{{view.display_nick}}</span>
-        </h1>
-      {% endblock %}
-    {% endinclude_extend %}
+    {% if only_admin_can_post %}
+      {% include 'form_error.html' %}
+      <div class="main">
+        <div class="vcard" id="profile">
+          {% with view as actor %}
+            {% include 'common/templates/vcard_full.html' %}
+          {% endwith %}
+        </div>
+      </div>
+    {% else %} 
+      {% include_extend 'common/templates/message_form.html' %}
+        {% block message_title %}
+          <ul class="float">
+            <li>
+              {% if not user_is_admin %}
+                Bạn đang là thành viên của nhóm này. <a href='{% url_for view request %}?channel_part=&amp;nick={{request.user.nick|urlencode}}&amp;channel={{view.nick|urlencode}}&amp;{{request.user|nonceparam:"channel_part"}}'>Rời khỏi nhóm {{view.display_nick}}</a>
+              {% else %}
+                <a href="{{view.url}}/settings">Thiết lập</a>
+              {% endif %}
+            </li>
+          </ul>
+          <h1 class="fn" style="margin-top: -5px">
+            <span class="nickname">{{view.display_nick}}</span>
+          </h1>
+        {% endblock %}
+      {% endinclude_extend %}
+    {% endif %}
   {% else %}
     {% include 'form_error.html' %}
     <div class="main">

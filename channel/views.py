@@ -12,7 +12,7 @@ from common import exception
 from common import util
 from common import views as common_views
 from operator import itemgetter
-from settings import DEFAULT_OURPICKS_CHANNELS
+from settings import DEFAULT_OURPICKS_CHANNELS, NS_DOMAIN
 from common.slimmer import html_slimmer
 
 
@@ -221,8 +221,13 @@ def channel_history(request, nick, format='html'):
     user_can_post = True
     user_is_admin = True
   elif api.channel_has_member(request.user, view.nick, request.user.nick):
-    privacy = 'contacts'
-    user_can_post = True
+    if view.nick == "#status@%s" % NS_DOMAIN:
+      privacy = 'contacts'
+      user_can_post = True
+      only_admin_can_post = True
+    else:
+      privacy = 'contacts'
+      user_can_post = True
 
   per_page = CHANNEL_HISTORY_PER_PAGE
   offset, prev = util.page_offset(request)

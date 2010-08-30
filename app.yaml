@@ -1,5 +1,5 @@
 application: "inforlearn"
-version: 1-0-rc1
+version: 1-0-rc2
 runtime: python
 api_version: 1
 skip_files: |

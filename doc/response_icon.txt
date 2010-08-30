@@ -1,6 +1,6 @@
-=======================
-Avatar Icon in Response
-=======================
+===========
+Avatar Icon
+===========
 
 The icon values in API responses are keys to avatar images. To construct the full path, add the '/image' prefix and append the proper image suffix. The valid image suffixes are:
 

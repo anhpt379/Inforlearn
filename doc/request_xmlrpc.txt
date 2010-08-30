@@ -2,12 +2,7 @@
 Request Format: XML-RPC
 ========================
 
-XML-RPC is Easy
-===============
-
-The XML-RPC interface uses... well... xml-rpc.
-You'll be using a library, surely.
-The endpoint is ``http://api.jaiku.com/xmlrpc``
+Đích: ``http://api.inforlearn.com/xmlrpc``
 
 All parameters should be sent as a dictionary, which means one big argument that
 is a list of key-value pairs rather than positional arguments (this makes it
