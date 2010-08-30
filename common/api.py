@@ -502,7 +502,7 @@ def abuse_report_entry(api_user, nick, entry):
 def activation_activate_email(api_user, nick, code):
   activation_ref = activation_get_code(api_user, nick, 'email', code)
   if not activation_ref:
-    raise exception.ApiNotFound('Mã xác thực %s không hợp lệ' % code)
+    raise exception.ApiNotFound(u'Mã xác thực "%s" không hợp lệ.' % code)
 
   actor_ref = actor_get(api_user, nick)
   existing_ref = actor_lookup_email(ROOT, activation_ref.content)
@@ -517,7 +517,7 @@ def activation_activate_email(api_user, nick, code):
 
   if existing_ref:
     raise exception.ApiAlreadyInUse(
-        'Địa chỉ email %s đã được kích hoạt.' % activation_ref.content)
+        u'Địa chỉ email %s đã được kích hoạt.' % activation_ref.content)
 
   # XXX begin transaction
 

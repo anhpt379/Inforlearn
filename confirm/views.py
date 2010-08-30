@@ -9,4 +9,4 @@ def confirm_email(request, code):
                                           request.user.nick,
                                           code)
   return util.RedirectFlash(request.user.url() + "/overview",
-                            u"Địa chỉ '%s' đã được xác nhận. Bạn có thể kích hoạt tính năng nhận thông báo qua email <a href='%s/user/Admin/settings/notifications'>ở đây</a>" % (rel_ref.target, request.user.url()))
+                            "Email '%s' has been confirmed." % (rel_ref.target))
