@@ -12,36 +12,25 @@ from common import util
 from common import display
 from common import views as common_views
 from common.slimmer import html_slimmer
+from settings import DOMAIN
 import re
+
 
 
 ENTRIES_PER_PAGE = 20
 CONTACTS_PER_PAGE = 48
 CHANNELS_PER_PAGE = 48
 
-# This is a decorator to make it a bit easier to deal with the possibility
-# the nick coming in via the subdomain
-def alternate_nick(f):
-  def _wrap(request, *args, **kw):
-    if settings.WILDCARD_USER_SUBDOMAINS_ENABLED:
-      # grab the nick from the subdomain
-      if hasattr(request, 'subdomain'):
-        kw['nick'] = request.subdomain
-    return f(request, *args, **kw)
-  _wrap.func_name = f.func_name
-  return _wrap
-
 def get_text(begin_str, end_str, document):
   """ Trả về các ký tự nằm giữa 2 chuỗi """
   s = begin_str + '(.*?)' + end_str
   return re.compile(s, re.DOTALL |  re.IGNORECASE).findall(document)
 
-@alternate_nick
 def actor_post(request, format='html'):    
   nick = request.COOKIES.get("username")
   if nick is None:
-    redirect_to = "%s?message=%s" % (request.META.get("PATH_INFO"), 
-                                     request.GET.get("message"))
+    redirect_to = "http://%s/post?message=%s" % (DOMAIN, 
+                                                 request.GET.get("message"))
     return http.HttpResponseRedirect("/login?redirect_to=%s" % redirect_to)
   nick = clean.nick(nick)
 

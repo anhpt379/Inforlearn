@@ -205,7 +205,8 @@ def format_autolinks(value, arg=None):
   escape_chars = ['_']
   for i in display_links:
     for char in escape_chars:
-      value = value.replace(i, i.replace(char, '\%s' % char))
+      # escape _ in url and display short link
+      value = value.replace('>%s</' % i, '>%s</' % (i.replace(char, '\%s' % char)[:25] + '...'))
   return value
 
 # TODO(tyler): Combine these with validate

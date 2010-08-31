@@ -45,9 +45,9 @@ def _get_actor_urlnick_from_nick(nick):
 def _to_api(v):
   if hasattr(v, 'to_api'):
     v = v.to_api()
-  elif isinstance(v, type([])):
+  elif isinstance(v, list):
     v = [_to_api(x) for x in v]
-  elif isinstance(v, type({})):
+  elif isinstance(v, dict):
     v = dict([(key, _to_api(value)) for (key, value) in v.iteritems()])
   elif isinstance(v, datetime.datetime):
     v = str(v)

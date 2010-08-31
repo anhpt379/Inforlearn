@@ -3630,13 +3630,13 @@ def user_authenticate(api_user, nick, nonce, digest):
 # Helper class
 class PublicApi(object):
   methods = {"post": post,
-             "actor_add_contact": actor_add_contact,
-             "actor_get": actor_get,
-             "actor_get_contacts_avatars_since":
+             "add_contact": actor_add_contact,
+             "get_info": actor_get,
+             "get_contacts":
                  actor_get_contacts_avatars_since,
-             "entry_add_comment": entry_add_comment,
-             "entry_get_actor_overview": entry_get_actor_overview,
-             "entry_get_actor_overview_since": entry_get_actor_overview_since,
+             "add_comment": entry_add_comment,
+             "get_messages": entry_get_actor_overview,
+             "get_messages_since": entry_get_actor_overview_since,
              }
 
   # Private methods are externally accessible but whose design has not been
@@ -3692,7 +3692,7 @@ class ResultWrapper(object):
         o[k] = {}
       else:
         o[k] = models._to_api(v)
-    return o
+    return o    
 
   def __eq__(self, other):
     # support comparing to other ResultWrappers

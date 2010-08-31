@@ -474,3 +474,5 @@ def render_api_response(rv, format="json", servertime=None):
       o['servertime'] = str(servertime)
 
   return http.HttpResponse(simplejson.dumps(o))
+
+  

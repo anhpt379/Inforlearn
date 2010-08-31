@@ -357,7 +357,7 @@ def actor_unread_messages(request, nick, format='html'):
       _entries.append(entry)
   entries = _entries
   total_unread = len(entries)
-  if total_unread == 0:
+  if total_unread == 0 and old_offset is not None:
     cache.set(key, old_offset)
     url = request.user.url(request=request)
     return http.HttpResponseRedirect(url + "/overview")
@@ -366,10 +366,6 @@ def actor_unread_messages(request, nick, format='html'):
   green_top = True
   sidebar_green_top = True
   area = "unread-messages"
-
-  # TODO(tyler/termie):  This conflicts with the global settings import.
-  # Also, this seems fishy.  Do none of the settings.* items work in templates?
-#  import settings
 
   c = template.RequestContext(request, locals())
 
