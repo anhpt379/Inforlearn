@@ -1,20 +1,21 @@
 #!/usr/bin/env python
 # Requires BeautifulSoup, tested with version 3.0.8.1
 
-import sys
-import os
-import urllib
-import cookielib
-from urllib2 import *
-from BeautifulSoup import *
+from os import environ
+from re import compile
+from cookielib import CookieJar
+from urllib import urlencode, quote_plus
+from urllib2 import HTTPCookieProcessor, HTTPRedirectHandler, build_opener, Request
+from BeautifulSoup import BeautifulSoup, NavigableString
 
 LOGIN_URL="%s/_ah/login?email=test%%40example.com&admin=True&action=Login&continue="
 TASKS_URL='%s/_ah/admin/tasks'
+
 class CApp(object):
   def __init__(self, options):
     self.options = options
     self.url = 'http://%s:%s' % (options.host, options.port)
-    self.cookiejar = cookielib.CookieJar()
+    self.cookiejar = CookieJar()
     
   def send_request(self, url, data = None, headers = None):
     cookie_handler = HTTPCookieProcessor(self.cookiejar)
@@ -30,7 +31,7 @@ class CApp(object):
     
   def get_login_url(self):
     rr = LOGIN_URL % self.url
-    rr += urllib.quote_plus(self.url)
+    rr += quote_plus(self.url)
     return rr
     
   def get_queue_url(self, queue = None):
@@ -54,7 +55,7 @@ class CApp(object):
       html = self.send_request(url)
       soup = BeautifulSoup(html)
       tasks = []
-      for t in soup.findAll(id=re.compile("^runform")):
+      for t in soup.findAll(id=compile("^runform")):
         task = self.parse(t)
         if task['name'] in failed_tasks:
           continue
@@ -74,9 +75,9 @@ class CApp(object):
           url = '%s%s' % (self.url, task['action'])
           print url
           payload = task['payload'] if task['payload'] else ''
-          response = self.send_request(url, 
-                                       headers = task['headers'],
-                                       data = task['payload'])
+          self.send_request(url, 
+                            headers = task['headers'],
+                            data = payload)
           soup = BeautifulSoup(self.delete_task(task,queue))
         except Exception,e:
           print e
@@ -85,15 +86,14 @@ class CApp(object):
         break
       
   def delete_task(self, task,queue):
-    import urllib
     print 'deleting %s' % task['name']
     
     return self.send_request(
         url=self.get_queue_url(''),
         headers={},
-        data = urllib.urlencode([('queue',queue),
-                               ('task',task['headers']['X-AppEngine-TaskName']),
-                               ('action:deletetask','true')]))
+        data = urlencode([('queue',queue),
+                         ('task',task['headers']['X-AppEngine-TaskName']),
+                         ('action:deletetask','true')]))
   
   def parse(self, form):
     res = {}
@@ -127,11 +127,11 @@ def parseargs():
     df = 'default'
     parser.add_option('-n', '--name', dest='name', default=df,
                       help="name of the queue. default: %s" % df)
-    df = os.environ.get('NS_HOSTNAME', 'localhost')
+    df = environ.get('NS_HOSTNAME', 'localhost')
     parser.add_option('-s', '--srv', dest='host', 
                       default=df,
                       help="the host where the server runs. default: %s" % df)
-    df = os.environ.get('PCKIDSIS_PORT', 8080)
+    df = environ.get('PCKIDSIS_PORT', 8080)
     parser.add_option('-p', '--port', dest='port', 
                       default=df,
                       help="the port where the server listens. default: %s" % df)
