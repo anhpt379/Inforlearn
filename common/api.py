@@ -3629,14 +3629,14 @@ def user_authenticate(api_user, nick, nonce, digest):
 
 # Helper class
 class PublicApi(object):
-  methods = {"post": post,
+  methods = {"send_message": post,
              "add_contact": actor_add_contact,
              "get_info": actor_get,
              "get_contacts":
                  actor_get_contacts_avatars_since,
              "add_comment": entry_add_comment,
-             "get_messages": entry_get_actor_overview,
-             "get_messages_since": entry_get_actor_overview_since,
+             "get_stream": entry_get_actor_overview,
+             "get_stream_since": entry_get_actor_overview_since,
              }
 
   # Private methods are externally accessible but whose design has not been

@@ -93,7 +93,6 @@ body {
   text-align: center;
   color: #333;
   background-attachment: fixed;
-  opacity: 0.99px;
 }
 
 /* --- Container --------------------------------------- */
@@ -117,11 +116,9 @@ div#header-container {
   margin-bottom: 25px;
   color: #666;
   padding: 0;
-  opacity: 0.95;
 }
 
 div#header {
-  opacity: 0.95;
   position: relative;
   padding-bottom: 8px;
   z-index: 100;

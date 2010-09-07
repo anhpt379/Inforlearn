@@ -14,14 +14,8 @@
   <div id="followers" class='contacts'>
     {% ifequal request.user.nick view.nick %}
       <h2>
-        Đang chờ bạn đồng ý ({{actor_follower_count}})
+        Những người theo dõi bạn ({{actor_follower_count}})
       </h2>
-      <p class="foot-note">
-        Những người trong danh sách này ngỏ lời muốn làm bạn với bạn. Click "Kết bạn" nếu bạn đồng ý.
-        <br></br>
-      Lưu ý: Khi bạn đồng ý kết bạn với một người thì người đó sẽ được phép theo dõi tất cả các trao đổi của bạn trên site, kể cả những trao đổi mang tính cá nhân.
-      
-      </p>
     {% endifequal %}
 
     {% if actor_tiles %}

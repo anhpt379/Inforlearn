@@ -187,7 +187,41 @@ def actor_invite(request, nick, format='html'):
   else:
     whose = "%s's" % view.display_nick()
     
+    
   page = 'invite'
+
+  contact_nicks = api.actor_get_contacts(request.user, view.nick,
+                                         limit=1000)
+  actor_nicks = contact_nicks
+  actors = api.actor_get_actors(request.user, actor_nicks)
+  # clear deleted actors
+  actors = dict([(k, v) for k, v in actors.iteritems() if v])
+
+
+  follower_nicks = api.actor_get_followers(request.user,
+                                           view.nick,
+                                           limit=1000)
+  followers = api.actor_get_actors(request.user, follower_nicks)
+  # clear deleted actors
+  followers = dict([(k, v) for k, v in followers.iteritems() if v])
+  
+  actor_follower_count = len(followers)
+  actor_contact_count = len(actors)
+  
+#  nick = nick.split("@")[0] + "@inforlearn.appspot.com"
+  contacts = api.actor_get_contacts(request.user, request.user.nick, limit=1000)
+
+  _users = api.get_recommended_items(nick, "user:users")
+  users = []
+  if _users is not None:
+    for user in _users:
+      if user[1] not in contacts:
+        details = api.get_actor_details(user[1])
+        if details:
+          users.append(details)
+    
+  actor_recommended_users_count = len(users) 
+
 
   c = template.RequestContext(request, locals())
 
@@ -580,10 +614,10 @@ def actor_contacts(request, nick=None, format='html'):
   # add some extra info so we can let the user do contextual actions
   # on these homeboys
   if request.user and request.user.nick == view.nick:
-    for actor in list(followers):
-      if api.actor_is_contact(request.user, view.nick, actor):
-#        actors[actor].my_contact = True
-        followers.pop(actor)
+#    for actor in list(followers):
+#      if api.actor_is_contact(request.user, view.nick, actor):
+##        actors[actor].my_contact = True
+#        followers.pop(actor)
     # looking at self, find out who of these people follow me so
     # I can highlight them
     for actor in actors:
@@ -663,10 +697,10 @@ def actor_followers(request, nick=None, format='html'):
   # add some extra info so we can let the user do contextual actions
   # on these homeboys
   if request.user and request.user.nick == view.nick:
-    for actor in list(actors):
-      if api.actor_is_contact(request.user, view.nick, actor):
-#        actors[actor].my_contact = True
-        actors.pop(actor)
+#    for actor in list(actors):
+#      if api.actor_is_contact(request.user, view.nick, actor):
+##        actors[actor].my_contact = True
+#        actors.pop(actor)
     whose = u'bạn'
   else:
     whose = view.display_nick()

@@ -22,7 +22,7 @@
         {% if request.user %}
           {% if user_is_contact %}
           <p class="contact" style="margin-top: 20px;">
-            {{ view.display_nick }} hiện đã ở trong danh sách liên hệ của bạn.
+            Bạn đang nhận tin nhắn và bình luận gửi từ {{ view.display_nick }}.
             {% actor_remove_contact request.user request.user view %}
           </p>
           {% else %}
