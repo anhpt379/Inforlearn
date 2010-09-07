@@ -4,7 +4,7 @@ from common.models import CachingModel
 class CacheMiddleware(object):
   def process_request(self, request):
     CachingModel.enable_cache(True)
-    CachingModel.reset_cache()
+#    CachingModel.reset_cache()
 
   def process_response(self, request, response):
     # don't cache anything by default

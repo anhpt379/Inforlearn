@@ -91,13 +91,13 @@ def actor_history(request, nick=None, format='html'):
       inbox = []
     else:
       inbox = api.inbox_get_actor_public(request.user, view.nick,
-                                         limit=100, offset=offset)
+                                         limit=30, offset=offset)
   elif privacy == 'contacts':
     inbox = api.inbox_get_actor_contacts(request.user, view.nick,
-                                         limit=100, offset=offset)
+                                         limit=30, offset=offset)
   elif privacy == 'private':
     inbox = api.inbox_get_actor_private(request.user, view.nick,
-                                        limit=100, offset=offset)
+                                        limit=30, offset=offset)
 
   actor_streams = api.stream_get_actor_safe(request.user, view.nick)
 
@@ -261,7 +261,7 @@ def actor_overview(request, nick, format='html'):
 
   inbox = api.inbox_get_actor_overview(request.user,
                                        view.nick,
-                                       limit=100,#(per_page + 1),
+                                       limit=30,#(per_page + 1),
                                        offset=offset)
 #  return http.HttpResponse(str(inbox))
   actor_streams = api.stream_get_actor(request.user, view.nick)

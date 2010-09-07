@@ -23,8 +23,7 @@ def explore_recent(request, format="html"):
 
   offset, prev = util.page_offset(request)
 
-  inbox = api.inbox_get_explore(request.user, limit=100,
-                                offset=offset)
+  inbox = api.inbox_get_explore(request.user, limit=30, offset=offset)
 
   # START inbox generation chaos
   # TODO(termie): refacccttttooorrrrr
