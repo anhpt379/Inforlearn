@@ -62,7 +62,7 @@ def avatar_url(value, arg="f"):
   # TODO cache these
   path = "%s_%s.jpg" % (icon, size)
 
-  return 'http://%s/image/%s' % (settings.DOMAIN, http.urlquote(path))
+  return 'http://%s/image/%s' % (settings.COOKIELESS_DOMAIN, http.urlquote(path))
 
 def parse_args(args):
   """Splits comma separated argument into size and rel attribute."""
